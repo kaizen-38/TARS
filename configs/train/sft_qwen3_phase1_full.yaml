@@ -1,0 +1,45 @@
+# Reproduction SFT config — full fine-tuning on Qwen3-1.7B
+# This is the locked Phase 1 training configuration.
+
+### Model
+model_name_or_path: Qwen/Qwen3-1.7B
+trust_remote_code: true
+
+### Method
+stage: sft
+do_train: true
+finetuning_type: full
+
+### Dataset (populated by write_llamafactory_yaml.py at launch time)
+dataset: phase1_standard,phase1_anonymized,phase1_compact
+dataset_dir: data/datasets
+template: qwen
+cutoff_len: 4096
+overwrite_cache: false
+preprocessing_num_workers: 4
+
+### Output
+output_dir: runs/sft_qwen3_phase1_full
+logging_dir: runs/sft_qwen3_phase1_full/logs
+overwrite_output_dir: false
+save_steps: 500
+logging_steps: 10
+plot_loss: true
+
+### Training
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 16
+learning_rate: 1.0e-5
+lr_scheduler_type: cosine
+warmup_ratio: 0.03
+num_train_epochs: 3.0
+max_steps: -1
+bf16: true
+fp16: false
+gradient_checkpointing: true
+ddp_timeout: 180000
+dataloader_num_workers: 2
+
+### Reproducibility
+seed: 42
+data_seed: 42

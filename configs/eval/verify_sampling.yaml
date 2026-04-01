@@ -1,0 +1,30 @@
+# Sampling-based verification config — used for pass@k / diversity analysis
+# NOT the primary metric; greedy_eval.yaml is the locked Phase 1 baseline.
+
+decoding:
+  do_sample: true
+  temperature: 0.7
+  top_p: 0.8
+  top_k: 20
+  presence_penalty: 1.5
+  max_new_tokens: 1024
+  enable_thinking: false      # MUST be false for Phase 1
+
+# Number of samples per instance
+num_samples: 8
+
+# Batch size for inference
+per_device_eval_batch_size: 1
+
+# VAL validation budget per candidate
+max_val_calls_per_candidate: 1
+
+# Per-instance wall-clock timeout in seconds
+per_instance_timeout_sec: 120
+
+# Output settings
+save_raw_generation: true
+save_cleaned_plan: true
+save_parsed_plan: true
+save_val_result: true
+save_timing: true

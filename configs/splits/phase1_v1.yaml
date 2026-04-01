@@ -1,0 +1,31 @@
+train_domains:
+  - blocksworld
+  - gripper
+  - ferry
+  - delivery
+  - childsnack
+  - floortile
+  - rovers
+  - spanner
+
+heldout_domains:
+  - miconic
+  - sokoban
+  - transport
+  - satellite
+
+representations:
+  - standard
+  - anonymized
+  - compact
+
+budgets:
+  max_new_tokens: 2048
+  max_val_calls_per_candidate: 1
+  per_instance_timeout_sec: 120
+
+smoke_test:
+  instances_per_domain: 5
+
+pilot:
+  instances_per_domain: 25

@@ -1,0 +1,49 @@
+# Debug / smoke-test SFT config — LoRA fine-tuning on Qwen3-1.7B
+# Use this to verify the training pipeline works before committing to full fine-tuning.
+
+### Model
+model_name_or_path: Qwen/Qwen3-1.7B
+trust_remote_code: true
+
+### Method
+stage: sft
+do_train: true
+finetuning_type: lora
+
+### LoRA params
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.05
+lora_target: all
+
+### Dataset
+dataset: phase1_standard
+dataset_dir: data/datasets
+template: qwen
+cutoff_len: 1024
+overwrite_cache: false
+preprocessing_num_workers: 2
+
+### Output
+output_dir: runs/sft_qwen3_phase1_lora_debug
+logging_dir: runs/sft_qwen3_phase1_lora_debug/logs
+overwrite_output_dir: true
+save_steps: 50
+logging_steps: 5
+plot_loss: false
+
+### Training (deliberately tiny for smoke-testing)
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 4
+learning_rate: 1.0e-4
+lr_scheduler_type: cosine
+warmup_ratio: 0.03
+num_train_epochs: 1.0
+max_steps: 20
+bf16: true
+fp16: false
+gradient_checkpointing: false
+
+### Reproducibility
+seed: 42
+data_seed: 42

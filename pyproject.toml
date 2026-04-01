@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "thicket_phase1"
+version = "0.1.0"
+description = "Phase 1: Reproduce 1.7B LLM planning baseline with locked splits/budgets/protocol"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "kaizen-38" }]
+
+dependencies = [
+    "transformers>=4.51.0",
+    "torch>=2.2.0",
+    "accelerate>=0.30.0",
+    "peft>=0.10.0",
+    "datasets>=2.19.0",
+    "pddl>=0.4.0",
+    "pyyaml>=6.0",
+    "rich>=13.0",
+    "typer>=0.12.0",
+    "jsonlines>=4.0",
+    "tqdm>=4.66",
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "filelock>=3.13",
+    "sentencepiece>=0.2.0",
+    "tokenizers>=0.19.0",
+    "einops>=0.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-timeout>=2.3",
+    "ruff>=0.4",
+    "mypy>=1.10",
+]
+
+[project.scripts]
+thicket = "cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = false
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+timeout = 120

@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+.venv/
+venv/
+env/
+.Python
+pip-log.txt
+
+# Data (large files)
+data/raw/
+data/generated/
+data/datasets/alpaca/
+data/splits/
+
+# Training runs (large checkpoints)
+runs/*/
+!runs/.gitkeep
+
+# Model weights
+*.bin
+*.safetensors
+*.pt
+*.pth
+
+# Logs
+*.log
+*.jsonl
+!configs/**/*.yaml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts (third_party binaries)
+third_party/downward/builds/
+third_party/VAL/build/
+third_party/VAL/bin/
+
+# Pytest
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage

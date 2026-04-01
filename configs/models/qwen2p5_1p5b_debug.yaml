@@ -1,0 +1,23 @@
+# Model configuration for Qwen/Qwen2.5-1.5B-Instruct (cheap debug / CI model)
+# Use this when you want fast iteration without paying for Qwen3-1.7B compute.
+model_name_or_path: Qwen/Qwen2.5-1.5B-Instruct
+model_type: qwen2
+tokenizer_name_or_path: Qwen/Qwen2.5-1.5B-Instruct
+
+# Inference defaults
+inference:
+  enable_thinking: false
+  do_sample: false
+  temperature: 0.01
+  top_p: 1.0
+  max_new_tokens: 512
+  repetition_penalty: 1.0
+
+# Quantization
+quantization: null
+
+# dtype
+torch_dtype: bfloat16
+
+# Flash attention
+use_flash_attention_2: false

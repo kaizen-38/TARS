@@ -1,0 +1,22 @@
+# Model configuration for Qwen/Qwen3-1.7B (primary reproduction model)
+model_name_or_path: Qwen/Qwen3-1.7B
+model_type: qwen3
+tokenizer_name_or_path: Qwen/Qwen3-1.7B
+
+# Inference defaults
+inference:
+  enable_thinking: false   # ALWAYS false for Phase 1 baseline
+  do_sample: false
+  temperature: 0.01
+  top_p: 1.0
+  max_new_tokens: 2048
+  repetition_penalty: 1.0
+
+# Quantization (set to null to disable, or "int4" / "int8")
+quantization: null
+
+# dtype
+torch_dtype: bfloat16
+
+# Flash attention (set to false if unsupported hardware)
+use_flash_attention_2: true
