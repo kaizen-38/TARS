@@ -43,7 +43,7 @@ submit() {
     local desc="$1"; shift
     local jid
     jid=$(sbatch "$@" | awk '{print $NF}')
-    echo "${desc}: ${jid}" | tee -a "$LOG"
+    echo "${desc}: ${jid}" | tee -a "$LOG" >&2
     echo "$jid"
 }
 
