@@ -31,7 +31,7 @@ for domain in "${DOMAINS_WITH_MAKE[@]}"; do
     fi
     if [ -f "$d/Makefile" ]; then
         echo "  Building $domain..."
-        make -C "$d" -j"$(nproc 2>/dev/null || echo 4)" 2>&1 | tail -5
+        make -C "$d" -j"$(nproc 2>/dev/null || echo 4)" -k 2>&1 | grep -v "^make\[" | tail -8 || true
     elif ls "$d"/*.c &>/dev/null 2>&1; then
         echo "  Compiling $domain (no Makefile, using gcc)..."
         (cd "$d" && gcc -O2 -o "$domain" *.c -lm 2>&1 | tail -5) || true
@@ -45,7 +45,7 @@ SOK_DIR="$GEN_DIR/sokoban/random"
 if [ -d "$SOK_DIR" ]; then
     echo "  Building sokoban..."
     if [ -f "$SOK_DIR/Makefile" ]; then
-        make -C "$SOK_DIR" -j"$(nproc 2>/dev/null || echo 4)" 2>&1 | tail -5
+        make -C "$SOK_DIR" -j"$(nproc 2>/dev/null || echo 4)" -k 2>&1 | grep -v "^make\[" | tail -8 || true
     elif ls "$SOK_DIR"/*.c &>/dev/null 2>&1; then
         (cd "$SOK_DIR" && gcc -O2 -o sokoban-generator-typed *.c -lm 2>&1 | tail -5) || true
     fi
