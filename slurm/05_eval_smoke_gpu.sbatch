@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=tars_eval_smoke
 #SBATCH --account=class_cse574spring2026
-#SBATCH --partition=gpu
-#SBATCH --qos=gpu
+#SBATCH --partition=public
+#SBATCH --qos=public
 #SBATCH --gres=gpu:a100:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
