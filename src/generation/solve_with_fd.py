@@ -65,7 +65,7 @@ class FastDownwardBackend(PlannerBackend):
     """Wrapper around Fast Downward (aibasel/downward)."""
 
     # Default search configuration — lama-first is a solid anytime planner.
-    DEFAULT_SEARCH = "--alias lama-first"
+    DEFAULT_SEARCH = "--search lazy_greedy([ff()], preferred=[ff()])"
 
     def __init__(self, fd_root: Path = _FD_ROOT, search_config: Optional[str] = None) -> None:
         self.fd_root = fd_root
@@ -95,33 +95,39 @@ class FastDownwardBackend(PlannerBackend):
         timeout: int,
     ) -> tuple[int, str, str, list[str]]:
         binary = self._get_binary()
-        cmd = (
-            ["python", str(binary), str(domain_file), str(problem_file)]
-            + self.search_config.split()
-        )
+        if self.search_config.startswith("--search "):
+            search_expr = self.search_config[len("--search "):]
+            cmd = ["python", str(binary), str(domain_file), str(problem_file),
+                    "--search", search_expr]
+        elif self.search_config.startswith("--alias "):
+            alias = self.search_config[len("--alias "):]
+            cmd = ["python", str(binary), str(domain_file), str(problem_file),
+            "--alias", alias]   
+        else:
+            cmd = (["python", str(binary), str(domain_file), str(problem_file)]
+                     + self.search_config.split())
         logger.info("FD solve: %s", " ".join(cmd))
+        sas_plan = Path("sas_plan")
+        if sas_plan.exists():
+            sas_plan.unlink()
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-        actions = _parse_fd_plan(result.stdout)
+        actions = []
+        if sas_plan.exists():
+            actions = _parse_fd_plan(sas_plan.read_text())
+            sas_plan.unlink()
         return result.returncode, result.stdout, result.stderr, actions
 
 
-def _parse_fd_plan(stdout: str) -> list[str]:
-    """Extract the action sequence from Fast Downward's plan output.
-
-    FD writes plans to sas_plan files, but it also echoes them in stdout
-    in the format:  (action arg1 arg2) [cost: N]
-    """
-    actions: list[str] = []
-    for line in stdout.splitlines():
+def _parse_fd_plan(text: str) -> list[str]:
+    """Parse plan from sas_plan file content."""
+    actions = []
+    for line in text.splitlines():
         stripped = line.strip()
-        if stripped.startswith("(") and stripped.endswith("]"):
-            # Remove cost suffix
-            paren_end = stripped.rfind(")")
-            action_str = stripped[: paren_end + 1]
-            actions.append(action_str.lower())
-        elif stripped.startswith("(") and stripped.endswith(")"):
-            actions.append(stripped.lower())
-    # Also check for sas_plan files written to CWD
+        if stripped.startswith("(") and not stripped.startswith(";"):
+            if stripped.endswith("]") and "[" in stripped:
+                stripped = stripped[:stripped.rfind("[")].strip()
+            if stripped.endswith(")"):
+                actions.append(stripped.lower())
     return actions
 
 
