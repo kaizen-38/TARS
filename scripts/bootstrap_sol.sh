@@ -14,7 +14,8 @@ echo "==> Creating conda environment '${ENV_NAME}' with Python 3.11..."
 mamba create -n "${ENV_NAME}" python=3.11 -y
 
 echo "==> Activating environment..."
-source activate "${ENV_NAME}"
+eval "$(conda shell.bash hook)"
+conda activate "${ENV_NAME}"
 
 echo "==> Upgrading pip and setuptools..."
 pip install --upgrade "pip>=24" "setuptools>=68" wheel --quiet
