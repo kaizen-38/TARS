@@ -32,6 +32,26 @@ if ! python3 -c "import typer" &>/dev/null; then
 fi
 export PYTHONPATH="${REPO_ROOT}/src"
 
+# Pre-flight: verify submodules and built tools exist
+PREFLIGHT_OK=true
+if [ ! -f "${REPO_ROOT}/third_party/pddl-generators/blocksworld/blocksworld" ]; then
+    echo "ERROR: pddl-generators not built. Run: bash scripts/setup_third_party.sh && make build-tools" >&2
+    PREFLIGHT_OK=false
+fi
+if [ ! -f "${REPO_ROOT}/third_party/downward/fast-downward.py" ]; then
+    echo "ERROR: Fast Downward not found. Run: bash scripts/setup_third_party.sh && make build-tools" >&2
+    PREFLIGHT_OK=false
+fi
+if [ ! -f "${REPO_ROOT}/third_party/VAL/build/bin/Validate" ] && \
+   [ ! -f "${REPO_ROOT}/third_party/VAL/bin/Validate" ]; then
+    echo "ERROR: VAL not built. Run: bash scripts/setup_third_party.sh && make build-tools" >&2
+    PREFLIGHT_OK=false
+fi
+if ! $PREFLIGHT_OK; then
+    echo "Fix the above errors then rerun submit_phase1.sh." >&2
+    exit 1
+fi
+
 RUN_PILOT=false
 RUN_FULL=false
 for arg in "$@"; do
