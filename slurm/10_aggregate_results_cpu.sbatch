@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=tars_aggregate
 #SBATCH --account=class_cse574spring2026
-#SBATCH --partition=general
+#SBATCH --partition=public
+#SBATCH --qos=public
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=8G
 #SBATCH --time=00:15:00

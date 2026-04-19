@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=tars_generate
 #SBATCH --account=class_cse574spring2026
-#SBATCH --partition=general
+#SBATCH --partition=public
+#SBATCH --qos=public
 #SBATCH --array=0-11          # one task per domain (12 total: 8 train + 4 heldout)
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=8G

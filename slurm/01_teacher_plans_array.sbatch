@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=tars_solve
 #SBATCH --account=class_cse574spring2026
-#SBATCH --partition=general
+#SBATCH --partition=public
+#SBATCH --qos=public
 #SBATCH --array=0-59          # smoke: 5*12=60 rows; update to 0-299 for pilot (25*12)
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G
