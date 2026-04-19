@@ -11,12 +11,13 @@
 #SBATCH --error=logs/01_solve_%A_%a.err
 
 set -euo pipefail
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="${SLURM_SUBMIT_DIR}"
 MANIFEST="${REPO_ROOT}/manifests/solve_manifest.tsv"
 
 module purge
 module load mamba/latest
-source activate tars
+source /packages/apps/mamba/latest/etc/profile.d/conda.sh
+conda activate tars
 
 export PYTHONPATH="${REPO_ROOT}/src"
 cd "${REPO_ROOT}"

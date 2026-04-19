@@ -15,12 +15,13 @@
 #   MODE=smoke sbatch slurm/00_generate_instances_array.sbatch
 
 set -euo pipefail
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="${SLURM_SUBMIT_DIR}"
 MANIFEST="${REPO_ROOT}/manifests/generate_${MODE:-smoke}.tsv"
 
 module purge
 module load mamba/latest
-source activate tars
+source /packages/apps/mamba/latest/etc/profile.d/conda.sh
+conda activate tars
 
 export PYTHONPATH="${REPO_ROOT}/src"
 cd "${REPO_ROOT}"

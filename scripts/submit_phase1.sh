@@ -74,7 +74,7 @@ JID_SOLVE_MANIFEST=$(submit "00b_solve_manifest" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/00b_manifest_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source activate tars && \
+    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source /packages/apps/mamba/latest/etc/profile.d/conda.sh && conda activate tars && \
             export PYTHONPATH=${REPO_ROOT}/src && \
             python scripts/gen_manifests.py solve && \
             python scripts/gen_manifests.py validate")
@@ -91,7 +91,7 @@ JID_VAL_MANIFEST=$(submit "01b_val_manifest" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/01b_manifest_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source activate tars && \
+    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source /packages/apps/mamba/latest/etc/profile.d/conda.sh && conda activate tars && \
             export PYTHONPATH=${REPO_ROOT}/src && \
             python scripts/gen_manifests.py validate")
 
@@ -148,7 +148,7 @@ JID_SOLVE_MANIFEST_P=$(submit "00b_solve_manifest_pilot" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/00b_manifest_pilot_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source activate tars && \
+    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source /packages/apps/mamba/latest/etc/profile.d/conda.sh && conda activate tars && \
             export PYTHONPATH=${REPO_ROOT}/src && \
             python scripts/gen_manifests.py solve")
 
@@ -162,7 +162,7 @@ JID_VAL_MANIFEST_P=$(submit "01b_val_manifest_pilot" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/01b_manifest_pilot_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source activate tars && \
+    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source /packages/apps/mamba/latest/etc/profile.d/conda.sh && conda activate tars && \
             export PYTHONPATH=${REPO_ROOT}/src && \
             python scripts/gen_manifests.py validate")
 
