@@ -12,6 +12,7 @@ Output files per instance:
 from __future__ import annotations
 
 import subprocess
+import tempfile
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, asdict
@@ -95,33 +96,37 @@ class FastDownwardBackend(PlannerBackend):
         timeout: int,
     ) -> tuple[int, str, str, list[str]]:
         binary = self._get_binary()
+        # Use absolute paths since we change cwd to a tempdir below.
         cmd = (
-            ["python", str(binary), str(domain_file), str(problem_file)]
+            ["python", str(binary), str(domain_file.resolve()), str(problem_file.resolve())]
             + self.search_config.split()
         )
         logger.info("FD solve: %s", " ".join(cmd))
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-        actions = _parse_fd_plan(result.stdout)
+        # Each solve runs in its own tempdir so parallel Slurm tasks never
+        # clobber each other's sas_plan file.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=timeout, cwd=tmpdir
+            )
+            # lama-first (iterated search) writes sas_plan.1, sas_plan.2, …
+            # lazy_greedy writes sas_plan. Glob both; last file = best plan.
+            plan_files = sorted(Path(tmpdir).glob("sas_plan*"))
+            actions = _parse_fd_plan(plan_files[-1].read_text()) if plan_files else []
         return result.returncode, result.stdout, result.stderr, actions
 
 
-def _parse_fd_plan(stdout: str) -> list[str]:
-    """Extract the action sequence from Fast Downward's plan output.
-
-    FD writes plans to sas_plan files, but it also echoes them in stdout
-    in the format:  (action arg1 arg2) [cost: N]
-    """
+def _parse_fd_plan(text: str) -> list[str]:
+    """Parse plan from sas_plan file content (one action per line)."""
     actions: list[str] = []
-    for line in stdout.splitlines():
+    for line in text.splitlines():
         stripped = line.strip()
-        if stripped.startswith("(") and stripped.endswith("]"):
-            # Remove cost suffix
-            paren_end = stripped.rfind(")")
-            action_str = stripped[: paren_end + 1]
-            actions.append(action_str.lower())
-        elif stripped.startswith("(") and stripped.endswith(")"):
-            actions.append(stripped.lower())
-    # Also check for sas_plan files written to CWD
+        if not stripped or stripped.startswith(";"):
+            continue
+        if stripped.startswith("("):
+            if "[" in stripped:
+                stripped = stripped[: stripped.rfind("[")].strip()
+            if stripped.endswith(")"):
+                actions.append(stripped.lower())
     return actions
 
 

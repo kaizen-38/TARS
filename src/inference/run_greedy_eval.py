@@ -42,6 +42,7 @@ _DATA_DIR = _REPO_ROOT / "data"
 def main(
     checkpoint_path: str = typer.Option(..., help="Path to fine-tuned checkpoint or HF model id"),
     split: str = typer.Option("heldout", help="'train' or 'heldout'"),
+    domain: Optional[str] = typer.Option(None, help="Restrict to one domain (for array jobs)"),
     representations: list[str] = typer.Option(
         ["standard", "anonymized", "compact"], help="Representations to evaluate"
     ),
@@ -73,7 +74,7 @@ def main(
     run_logger = RunLogger(output_dir / "run_log.jsonl")
     tmp_dir = ensure_dir(output_dir / "tmp_plans")
 
-    logger.info("Starting greedy eval run_id=%s split=%s", run_id, split)
+    logger.info("Starting greedy eval run_id=%s split=%s domain=%s", run_id, split, domain or "all")
 
     model, tokenizer = load_model_and_tokenizer(
         model_name_or_path=model_name,
@@ -82,17 +83,16 @@ def main(
 
     # Discover instances for the split
     instance_files = list(instances_dir.rglob("*_meta.json"))
-    instance_files = [
-        f for f in instance_files
-        if f"_{split}_" in f.name
-    ]
+    instance_files = [f for f in instance_files if f"_{split}_" in f.name]
+    if domain:
+        instance_files = [f for f in instance_files if f"/{domain}/" in str(f)]
 
     logger.info("Found %d instance meta files for split '%s'", len(instance_files), split)
 
     for meta_path in sorted(instance_files):
         meta = load_json(meta_path)
         instance_id = meta["instance_id"]
-        domain = meta["domain"]
+        inst_domain = meta["domain"]
 
         domain_file = _REPO_ROOT / meta["domain_file"]
         problem_file = _REPO_ROOT / meta["problem_file"]
@@ -165,7 +165,7 @@ def main(
             run_logger.log_run_result(
                 run_id=run_id,
                 seed=seed,
-                domain=domain,
+                domain=inst_domain,
                 problem_id=instance_id,
                 representation=repr_name,
                 split=split,
