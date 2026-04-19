@@ -71,7 +71,7 @@ JID_GEN=$(submit "00_generate_smoke" \
 # After generate: build solve manifest
 JID_SOLVE_MANIFEST=$(submit "00b_solve_manifest" \
     --dependency=afterok:${JID_GEN} \
-    --partition=public --qos=public --account=class_cse574spring2026 \
+    --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/00b_manifest_%j.out \
     --wrap="cd ${REPO_ROOT} && module load mamba/latest && source activate tars && \
@@ -88,7 +88,7 @@ JID_SOLVE=$(submit "01_teacher_plans_smoke" \
 # After solve: build validate manifest
 JID_VAL_MANIFEST=$(submit "01b_val_manifest" \
     --dependency=afterok:${JID_SOLVE} \
-    --partition=public --qos=public --account=class_cse574spring2026 \
+    --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/01b_manifest_%j.out \
     --wrap="cd ${REPO_ROOT} && module load mamba/latest && source activate tars && \
@@ -145,7 +145,7 @@ JID_GEN_PILOT=$(submit "00_generate_pilot" \
 
 JID_SOLVE_MANIFEST_P=$(submit "00b_solve_manifest_pilot" \
     --dependency=afterok:${JID_GEN_PILOT} \
-    --partition=public --qos=public --account=class_cse574spring2026 \
+    --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/00b_manifest_pilot_%j.out \
     --wrap="cd ${REPO_ROOT} && module load mamba/latest && source activate tars && \
@@ -159,7 +159,7 @@ JID_SOLVE_PILOT=$(submit "01_teacher_plans_pilot" \
 
 JID_VAL_MANIFEST_P=$(submit "01b_val_manifest_pilot" \
     --dependency=afterok:${JID_SOLVE_PILOT} \
-    --partition=public --qos=public --account=class_cse574spring2026 \
+    --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/01b_manifest_pilot_%j.out \
     --wrap="cd ${REPO_ROOT} && module load mamba/latest && source activate tars && \

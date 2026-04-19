@@ -2,7 +2,7 @@
 #SBATCH --job-name=tars_eval_pilot
 #SBATCH --account=class_cse574spring2026
 #SBATCH --partition=public
-#SBATCH --qos=public
+#SBATCH --qos=class
 #SBATCH --gres=gpu:a100:1
 #SBATCH --array=0-11          # one task per domain (12 total)
 #SBATCH --cpus-per-task=8

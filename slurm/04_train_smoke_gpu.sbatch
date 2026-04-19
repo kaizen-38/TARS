@@ -2,7 +2,7 @@
 #SBATCH --job-name=tars_train_smoke
 #SBATCH --account=class_cse574spring2026
 #SBATCH --partition=public
-#SBATCH --qos=public
+#SBATCH --qos=class
 #SBATCH --gres=gpu:a100:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G

@@ -2,7 +2,7 @@
 #SBATCH --job-name=tars_validate
 #SBATCH --account=class_cse574spring2026
 #SBATCH --partition=public
-#SBATCH --qos=public
+#SBATCH --qos=class
 #SBATCH --array=0-59          # smoke: update to match solve_manifest row count - 1
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=4G
