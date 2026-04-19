@@ -18,7 +18,7 @@ REPO_ROOT="${SLURM_SUBMIT_DIR}"
 
 module purge
 module load mamba/latest
-source /packages/apps/mamba/latest/etc/profile.d/conda.sh
+eval "$(conda shell.bash hook)"
 conda activate tars
 
 export HF_HOME="${SCRATCH}/hf_cache"

@@ -11,9 +11,9 @@
 #
 # Prerequisites:
 #   1. bash scripts/bootstrap_sol.sh    (run once, on login node)
-#   2. python scripts/gen_manifests.py generate --mode smoke
-#   3. python scripts/gen_manifests.py eval --split heldout
-#   4. python scripts/gen_manifests.py eval --split train
+#   2. python3 scripts/gen_manifests.py generate --mode smoke
+#   3. python3 scripts/gen_manifests.py eval --split heldout
+#   4. python3 scripts/gen_manifests.py eval --split train
 #
 # Sol account: class_cse574spring2026
 # Shared data:  /data/courses/class_cse574spring2026_subbarao
@@ -23,6 +23,14 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${REPO_ROOT}"
 mkdir -p logs
+
+# Activate tars environment if not already active
+if ! python3 -c "import typer" &>/dev/null; then
+    module load mamba/latest
+    eval "$(conda shell.bash hook)"
+    conda activate tars
+fi
+export PYTHONPATH="${REPO_ROOT}/src"
 
 RUN_PILOT=false
 RUN_FULL=false
@@ -55,9 +63,9 @@ echo "--- Part 1: Smoke pipeline ---"
 
 # Generate smoke manifests
 echo "Generating smoke manifests..."
-python scripts/gen_manifests.py generate --mode smoke
-python scripts/gen_manifests.py eval --split heldout
-python scripts/gen_manifests.py eval --split train
+python3 scripts/gen_manifests.py generate --mode smoke
+python3 scripts/gen_manifests.py eval --split heldout
+python3 scripts/gen_manifests.py eval --split train
 
 N_DOMAINS=12
 SMOKE_N=$(( N_DOMAINS * 5 - 1 ))   # 5 instances × 12 domains = 60, array 0-59
@@ -74,10 +82,10 @@ JID_SOLVE_MANIFEST=$(submit "00b_solve_manifest" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/00b_manifest_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source /packages/apps/mamba/latest/etc/profile.d/conda.sh && conda activate tars && \
+    --wrap="cd ${REPO_ROOT} && module load mamba/latest && eval \"\$(conda shell.bash hook)\" && conda activate tars && \
             export PYTHONPATH=${REPO_ROOT}/src && \
-            python scripts/gen_manifests.py solve && \
-            python scripts/gen_manifests.py validate")
+            python3 scripts/gen_manifests.py solve && \
+            python3 scripts/gen_manifests.py validate")
 
 # Job 01: solve instances (FD), smoke array 0-59
 JID_SOLVE=$(submit "01_teacher_plans_smoke" \
@@ -91,9 +99,9 @@ JID_VAL_MANIFEST=$(submit "01b_val_manifest" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/01b_manifest_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source /packages/apps/mamba/latest/etc/profile.d/conda.sh && conda activate tars && \
+    --wrap="cd ${REPO_ROOT} && module load mamba/latest && eval \"\$(conda shell.bash hook)\" && conda activate tars && \
             export PYTHONPATH=${REPO_ROOT}/src && \
-            python scripts/gen_manifests.py validate")
+            python3 scripts/gen_manifests.py validate")
 
 # Job 02: validate plans (VAL), smoke array 0-59
 JID_VAL=$(submit "02_validate_smoke" \
@@ -135,7 +143,7 @@ echo "--- Part 2: Pilot pipeline (depends on smoke dataset) ---"
 
 PILOT_N=$(( N_DOMAINS * 25 - 1 ))   # 25 × 12 = 300, array 0-299
 
-python scripts/gen_manifests.py generate --mode pilot
+python3 scripts/gen_manifests.py generate --mode pilot
 
 JID_GEN_PILOT=$(submit "00_generate_pilot" \
     --dependency=afterok:${JID_EVAL_SMOKE} \
@@ -148,9 +156,9 @@ JID_SOLVE_MANIFEST_P=$(submit "00b_solve_manifest_pilot" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/00b_manifest_pilot_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source /packages/apps/mamba/latest/etc/profile.d/conda.sh && conda activate tars && \
+    --wrap="cd ${REPO_ROOT} && module load mamba/latest && eval \"\$(conda shell.bash hook)\" && conda activate tars && \
             export PYTHONPATH=${REPO_ROOT}/src && \
-            python scripts/gen_manifests.py solve")
+            python3 scripts/gen_manifests.py solve")
 
 JID_SOLVE_PILOT=$(submit "01_teacher_plans_pilot" \
     --dependency=afterok:${JID_SOLVE_MANIFEST_P} \
@@ -162,9 +170,9 @@ JID_VAL_MANIFEST_P=$(submit "01b_val_manifest_pilot" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/01b_manifest_pilot_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && source /packages/apps/mamba/latest/etc/profile.d/conda.sh && conda activate tars && \
+    --wrap="cd ${REPO_ROOT} && module load mamba/latest && eval \"\$(conda shell.bash hook)\" && conda activate tars && \
             export PYTHONPATH=${REPO_ROOT}/src && \
-            python scripts/gen_manifests.py validate")
+            python3 scripts/gen_manifests.py validate")
 
 JID_VAL_PILOT=$(submit "02_validate_pilot" \
     --dependency=afterok:${JID_VAL_MANIFEST_P} \

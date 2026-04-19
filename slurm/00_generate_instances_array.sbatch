@@ -20,7 +20,7 @@ MANIFEST="${REPO_ROOT}/manifests/generate_${MODE:-smoke}.tsv"
 
 module purge
 module load mamba/latest
-source /packages/apps/mamba/latest/etc/profile.d/conda.sh
+eval "$(conda shell.bash hook)"
 conda activate tars
 
 export PYTHONPATH="${REPO_ROOT}/src"
