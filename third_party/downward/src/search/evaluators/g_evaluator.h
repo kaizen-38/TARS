@@ -6,14 +6,13 @@
 namespace g_evaluator {
 class GEvaluator : public Evaluator {
 public:
-    GEvaluator(const std::string &description, utils::Verbosity verbosity);
+    explicit GEvaluator(const plugins::Options &opts);
+    virtual ~GEvaluator() override = default;
 
     virtual EvaluationResult compute_result(
         EvaluationContext &eval_context) override;
 
-    virtual void get_path_dependent_evaluators(
-        std::set<Evaluator *> &) override {
-    }
+    virtual void get_path_dependent_evaluators(std::set<Evaluator *> &) override {}
 };
 }
 

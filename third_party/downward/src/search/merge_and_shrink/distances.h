@@ -50,7 +50,8 @@ public:
     }
 
     void compute_distances(
-        bool compute_init_distances, bool compute_goal_distances,
+        bool compute_init_distances,
+        bool compute_goal_distances,
         utils::LogProxy &log);
 
     /*
@@ -64,7 +65,8 @@ public:
     */
     void apply_abstraction(
         const StateEquivalenceRelation &state_equivalence_relation,
-        bool compute_init_distances, bool compute_goal_distances,
+        bool compute_init_distances,
+        bool compute_goal_distances,
         utils::LogProxy &log);
 
     int get_init_distance(int state) const {

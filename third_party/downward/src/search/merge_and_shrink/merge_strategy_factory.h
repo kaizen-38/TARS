@@ -24,18 +24,17 @@ protected:
     virtual std::string name() const = 0;
     virtual void dump_strategy_specific_options() const = 0;
 public:
-    MergeStrategyFactory(utils::Verbosity verbosity);
+    explicit MergeStrategyFactory(const plugins::Options &options);
     virtual ~MergeStrategyFactory() = default;
     void dump_options() const;
     virtual std::unique_ptr<MergeStrategy> compute_merge_strategy(
-        const TaskProxy &task_proxy, const FactoredTransitionSystem &fts) = 0;
+        const TaskProxy &task_proxy,
+        const FactoredTransitionSystem &fts) = 0;
     virtual bool requires_init_distances() const = 0;
     virtual bool requires_goal_distances() const = 0;
 };
 
 extern void add_merge_strategy_options_to_feature(plugins::Feature &feature);
-extern std::tuple<utils::Verbosity> get_merge_strategy_arguments_from_options(
-    const plugins::Options &opts);
 }
 
 #endif

@@ -1,5 +1,5 @@
 import argparse
-from pathlib import Path
+import os.path
 import re
 import sys
 
@@ -47,7 +47,8 @@ Portfolios require that a time limit is in effect. Portfolio configurations
 that exceed their time or memory limit are aborted, and the next
 configuration is run."""
 
-EXAMPLE_PORTFOLIO = aliases.PORTFOLIOS["seq-opt-fdss-1"].relative_to(util.REPO_ROOT_DIR)
+EXAMPLE_PORTFOLIO = os.path.relpath(
+    aliases.PORTFOLIOS["seq-opt-fdss-1"], start=util.REPO_ROOT_DIR)
 
 EXAMPLES = [
     ("Translate and find a plan with A* + LM-Cut:",
@@ -59,7 +60,7 @@ EXAMPLES = [
     ("Run predefined configuration (LAMA-2011) on translated task:",
      ["--alias", "seq-sat-lama-2011", "output.sas"]),
     ("Run a portfolio on a translated task:",
-     ["--portfolio", str(EXAMPLE_PORTFOLIO),
+     ["--portfolio", EXAMPLE_PORTFOLIO,
       "--search-time-limit", "30m", "output.sas"]),
     ("Run the search component in debug mode (with assertions enabled) "
      "and validate the resulting plan:",
@@ -80,17 +81,7 @@ EXAMPLES = [
       "--evaluator", '"hff=ff()"', "--search", '"eager_greedy([hff], preferred=[hff])"']),
 ]
 
-
-def _format_example(description, parameters):
-    call_string = " ".join([Path(sys.argv[0]).name] + parameters)
-    return f"{description}\n{call_string}"
-
-
-def _format_examples(examples):
-    return "\n\n".join(_format_example(*example) for example in examples)
-
-
-EPILOG = f"""component options:
+EPILOG = """component options:
   --translate-options OPTION1 OPTION2 ...
   --search-options OPTION1 OPTION2 ...
                         pass OPTION1 OPTION2 ... to specified planner component
@@ -98,11 +89,11 @@ EPILOG = f"""component options:
 
 Examples:
 
-{_format_examples(EXAMPLES)}
-"""
+%s
+""" % "\n\n".join("%s\n%s" % (desc, " ".join([os.path.basename(sys.argv[0])] + parameters)) for desc, parameters in EXAMPLES)
 
 COMPONENTS_PLUS_OVERALL = ["translate", "search", "validate", "overall"]
-DEFAULT_SAS_FILE = Path("output.sas")
+DEFAULT_SAS_FILE = "output.sas"
 
 
 """
@@ -111,7 +102,7 @@ custom exit codes instead of 2.
 """
 def print_usage_and_exit_with_driver_input_error(parser, msg):
     parser.print_usage()
-    returncodes.exit_with_driver_input_error(f"{Path(sys.argv[0]).name}: error: {msg}")
+    returncodes.exit_with_driver_input_error("{}: error: {}".format(os.path.basename(sys.argv[0]), msg))
 
 
 class RawHelpFormatter(argparse.HelpFormatter):
@@ -220,8 +211,8 @@ def _set_components_automatically(parser, args):
 
 def _set_components_and_inputs(parser, args):
     """Set args.components to the planner components to be run and set
-    args.translate_inputs, args.search_input, and args.validate_inputs
-    to the correct input filenames.
+    args.translate_inputs and args.search_input to the correct input
+    filenames.
 
     Rules:
     1. If any --run-xxx option is specified, then the union
@@ -248,6 +239,7 @@ def _set_components_and_inputs(parser, args):
 
     assert args.components
     first = args.components[0]
+    num_files = len(args.filenames)
     # When passing --help to any of the components (or -h to the
     # translator), we don't require input filenames and silently
     # swallow any that are provided. This is undocumented to avoid
@@ -255,35 +247,25 @@ def _set_components_and_inputs(parser, args):
     if first == "translate":
         if "--help" in args.translate_options or "-h" in args.translate_options:
             args.translate_inputs = []
+        elif num_files == 1:
+            task_file, = args.filenames
+            domain_file = util.find_domain_filename(task_file)
+            args.translate_inputs = [domain_file, task_file]
+        elif num_files == 2:
+            args.translate_inputs = args.filenames
         else:
-            args.translate_inputs = _get_pddl_input_files(args, parser, "translator")
+            print_usage_and_exit_with_driver_input_error(
+                parser, "translator needs one or two input files")
     elif first == "search":
         if "--help" in args.search_options:
             args.search_input = None
-        elif len(args.filenames) == 1:
-            args.search_input = Path(args.filenames[0])
+        elif num_files == 1:
+            args.search_input, = args.filenames
         else:
             print_usage_and_exit_with_driver_input_error(
                 parser, "search needs exactly one input file")
     else:
         assert False, first
-
-    if "validate" in args.components:
-        args.validate_inputs = _get_pddl_input_files(args, parser, "validate")
-
-
-def _get_pddl_input_files(args, parser, component):
-    num_files = len(args.filenames)
-    if num_files == 1:
-        task = Path(args.filenames[0])
-        domain = util.find_domain_path(task)
-    elif num_files == 2:
-        domain = Path(args.filenames[0])
-        task = Path(args.filenames[1])
-    else:
-        print_usage_and_exit_with_driver_input_error(
-            parser, f"{component} needs one or two PDDL input files")
-    return [domain, task]
 
 
 def _set_translator_output_options(parser, args):
@@ -415,20 +397,20 @@ def parse_args():
         help="set log level (most verbose: debug; least verbose: warning; default: %(default)s)")
 
     driver_other.add_argument(
-        "--plan-file", metavar="FILE", default="sas_plan", type=Path,
+        "--plan-file", metavar="FILE", default="sas_plan",
         help="write plan(s) to FILE (default: %(default)s; anytime configurations append .1, .2, ...)")
 
     driver_other.add_argument(
-        "--sas-file", metavar="FILE", type=Path,
+        "--sas-file", metavar="FILE",
         help="intermediate file for storing the translator output "
-            f"(implies --keep-sas-file, default: {DEFAULT_SAS_FILE})")
+            "(implies --keep-sas-file, default: {})".format(DEFAULT_SAS_FILE))
     driver_other.add_argument(
         "--keep-sas-file", action="store_true",
         help="keep translator output file (implied by --sas-file, default: "
             "delete file if translator and search component are active)")
 
     driver_other.add_argument(
-        "--portfolio", metavar="FILE", type=Path,
+        "--portfolio", metavar="FILE",
         help="run a portfolio specified in FILE")
     driver_other.add_argument(
         "--portfolio-bound", metavar="VALUE", default=None, type=int,

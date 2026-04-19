@@ -3,6 +3,7 @@
 #include "../task_proxy.h"
 
 #include "../utils/logging.h"
+#include "../utils/memory.h"
 #include "../utils/timer.h"
 
 #include <algorithm>
@@ -27,8 +28,8 @@ using namespace std;
 */
 
 namespace causal_graph {
-static unordered_map<const AbstractTask *, unique_ptr<CausalGraph>>
-    causal_graph_cache;
+static unordered_map<const AbstractTask *,
+                     unique_ptr<CausalGraph>> causal_graph_cache;
 
 /*
   An IntRelationBuilder constructs an IntRelation by adding one pair
@@ -60,21 +61,27 @@ public:
     void compute_relation(IntRelation &result) const;
 };
 
-IntRelationBuilder::IntRelationBuilder(int range) : int_sets(range) {
+
+IntRelationBuilder::IntRelationBuilder(int range)
+    : int_sets(range) {
 }
+
 
 IntRelationBuilder::~IntRelationBuilder() {
 }
 
+
 int IntRelationBuilder::get_range() const {
     return int_sets.size();
 }
+
 
 void IntRelationBuilder::add_pair(int u, int v) {
     assert(u >= 0 && u < get_range());
     assert(v >= 0 && v < get_range());
     int_sets[u].insert(v);
 }
+
 
 void IntRelationBuilder::compute_relation(IntRelation &result) const {
     int range = get_range();
@@ -85,6 +92,7 @@ void IntRelationBuilder::compute_relation(IntRelation &result) const {
         sort(result[i].begin(), result[i].end());
     }
 }
+
 
 struct CausalGraphBuilder {
     IntRelationBuilder pre_eff_builder;
@@ -161,7 +169,7 @@ struct CausalGraphBuilder {
 
 CausalGraph::CausalGraph(const TaskProxy &task_proxy) {
     utils::Timer timer;
-    utils::g_log << "Building causal graph... " << flush;
+    utils::g_log << "building causal graph..." << flush;
     int num_variables = task_proxy.get_variables().size();
     CausalGraphBuilder cg_builder(num_variables);
 
@@ -179,7 +187,7 @@ CausalGraph::CausalGraph(const TaskProxy &task_proxy) {
     cg_builder.succ_builder.compute_relation(successors);
 
     // dump(task_proxy);
-    utils::g_log << "done!" << endl;
+    utils::g_log << "done! [t=" << timer << "]" << endl;
 }
 
 void CausalGraph::dump(const TaskProxy &task_proxy) const {
@@ -199,7 +207,7 @@ const CausalGraph &get_causal_graph(const AbstractTask *task) {
     if (causal_graph_cache.count(task) == 0) {
         TaskProxy task_proxy(*task);
         causal_graph_cache.insert(
-            make_pair(task, make_unique<CausalGraph>(task_proxy)));
+            make_pair(task, utils::make_unique_ptr<CausalGraph>(task_proxy)));
     }
     return *causal_graph_cache[task];
 }

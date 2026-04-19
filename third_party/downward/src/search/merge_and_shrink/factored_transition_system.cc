@@ -8,6 +8,7 @@
 
 #include "../utils/collections.h"
 #include "../utils/logging.h"
+#include "../utils/memory.h"
 #include "../utils/system.h"
 
 #include <cassert>
@@ -16,13 +17,15 @@ using namespace std;
 
 namespace merge_and_shrink {
 FTSConstIterator::FTSConstIterator(
-    const FactoredTransitionSystem &fts, bool end)
+    const FactoredTransitionSystem &fts,
+    bool end)
     : fts(fts), current_index((end ? fts.get_size() : 0)) {
     next_valid_index();
 }
 
 void FTSConstIterator::next_valid_index() {
-    while (current_index < fts.get_size() && !fts.is_active(current_index)) {
+    while (current_index < fts.get_size()
+           && !fts.is_active(current_index)) {
         ++current_index;
     }
 }
@@ -32,12 +35,14 @@ void FTSConstIterator::operator++() {
     next_valid_index();
 }
 
+
 FactoredTransitionSystem::FactoredTransitionSystem(
     unique_ptr<Labels> labels,
     vector<unique_ptr<TransitionSystem>> &&transition_systems,
     vector<unique_ptr<MergeAndShrinkRepresentation>> &&mas_representations,
     vector<unique_ptr<Distances>> &&distances,
-    const bool compute_init_distances, const bool compute_goal_distances,
+    const bool compute_init_distances,
+    const bool compute_goal_distances,
     utils::LogProxy &log)
     : labels(move(labels)),
       transition_systems(move(transition_systems)),
@@ -55,8 +60,7 @@ FactoredTransitionSystem::FactoredTransitionSystem(
     }
 }
 
-FactoredTransitionSystem::FactoredTransitionSystem(
-    FactoredTransitionSystem &&other)
+FactoredTransitionSystem::FactoredTransitionSystem(FactoredTransitionSystem &&other)
     : labels(move(other.labels)),
       transition_systems(move(other.transition_systems)),
       mas_representations(move(other.mas_representations)),
@@ -78,10 +82,8 @@ void FactoredTransitionSystem::assert_index_valid(int index) const {
     assert(utils::in_bounds(index, transition_systems));
     assert(utils::in_bounds(index, mas_representations));
     assert(utils::in_bounds(index, distances));
-    if ((!transition_systems[index] || !mas_representations[index] ||
-         !distances[index]) &&
-        (transition_systems[index] || mas_representations[index] ||
-         distances[index])) {
+    if (!(transition_systems[index] && mas_representations[index] && distances[index]) &&
+        !(!transition_systems[index] && !mas_representations[index] && !distances[index])) {
         cerr << "Factor at index is in an inconsistent state!" << endl;
         utils::exit_with(utils::ExitCode::SEARCH_CRITICAL_ERROR);
     }
@@ -89,12 +91,10 @@ void FactoredTransitionSystem::assert_index_valid(int index) const {
 
 bool FactoredTransitionSystem::is_component_valid(int index) const {
     assert(is_active(index));
-    if (compute_init_distances &&
-        !distances[index]->are_init_distances_computed()) {
+    if (compute_init_distances && !distances[index]->are_init_distances_computed()) {
         return false;
     }
-    if (compute_goal_distances &&
-        !distances[index]->are_goal_distances_computed()) {
+    if (compute_goal_distances && !distances[index]->are_goal_distances_computed()) {
         return false;
     }
     return transition_systems[index]->is_valid();
@@ -109,7 +109,8 @@ void FactoredTransitionSystem::assert_all_components_valid() const {
 }
 
 void FactoredTransitionSystem::apply_label_mapping(
-    const vector<pair<int, vector<int>>> &label_mapping, int combinable_index) {
+    const vector<pair<int, vector<int>>> &label_mapping,
+    int combinable_index) {
     assert_all_components_valid();
     for (const auto &entry : label_mapping) {
         assert(entry.first == labels->get_num_total_labels());
@@ -126,7 +127,8 @@ void FactoredTransitionSystem::apply_label_mapping(
 }
 
 bool FactoredTransitionSystem::apply_abstraction(
-    int index, const StateEquivalenceRelation &state_equivalence_relation,
+    int index,
+    const StateEquivalenceRelation &state_equivalence_relation,
     utils::LogProxy &log) {
     assert(is_component_valid(index));
 
@@ -142,8 +144,10 @@ bool FactoredTransitionSystem::apply_abstraction(
         state_equivalence_relation, abstraction_mapping, log);
     if (compute_init_distances || compute_goal_distances) {
         distances[index]->apply_abstraction(
-            state_equivalence_relation, compute_init_distances,
-            compute_goal_distances, log);
+            state_equivalence_relation,
+            compute_init_distances,
+            compute_goal_distances,
+            log);
     }
     mas_representations[index]->apply_abstraction_to_lookup_table(
         abstraction_mapping);
@@ -155,24 +159,29 @@ bool FactoredTransitionSystem::apply_abstraction(
 }
 
 int FactoredTransitionSystem::merge(
-    int index1, int index2, utils::LogProxy &log) {
+    int index1,
+    int index2,
+    utils::LogProxy &log) {
     assert(is_component_valid(index1));
     assert(is_component_valid(index2));
-    transition_systems.push_back(TransitionSystem::merge(
-        *labels, *transition_systems[index1], *transition_systems[index2],
-        log));
+    transition_systems.push_back(
+        TransitionSystem::merge(
+            *labels,
+            *transition_systems[index1],
+            *transition_systems[index2],
+            log));
     distances[index1] = nullptr;
     distances[index2] = nullptr;
     transition_systems[index1] = nullptr;
     transition_systems[index2] = nullptr;
     mas_representations.push_back(
-        make_unique<MergeAndShrinkRepresentationMerge>(
+        utils::make_unique_ptr<MergeAndShrinkRepresentationMerge>(
             move(mas_representations[index1]),
             move(mas_representations[index2])));
     mas_representations[index1] = nullptr;
     mas_representations[index2] = nullptr;
     const TransitionSystem &new_ts = *transition_systems.back();
-    distances.push_back(make_unique<Distances>(new_ts));
+    distances.push_back(utils::make_unique_ptr<Distances>(new_ts));
     int new_index = transition_systems.size() - 1;
     // Restore the invariant that distances are computed.
     if (compute_init_distances || compute_goal_distances) {
@@ -187,11 +196,11 @@ int FactoredTransitionSystem::merge(
 pair<unique_ptr<MergeAndShrinkRepresentation>, unique_ptr<Distances>>
 FactoredTransitionSystem::extract_factor(int index) {
     assert(is_component_valid(index));
-    return make_pair(move(mas_representations[index]), move(distances[index]));
+    return make_pair(move(mas_representations[index]),
+                     move(distances[index]));
 }
 
-void FactoredTransitionSystem::statistics(
-    int index, utils::LogProxy &log) const {
+void FactoredTransitionSystem::statistics(int index, utils::LogProxy &log) const {
     if (log.is_at_least_verbose()) {
         assert(is_component_valid(index));
         const TransitionSystem &ts = *transition_systems[index];

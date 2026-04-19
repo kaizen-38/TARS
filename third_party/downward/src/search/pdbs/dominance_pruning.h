@@ -14,9 +14,12 @@ namespace pdbs {
   p_superset is a superset of p_subset.
 */
 extern void prune_dominated_cliques(
-    PatternCollection &patterns, PDBCollection &pdbs,
-    std::vector<PatternClique> &pattern_cliques, int num_variables,
-    double max_time, utils::LogProxy &log);
+    PatternCollection &patterns,
+    PDBCollection &pdbs,
+    std::vector<PatternClique> &pattern_cliques,
+    int num_variables,
+    double max_time,
+    utils::LogProxy &log);
 }
 
 #endif

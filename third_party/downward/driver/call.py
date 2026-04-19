@@ -10,14 +10,9 @@ import subprocess
 import sys
 
 
-def _replace_paths_with_strings(cmd):
-    return [str(x) for x in cmd]
-
-
 def print_call_settings(nick, cmd, stdin, time_limit, memory_limit):
-    cmd = _replace_paths_with_strings(cmd)
     if stdin is not None:
-        stdin = shlex.quote(str(stdin))
+        stdin = shlex.quote(stdin)
     logging.info("{} stdin: {}".format(nick, stdin))
     limits.print_limits(nick, time_limit, memory_limit)
 
@@ -50,23 +45,8 @@ def _get_preexec_function(time_limit, memory_limit):
     else:
         return set_limits
 
-def _get_env(prepend_to_python_path=None):
-    """Provide the environment for a call.
-
-    If prepend_to_python_path is None, we just return the current environment.
-    Otherwise, we copy it and prepend the python path with the argument.
-
-    We use this to include the translator package from the build. In the
-    future, we could publish the translator as its own package and instal it
-    via pip.
-    """
-    if prepend_to_python_path is None:
-        return os.environ
-    path = f"{prepend_to_python_path}:{os.environ.get('PYTHONPATH', '')}"
-    return dict(os.environ, PYTHONPATH=path.strip(":"))
 
 def check_call(nick, cmd, stdin=None, time_limit=None, memory_limit=None):
-    cmd = _replace_paths_with_strings(cmd)
     print_call_settings(nick, cmd, stdin, time_limit, memory_limit)
 
     kwargs = {"preexec_fn": _get_preexec_function(time_limit, memory_limit)}
@@ -79,17 +59,12 @@ def check_call(nick, cmd, stdin=None, time_limit=None, memory_limit=None):
         return subprocess.check_call(cmd, **kwargs)
 
 
-def get_error_output_and_returncode(nick, cmd, time_limit=None,
-                                    memory_limit=None,
-                                    prepend_to_python_path=None):
-    cmd = _replace_paths_with_strings(cmd)
+def get_error_output_and_returncode(nick, cmd, time_limit=None, memory_limit=None):
     print_call_settings(nick, cmd, None, time_limit, memory_limit)
 
     preexec_fn = _get_preexec_function(time_limit, memory_limit)
-    env = _get_env(prepend_to_python_path)
 
     sys.stdout.flush()
-    p = subprocess.Popen(cmd, preexec_fn=preexec_fn, stderr=subprocess.PIPE,
-                         env=env)
+    p = subprocess.Popen(cmd, preexec_fn=preexec_fn, stderr=subprocess.PIPE)
     (stdout, stderr) = p.communicate()
     return stderr, p.returncode

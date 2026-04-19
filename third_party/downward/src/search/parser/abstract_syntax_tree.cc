@@ -17,15 +17,18 @@ using namespace std;
 
 namespace parser {
 class DecorateContext : public utils::Context {
+    const plugins::Registry registry;
     unordered_map<string, const plugins::Type *> variables;
 
 public:
+    DecorateContext()
+        : registry(plugins::RawRegistry::instance()->construct_registry()) {
+    }
+
     void add_variable(const string &name, const plugins::Type &type) {
         if (has_variable(name))
-            error(
-                "Variable '" + name +
-                "' is already defined in the "
-                "current scope. Shadowing variables is not supported.");
+            error("Variable '" + name + "' is already defined in the "
+                  "current scope. Shadowing variables is not supported.");
         variables.insert({name, &type});
     }
 
@@ -42,9 +45,7 @@ public:
         return *variables[name];
     }
 
-    const plugins::Registry &get_registry() const {
-        return *plugins::Registry::instance();
-    }
+    const plugins::Registry &get_registry() const {return registry;}
 };
 
 template<typename T, typename K>
@@ -68,11 +69,9 @@ DecoratedASTNodePtr ASTNode::decorate() const {
     return decorate(context);
 }
 
-LetNode::LetNode(
-    const string &variable_name, ASTNodePtr variable_definition,
-    ASTNodePtr nested_value)
-    : variable_name(variable_name),
-      variable_definition(move(variable_definition)),
+LetNode::LetNode(const string &variable_name, ASTNodePtr variable_definition,
+                 ASTNodePtr nested_value)
+    : variable_name(variable_name), variable_definition(move(variable_definition)),
       nested_value(move(nested_value)) {
 }
 
@@ -96,9 +95,8 @@ DecoratedASTNodePtr LetNode::decorate(DecorateContext &context) const {
         decorated_nested_value = nested_value->decorate(context);
         context.remove_variable(variable_name);
     }
-    return make_unique<DecoratedLetNode>(
-        variable_name, move(decorated_definition),
-        move(decorated_nested_value));
+    return utils::make_unique_ptr<DecoratedLetNode>(
+        variable_name, move(decorated_definition), move(decorated_nested_value));
 }
 
 void LetNode::dump(string indent) const {
@@ -117,31 +115,29 @@ const plugins::Type &LetNode::get_type(DecorateContext &context) const {
     return nested_type;
 }
 
-FunctionCallNode::FunctionCallNode(
-    const string &name, vector<ASTNodePtr> &&positional_arguments,
-    unordered_map<string, ASTNodePtr> &&keyword_arguments,
-    const string &unparsed_config)
-    : name(name),
-      positional_arguments(move(positional_arguments)),
-      keyword_arguments(move(keyword_arguments)),
-      unparsed_config(unparsed_config) {
+FunctionCallNode::FunctionCallNode(const string &name,
+                                   vector<ASTNodePtr> &&positional_arguments,
+                                   unordered_map<string, ASTNodePtr> &&keyword_arguments,
+                                   const string &unparsed_config)
+    : name(name), positional_arguments(move(positional_arguments)),
+      keyword_arguments(move(keyword_arguments)), unparsed_config(unparsed_config) {
 }
 
 static DecoratedASTNodePtr decorate_and_convert(
-    const ASTNode &node, const plugins::Type &target_type,
-    DecorateContext &context) {
+    const ASTNode &node, const plugins::Type &target_type, DecorateContext &context) {
     const plugins::Type &node_type = node.get_type(context);
     DecoratedASTNodePtr decorated_node = node.decorate(context);
 
     if (node_type != target_type) {
         utils::TraceBlock block(context, "Adding casting node");
         if (node_type.can_convert_into(target_type)) {
-            return make_unique<ConvertNode>(
+            return utils::make_unique_ptr<ConvertNode>(
                 move(decorated_node), node_type, target_type);
         } else {
             ostringstream message;
-            message << "Cannot convert from type '" << node_type.name()
-                    << "' to type '" << target_type.name() << "'" << endl;
+            message << "Cannot convert from type '"
+                    << node_type.name() << "' to type '" << target_type.name()
+                    << "'" << endl;
             context.error(message.str());
         }
     }
@@ -156,30 +152,28 @@ bool FunctionCallNode::collect_argument(
         return false;
     }
 
-    DecoratedASTNodePtr decorated_arg =
-        decorate_and_convert(arg, arg_info.type, context);
+    DecoratedASTNodePtr decorated_arg = decorate_and_convert(
+        arg, arg_info.type, context);
 
     if (arg_info.bounds.has_bound()) {
         DecoratedASTNodePtr decorated_min_node;
         {
             utils::TraceBlock block(context, "Handling lower bound");
             ASTNodePtr min_node = parse_ast_node(arg_info.bounds.min, context);
-            decorated_min_node =
-                decorate_and_convert(*min_node, arg_info.type, context);
+            decorated_min_node = decorate_and_convert(
+                *min_node, arg_info.type, context);
         }
         DecoratedASTNodePtr decorated_max_node;
         {
             utils::TraceBlock block(context, "Handling upper bound");
             ASTNodePtr max_node = parse_ast_node(arg_info.bounds.max, context);
-            decorated_max_node =
-                decorate_and_convert(*max_node, arg_info.type, context);
+            decorated_max_node = decorate_and_convert(
+                *max_node, arg_info.type, context);
         }
-        decorated_arg = make_unique<CheckBoundsNode>(
-            move(decorated_arg), move(decorated_min_node),
-            move(decorated_max_node));
+        decorated_arg = utils::make_unique_ptr<CheckBoundsNode>(
+            move(decorated_arg), move(decorated_min_node), move(decorated_max_node));
     }
-    FunctionArgument function_arg(
-        key, move(decorated_arg), arg_info.lazy_construction);
+    FunctionArgument function_arg(key, move(decorated_arg), arg_info.lazy_construction);
     arguments.insert({key, move(function_arg)});
     return true;
 }
@@ -189,15 +183,13 @@ void FunctionCallNode::collect_keyword_arguments(
     DecorateContext &context, CollectedArguments &arguments) const {
     unordered_map<string, plugins::ArgumentInfo> argument_infos_by_key;
     for (const plugins::ArgumentInfo &arg_info : argument_infos) {
-        assert(!argument_infos_by_key.contains(arg_info.key));
         argument_infos_by_key.insert({arg_info.key, arg_info});
     }
 
     for (const auto &key_and_arg : keyword_arguments) {
         const string &key = key_and_arg.first;
         const ASTNode &arg = *key_and_arg.second;
-        utils::TraceBlock block(
-            context, "Checking the keyword argument '" + key + "'.");
+        utils::TraceBlock block(context, "Checking the keyword argument '" + key + "'.");
         if (!argument_infos_by_key.count(key)) {
             vector<string> valid_keys = get_keys<string>(argument_infos_by_key);
             ostringstream message;
@@ -209,13 +201,13 @@ void FunctionCallNode::collect_keyword_arguments(
         const plugins::ArgumentInfo &arg_info = argument_infos_by_key.at(key);
         bool success = collect_argument(arg, arg_info, context, arguments);
         if (!success) {
-            ABORT(
-                "Multiple keyword definitions using the same key '" + key +
-                "'. This should be impossible here because we " +
-                "sort by key earlier.");
+            ABORT("Multiple keyword definitions using the same key '"
+                  + key + "'. This should be impossible here because we "
+                  + "sort by key earlier.");
         }
     }
 }
+
 
 /* This function has to be called *AFTER* collect_keyword_arguments. */
 void FunctionCallNode::collect_positional_arguments(
@@ -227,7 +219,7 @@ void FunctionCallNode::collect_positional_arguments(
     if (num_pos_args + num_kwargs > static_cast<int>(argument_infos.size())) {
         vector<string> allowed_keys;
         allowed_keys.reserve(argument_infos.size());
-        for (const auto &arg_info : argument_infos) {
+        for (const auto &arg_info: argument_infos) {
             allowed_keys.push_back(arg_info.key);
         }
         vector<string> given_positional_keys;
@@ -255,8 +247,9 @@ void FunctionCallNode::collect_positional_arguments(
         const ASTNode &arg = *positional_arguments[i];
         const plugins::ArgumentInfo &arg_info = argument_infos[i];
         utils::TraceBlock block(
-            context, "Checking the " + to_string(i + 1) +
-                         ". positional argument (" + arg_info.key + ")");
+            context,
+            "Checking the " + to_string(i + 1) +
+            ". positional argument (" + arg_info.key + ")");
         bool success = collect_argument(arg, arg_info, context, arguments);
         if (!success) {
             ostringstream message;
@@ -276,20 +269,17 @@ void FunctionCallNode::collect_default_values(
     for (const plugins::ArgumentInfo &arg_info : argument_infos) {
         const string &key = arg_info.key;
         if (!arguments.count(key)) {
-            utils::TraceBlock block(
-                context, "Checking the default for argument '" + key + "'.");
+            utils::TraceBlock block(context, "Checking the default for argument '" + key + "'.");
             if (arg_info.has_default()) {
                 ASTNodePtr arg;
                 {
                     utils::TraceBlock block(context, "Parsing default value");
                     arg = parse_ast_node(arg_info.default_value, context);
                 }
-                bool success =
-                    collect_argument(*arg, arg_info, context, arguments);
+                bool success = collect_argument(*arg, arg_info, context, arguments);
                 if (!success) {
-                    ABORT(
-                        "Default argument for '" + key + "' set although " +
-                        "value for keyword exists. This should be impossible.");
+                    ABORT("Default argument for '" + key + "' set although "
+                          + "value for keyword exists. This should be impossible.");
                 }
             } else if (!arg_info.is_optional()) {
                 context.error("Missing argument is mandatory!");
@@ -305,8 +295,7 @@ DecoratedASTNodePtr FunctionCallNode::decorate(DecorateContext &context) const {
         context.error("Plugin '" + name + "' is not defined.");
     }
     shared_ptr<const plugins::Feature> feature = registry.get_feature(name);
-    const vector<plugins::ArgumentInfo> &argument_infos =
-        feature->get_arguments();
+    const vector<plugins::ArgumentInfo> &argument_infos = feature->get_arguments();
 
     CollectedArguments arguments_by_key;
     collect_keyword_arguments(argument_infos, context, arguments_by_key);
@@ -317,8 +306,8 @@ DecoratedASTNodePtr FunctionCallNode::decorate(DecorateContext &context) const {
     for (auto &key_and_arg : arguments_by_key) {
         arguments.push_back(move(key_and_arg.second));
     }
-    return make_unique<DecoratedFunctionCallNode>(
-        feature, move(arguments), unparsed_config);
+    return utils::make_unique_ptr<DecoratedFunctionCallNode>(feature, move(arguments),
+                                                             unparsed_config);
 }
 
 void FunctionCallNode::dump(string indent) const {
@@ -335,27 +324,24 @@ void FunctionCallNode::dump(string indent) const {
     }
 }
 
-const plugins::Type &FunctionCallNode::get_type(
-    DecorateContext &context) const {
+const plugins::Type &FunctionCallNode::get_type(DecorateContext &context) const {
     const plugins::Registry &registry = context.get_registry();
     if (!registry.has_feature(name)) {
-        context.error(
-            "No feature defined for FunctionCallNode '" + name + "'.");
+        context.error("No feature defined for FunctionCallNode '" + name + "'.");
     }
-    const shared_ptr<const plugins::Feature> &feature =
-        registry.get_feature(name);
+    const shared_ptr<const plugins::Feature> &feature = registry.get_feature(name);
     return feature->get_type();
 }
 
-ListNode::ListNode(vector<ASTNodePtr> &&elements) : elements(move(elements)) {
+ListNode::ListNode(vector<ASTNodePtr> &&elements)
+    : elements(move(elements)) {
 }
 
 DecoratedASTNodePtr ListNode::decorate(DecorateContext &context) const {
     utils::TraceBlock block(context, "Checking list");
     vector<DecoratedASTNodePtr> decorated_elements;
     if (!elements.empty()) {
-        const plugins::Type *common_element_type =
-            get_common_element_type(context);
+        const plugins::Type *common_element_type = get_common_element_type(context);
         if (!common_element_type) {
             vector<string> element_type_names;
             element_type_names.reserve(elements.size());
@@ -363,26 +349,22 @@ DecoratedASTNodePtr ListNode::decorate(DecorateContext &context) const {
                 const plugins::Type &element_type = element->get_type(context);
                 element_type_names.push_back(element_type.name());
             }
-            context.error(
-                "List contains elements of different types: [" +
-                utils::join(element_type_names, ", ") + "].");
+            context.error("List contains elements of different types: ["
+                          + utils::join(element_type_names, ", ") + "].");
         }
         for (size_t i = 0; i < elements.size(); i++) {
-            utils::TraceBlock block(
-                context, "Checking " + to_string(i) + ". element");
+            utils::TraceBlock block(context, "Checking " + to_string(i) + ". element");
             const plugins::Type &element_type = elements[i]->get_type(context);
-            DecoratedASTNodePtr decorated_element_node =
-                elements[i]->decorate(context);
+            DecoratedASTNodePtr decorated_element_node = elements[i]->decorate(context);
             if (element_type != *common_element_type) {
                 assert(element_type.can_convert_into(*common_element_type));
-                decorated_element_node = make_unique<ConvertNode>(
-                    move(decorated_element_node), element_type,
-                    *common_element_type);
+                decorated_element_node = utils::make_unique_ptr<ConvertNode>(
+                    move(decorated_element_node), element_type, *common_element_type);
             }
             decorated_elements.push_back(move(decorated_element_node));
         }
     }
-    return make_unique<DecoratedListNode>(move(decorated_elements));
+    return utils::make_unique_ptr<DecoratedListNode>(move(decorated_elements));
 }
 
 void ListNode::dump(string indent) const {
@@ -398,9 +380,9 @@ const plugins::Type *ListNode::get_common_element_type(
     const plugins::Type *common_element_type = nullptr;
     for (const ASTNodePtr &element : elements) {
         const plugins::Type *element_type = &element->get_type(context);
-        if ((!common_element_type) ||
-            (!element_type->can_convert_into(*common_element_type) &&
-             common_element_type->can_convert_into(*element_type))) {
+        if ((!common_element_type)
+            || (!element_type->can_convert_into(*common_element_type) &&
+                common_element_type->can_convert_into(*element_type))) {
             common_element_type = element_type;
         } else if (!element_type->can_convert_into(*common_element_type)) {
             return nullptr;
@@ -416,12 +398,12 @@ const plugins::Type &ListNode::get_type(DecorateContext &context) const {
         const plugins::Type *element_type = get_common_element_type(context);
         if (!element_type)
             context.error("List elements cannot be converted to common type.");
-        return plugins::TypeRegistry::instance()->create_list_type(
-            *element_type);
+        return plugins::TypeRegistry::instance()->create_list_type(*element_type);
     }
 }
 
-LiteralNode::LiteralNode(const Token &value) : value(value) {
+LiteralNode::LiteralNode(Token value)
+    : value(value) {
 }
 
 DecoratedASTNodePtr LiteralNode::decorate(DecorateContext &context) const {
@@ -431,38 +413,33 @@ DecoratedASTNodePtr LiteralNode::decorate(DecorateContext &context) const {
             ABORT("A non-identifier token was defined as variable.");
         }
         string variable_name = value.content;
-        return make_unique<VariableNode>(variable_name);
+        return utils::make_unique_ptr<VariableNode>(variable_name);
     }
 
     switch (value.type) {
     case TokenType::BOOLEAN:
-        return make_unique<BoolLiteralNode>(value.content);
-    case TokenType::STRING:
-        return make_unique<StringLiteralNode>(value.content);
+        return utils::make_unique_ptr<BoolLiteralNode>(value.content);
     case TokenType::INTEGER:
-        return make_unique<IntLiteralNode>(value.content);
+        return utils::make_unique_ptr<IntLiteralNode>(value.content);
     case TokenType::FLOAT:
-        return make_unique<FloatLiteralNode>(value.content);
+        return utils::make_unique_ptr<FloatLiteralNode>(value.content);
     case TokenType::IDENTIFIER:
-        return make_unique<SymbolNode>(value.content);
+        return utils::make_unique_ptr<SymbolNode>(value.content);
     default:
-        ABORT(
-            "LiteralNode has unexpected token type '" +
-            token_type_name(value.type) + "'.");
+        ABORT("LiteralNode has unexpected token type '" +
+              token_type_name(value.type) + "'.");
     }
 }
 
 void LiteralNode::dump(string indent) const {
-    cout << indent << token_type_name(value.type) << ": " << value.content
-         << endl;
+    cout << indent << token_type_name(value.type) << ": "
+         << value.content << endl;
 }
 
 const plugins::Type &LiteralNode::get_type(DecorateContext &context) const {
     switch (value.type) {
     case TokenType::BOOLEAN:
         return plugins::TypeRegistry::instance()->get_type<bool>();
-    case TokenType::STRING:
-        return plugins::TypeRegistry::instance()->get_type<string>();
     case TokenType::INTEGER:
         return plugins::TypeRegistry::instance()->get_type<int>();
     case TokenType::FLOAT:
@@ -473,9 +450,8 @@ const plugins::Type &LiteralNode::get_type(DecorateContext &context) const {
         }
         return plugins::TypeRegistry::SYMBOL_TYPE;
     default:
-        ABORT(
-            "LiteralNode has unexpected token type '" +
-            token_type_name(value.type) + "'.");
+        ABORT("LiteralNode has unexpected token type '" +
+              token_type_name(value.type) + "'.");
     }
 }
 }

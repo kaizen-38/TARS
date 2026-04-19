@@ -8,7 +8,7 @@ class AbstractTask;
 struct FactPair;
 
 namespace landmarks {
-class LandmarkNode;
+class LandmarkGraph;
 }
 
 namespace plugins {
@@ -31,6 +31,7 @@ enum class FactOrder {
     HADD_DOWN
 };
 
+
 /*
   Create focused subtasks.
 */
@@ -42,6 +43,7 @@ public:
     virtual ~SubtaskGenerator() = default;
 };
 
+
 /*
   Return copies of the original task.
 */
@@ -49,12 +51,13 @@ class TaskDuplicator : public SubtaskGenerator {
     int num_copies;
 
 public:
-    explicit TaskDuplicator(int copies);
+    explicit TaskDuplicator(const plugins::Options &opts);
 
     virtual SharedTasks get_subtasks(
         const std::shared_ptr<AbstractTask> &task,
         utils::LogProxy &log) const override;
 };
+
 
 /*
   Use ModifiedGoalsTask to return a subtask for each goal fact.
@@ -64,12 +67,13 @@ class GoalDecomposition : public SubtaskGenerator {
     std::shared_ptr<utils::RandomNumberGenerator> rng;
 
 public:
-    explicit GoalDecomposition(FactOrder order, int random_seed);
+    explicit GoalDecomposition(const plugins::Options &opts);
 
     virtual SharedTasks get_subtasks(
         const std::shared_ptr<AbstractTask> &task,
         utils::LogProxy &log) const override;
 };
+
 
 /*
   Nest ModifiedGoalsTask and DomainAbstractedTask to return subtasks
@@ -84,11 +88,11 @@ class LandmarkDecomposition : public SubtaskGenerator {
        achieved before a given landmark can be made true. */
     std::shared_ptr<AbstractTask> build_domain_abstracted_task(
         const std::shared_ptr<AbstractTask> &parent,
-        const landmarks::LandmarkNode *node) const;
+        const landmarks::LandmarkGraph &landmark_graph,
+        const FactPair &fact) const;
 
 public:
-    explicit LandmarkDecomposition(
-        FactOrder order, int random_seed, bool combine_facts);
+    explicit LandmarkDecomposition(const plugins::Options &opts);
 
     virtual SharedTasks get_subtasks(
         const std::shared_ptr<AbstractTask> &task,

@@ -3,19 +3,17 @@
 
 from collections import deque, defaultdict
 import itertools
-import random
 import time
 from typing import List
 
-from translate import invariants
-from translate import pddl
-from translate import timers
-from translate.options import get_options
+import invariants
+import options
+import pddl
+import timers
 
 class BalanceChecker:
     def __init__(self, task, reachable_action_params):
-        self.predicates_to_add_actions = defaultdict(list)
-        self.random = random.Random(314159)
+        self.predicates_to_add_actions = defaultdict(set)
         self.action_to_heavy_action = {}
         for act in task.actions:
             action = self.add_inequality_preconds(act, reachable_action_params)
@@ -29,9 +27,7 @@ class BalanceChecker:
                     too_heavy_effects.append(eff.copy())
                 if not eff.literal.negated:
                     predicate = eff.literal.predicate
-                    add_actions = self.predicates_to_add_actions[predicate]
-                    if not add_actions or add_actions[-1] is not action:
-                        add_actions.append(action)
+                    self.predicates_to_add_actions[predicate].add(action)
             if create_heavy_act:
                 heavy_act = pddl.Action(action.name, action.parameters,
                                         action.num_external_parameters,
@@ -42,7 +38,7 @@ class BalanceChecker:
             self.action_to_heavy_action[action] = heavy_act
 
     def get_threats(self, predicate):
-        return self.predicates_to_add_actions.get(predicate, list())
+        return self.predicates_to_add_actions.get(predicate, set())
 
     def get_heavy_action(self, action):
         return self.action_to_heavy_action[action]
@@ -83,16 +79,13 @@ def get_fluents(task):
 def get_initial_invariants(task):
     for predicate in get_fluents(task):
         all_args = list(range(len(predicate.arguments)))
-        part = invariants.InvariantPart(predicate.name, all_args, None)
-        yield invariants.Invariant((part,))
-        for omitted in range(len(predicate.arguments)):
-            inv_args = (all_args[0:omitted] + [invariants.COUNTED] +
-                        all_args[omitted:-1])
-            part = invariants.InvariantPart(predicate.name, inv_args, omitted)
+        for omitted_arg in [-1] + all_args:
+            order = [i for i in all_args if i != omitted_arg]
+            part = invariants.InvariantPart(predicate.name, order, omitted_arg)
             yield invariants.Invariant((part,))
 
 def find_invariants(task, reachable_action_params):
-    limit = get_options().invariant_generation_max_candidates
+    limit = options.invariant_generation_max_candidates
     candidates = deque(itertools.islice(get_initial_invariants(task), 0, limit))
     print(len(candidates), "initial candidates")
     seen_candidates = set(candidates)
@@ -107,7 +100,7 @@ def find_invariants(task, reachable_action_params):
     start_time = time.process_time()
     while candidates:
         candidate = candidates.popleft()
-        if time.process_time() - start_time > get_options().invariant_generation_max_time:
+        if time.process_time() - start_time > options.invariant_generation_max_time:
             print("Time limit reached, aborting invariant generation")
             return
         if candidate.check_balance(balance_checker, enqueue_func):
@@ -119,42 +112,33 @@ def useful_groups(invariants, initial_facts):
         for predicate in invariant.predicates:
             predicate_to_invariants[predicate].append(invariant)
 
-    nonempty_groups = dict() # dict instead of set because it is stable
+    nonempty_groups = set()
     overcrowded_groups = set()
     for atom in initial_facts:
         if isinstance(atom, pddl.Assign):
             continue
         for invariant in predicate_to_invariants.get(atom.predicate, ()):
-            parameters = invariant.get_parameters(atom)
-            # we need to make the parameters dictionary hashable, so
-            # we store the values as a tuple
-            parameters_tuple = tuple(parameters[var]
-                                     for var in range(invariant.arity()))
-
-            group_key = (invariant, parameters_tuple)
+            group_key = (invariant, tuple(invariant.get_parameters(atom)))
             if group_key not in nonempty_groups:
-                nonempty_groups[group_key] = True
+                nonempty_groups.add(group_key)
             else:
                 overcrowded_groups.add(group_key)
-    useful_groups = [group_key for group_key in nonempty_groups.keys()
-                     if group_key not in overcrowded_groups]
+    useful_groups = nonempty_groups - overcrowded_groups
     for (invariant, parameters) in useful_groups:
         yield [part.instantiate(parameters) for part in sorted(invariant.parts)]
 
 # returns a list of mutex groups (parameters instantiated, counted variables not)
 def get_groups(task, reachable_action_params=None) -> List[List[pddl.Atom]]:
     with timers.timing("Finding invariants", block=True):
-        invariants = list(find_invariants(task, reachable_action_params))
+        invariants = sorted(find_invariants(task, reachable_action_params))
     with timers.timing("Checking invariant weight"):
         result = list(useful_groups(invariants, task.init))
     return result
 
 if __name__ == "__main__":
-    from translate import normalize
-    from translate import pddl_parser
-    from translate.options import set_options
+    import normalize
+    import pddl_parser
 
-    set_options() # use command line options
     print("Parsing...")
     task = pddl_parser.open()
     print("Normalizing...")

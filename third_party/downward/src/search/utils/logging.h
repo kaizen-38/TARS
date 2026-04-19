@@ -32,11 +32,9 @@ enum class Verbosity {
   Internal class encapsulated by LogProxy.
 */
 class Log {
-    static const int TIMER_PRECISION = 6;
     std::ostream &stream;
     const Verbosity verbosity;
     bool line_has_started;
-    void add_prefix() const;
 
 public:
     explicit Log(Verbosity verbosity)
@@ -47,8 +45,10 @@ public:
     Log &operator<<(const T &elem) {
         if (!line_has_started) {
             line_has_started = true;
-            add_prefix();
+            stream << "[t=" << g_timer << ", "
+                   << get_peak_memory_in_kb() << " KB] ";
         }
+
         stream << elem;
         return *this;
     }
@@ -87,7 +87,8 @@ private:
     std::shared_ptr<Log> log;
 
 public:
-    explicit LogProxy(const std::shared_ptr<Log> &log) : log(log) {
+    explicit LogProxy(const std::shared_ptr<Log> &log)
+        : log(log) {
     }
 
     template<typename T>
@@ -129,10 +130,7 @@ public:
 extern LogProxy g_log;
 
 extern void add_log_options_to_feature(plugins::Feature &feature);
-extern std::tuple<Verbosity> get_log_arguments_from_options(
-    const plugins::Options &opts);
-
-extern LogProxy get_log_for_verbosity(const Verbosity &verbosity);
+extern LogProxy get_log_from_options(const plugins::Options &options);
 extern LogProxy get_silent_log();
 
 class ContextError : public utils::Exception {
@@ -143,20 +141,19 @@ public:
 class Context {
 protected:
     static const std::string INDENT;
-    size_t initial_stack_size; // TODO: Can be removed once we got rid of
-                               // LazyValues
+    size_t initial_stack_size = 0;  // TODO: Can be removed once we got rid of LazyValues
     std::vector<std::string> block_stack;
 
 public:
-    Context();
+    explicit Context() = default;
     Context(const Context &context);
     virtual ~Context();
-    virtual std::string decorate_block_name(
-        const std::string &block_name) const;
+    virtual std::string decorate_block_name(const std::string &block_name) const;
     void enter_block(const std::string &block_name);
     void leave_block(const std::string &block_name);
     std::string str() const;
 
+    NO_RETURN
     virtual void error(const std::string &message) const;
     virtual void warn(const std::string &message) const;
 };
@@ -166,8 +163,7 @@ class MemoryContext : public Context {
     static const int MEM_FIELD_WIDTH = 7;
     static const int TIME_FIELD_WIDTH = 7;
 public:
-    virtual std::string decorate_block_name(
-        const std::string &block_name) const override;
+    virtual std::string decorate_block_name(const std::string &block_name) const override;
 };
 
 extern MemoryContext _memory_context;

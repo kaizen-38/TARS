@@ -9,7 +9,6 @@
 #include "../task_utils/task_properties.h"
 #include "../tasks/domain_abstracted_task_factory.h"
 #include "../tasks/modified_goals_task.h"
-#include "../utils/hash.h"
 #include "../utils/logging.h"
 #include "../utils/rng.h"
 #include "../utils/rng_options.h"
@@ -18,6 +17,7 @@
 #include <cassert>
 #include <iostream>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 using namespace std;
@@ -34,9 +34,7 @@ class SortFactsByIncreasingHaddValues {
 public:
     explicit SortFactsByIncreasingHaddValues(
         const shared_ptr<AbstractTask> &task)
-        : hadd(make_unique<additive_heuristic::AdditiveHeuristic>(
-              tasks::AxiomHandlingType::APPROXIMATE_NEGATIVE, task, false,
-              "h^add within CEGAR abstractions", utils::Verbosity::SILENT)) {
+        : hadd(create_additive_heuristic(task)) {
         TaskProxy task_proxy(*task);
         hadd->compute_heuristic_for_cegar(task_proxy.get_initial_state());
     }
@@ -46,21 +44,20 @@ public:
     }
 };
 
+
 static void remove_initial_state_facts(
     const TaskProxy &task_proxy, Facts &facts) {
     State initial_state = task_proxy.get_initial_state();
-    facts.erase(
-        remove_if(
-            facts.begin(), facts.end(),
-            [&](FactPair fact) {
-                return initial_state[fact.var].get_value() == fact.value;
-            }),
-        facts.end());
+    facts.erase(remove_if(facts.begin(), facts.end(), [&](FactPair fact) {
+                              return initial_state[fact.var].get_value() == fact.value;
+                          }), facts.end());
 }
 
 static void order_facts(
-    const shared_ptr<AbstractTask> &task, FactOrder fact_order,
-    vector<FactPair> &facts, utils::RandomNumberGenerator &rng,
+    const shared_ptr<AbstractTask> &task,
+    FactOrder fact_order,
+    vector<FactPair> &facts,
+    utils::RandomNumberGenerator &rng,
     utils::LogProxy &log) {
     if (log.is_at_least_verbose()) {
         log << "Sort " << facts.size() << " facts" << endl;
@@ -85,15 +82,20 @@ static void order_facts(
 }
 
 static Facts filter_and_order_facts(
-    const shared_ptr<AbstractTask> &task, FactOrder fact_order, Facts &facts,
-    utils::RandomNumberGenerator &rng, utils::LogProxy &log) {
+    const shared_ptr<AbstractTask> &task,
+    FactOrder fact_order,
+    Facts &facts,
+    utils::RandomNumberGenerator &rng,
+    utils::LogProxy &log) {
     TaskProxy task_proxy(*task);
     remove_initial_state_facts(task_proxy, facts);
     order_facts(task, fact_order, facts, rng, log);
     return facts;
 }
 
-TaskDuplicator::TaskDuplicator(int copies) : num_copies(copies) {
+
+TaskDuplicator::TaskDuplicator(const plugins::Options &opts)
+    : num_copies(opts.get<int>("copies")) {
 }
 
 SharedTasks TaskDuplicator::get_subtasks(
@@ -106,8 +108,9 @@ SharedTasks TaskDuplicator::get_subtasks(
     return subtasks;
 }
 
-GoalDecomposition::GoalDecomposition(FactOrder order, int random_seed)
-    : fact_order(order), rng(utils::get_rng(random_seed)) {
+GoalDecomposition::GoalDecomposition(const plugins::Options &opts)
+    : fact_order(opts.get<FactOrder>("order")),
+      rng(utils::parse_rng_from_options(opts)) {
 }
 
 SharedTasks GoalDecomposition::get_subtasks(
@@ -118,25 +121,26 @@ SharedTasks GoalDecomposition::get_subtasks(
     filter_and_order_facts(task, fact_order, goal_facts, *rng, log);
     for (const FactPair &goal : goal_facts) {
         shared_ptr<AbstractTask> subtask =
-            make_shared<extra_tasks::ModifiedGoalsTask>(task, Facts{goal});
+            make_shared<extra_tasks::ModifiedGoalsTask>(task, Facts {goal});
         subtasks.push_back(subtask);
     }
     return subtasks;
 }
 
-LandmarkDecomposition::LandmarkDecomposition(
-    FactOrder order, int random_seed, bool combine_facts)
-    : fact_order(order),
-      combine_facts(combine_facts),
-      rng(utils::get_rng(random_seed)) {
+
+LandmarkDecomposition::LandmarkDecomposition(const plugins::Options &opts)
+    : fact_order(opts.get<FactOrder>("order")),
+      combine_facts(opts.get<bool>("combine_facts")),
+      rng(utils::parse_rng_from_options(opts)) {
 }
 
 shared_ptr<AbstractTask> LandmarkDecomposition::build_domain_abstracted_task(
     const shared_ptr<AbstractTask> &parent,
-    const landmarks::LandmarkNode *node) const {
+    const landmarks::LandmarkGraph &landmark_graph,
+    const FactPair &fact) const {
     assert(combine_facts);
     extra_tasks::VarToGroups value_groups;
-    for (auto &pair : get_prev_landmarks(node)) {
+    for (auto &pair : get_prev_landmarks(landmark_graph, fact)) {
         int var = pair.first;
         vector<int> &group = pair.second;
         if (group.size() >= 2)
@@ -148,18 +152,16 @@ shared_ptr<AbstractTask> LandmarkDecomposition::build_domain_abstracted_task(
 SharedTasks LandmarkDecomposition::get_subtasks(
     const shared_ptr<AbstractTask> &task, utils::LogProxy &log) const {
     SharedTasks subtasks;
-    const shared_ptr<landmarks::LandmarkGraph> landmark_graph =
+    shared_ptr<landmarks::LandmarkGraph> landmark_graph =
         get_landmark_graph(task);
-    utils::HashMap<FactPair, landmarks::LandmarkNode *> atom_to_landmark_map =
-        get_atom_to_landmark_map(landmark_graph);
-    Facts landmark_facts = get_atom_landmarks(*landmark_graph);
+    Facts landmark_facts = get_fact_landmarks(*landmark_graph);
     filter_and_order_facts(task, fact_order, landmark_facts, *rng, log);
     for (const FactPair &landmark : landmark_facts) {
         shared_ptr<AbstractTask> subtask =
-            make_shared<extra_tasks::ModifiedGoalsTask>(task, Facts{landmark});
+            make_shared<extra_tasks::ModifiedGoalsTask>(task, Facts {landmark});
         if (combine_facts) {
             subtask = build_domain_abstracted_task(
-                subtask, atom_to_landmark_map[landmark]);
+                subtask, *landmark_graph, landmark);
         }
         subtasks.push_back(subtask);
     }
@@ -168,92 +170,61 @@ SharedTasks LandmarkDecomposition::get_subtasks(
 
 static void add_fact_order_option(plugins::Feature &feature) {
     feature.add_option<FactOrder>(
-        "order", "ordering of goal or landmark facts", "hadd_down");
-    utils::add_rng_options_to_feature(feature);
+        "order",
+        "ordering of goal or landmark facts",
+        "hadd_down");
+    utils::add_rng_options(feature);
 }
 
-static tuple<FactOrder, int> get_fact_order_arguments_from_options(
-    const plugins::Options &opts) {
-    return tuple_cat(
-        make_tuple(opts.get<FactOrder>("order")),
-        utils::get_rng_arguments_from_options(opts));
-}
-
-class TaskDuplicatorFeature
-    : public plugins::TypedFeature<SubtaskGenerator, TaskDuplicator> {
+class TaskDuplicatorFeature : public plugins::TypedFeature<SubtaskGenerator, TaskDuplicator> {
 public:
     TaskDuplicatorFeature() : TypedFeature("original") {
-        document_title("No abstraction");
-        document_synopsis(
-            "Copies of the original task are used as subproblems.");
         add_option<int>(
-            "copies", "number of task copies", "1",
+            "copies",
+            "number of task copies",
+            "1",
             plugins::Bounds("1", "infinity"));
-    }
-
-    virtual shared_ptr<TaskDuplicator> create_component(
-        const plugins::Options &opts) const override {
-        return plugins::make_shared_from_arg_tuples<TaskDuplicator>(
-            opts.get<int>("copies"));
     }
 };
 
 static plugins::FeaturePlugin<TaskDuplicatorFeature> _plugin_original;
 
-class GoalDecompositionFeature
-    : public plugins::TypedFeature<SubtaskGenerator, GoalDecomposition> {
+class GoalDecompositionFeature : public plugins::TypedFeature<SubtaskGenerator, GoalDecomposition> {
 public:
     GoalDecompositionFeature() : TypedFeature("goals") {
-        document_title("Abstraction by goals");
-        document_synopsis(
-            "For each goal atom of the original task one subproblem is generated having only the atom as its goal.");
         add_fact_order_option(*this);
-    }
-
-    virtual shared_ptr<GoalDecomposition> create_component(
-        const plugins::Options &opts) const override {
-        return plugins::make_shared_from_arg_tuples<GoalDecomposition>(
-            get_fact_order_arguments_from_options(opts));
     }
 };
 
 static plugins::FeaturePlugin<GoalDecompositionFeature> _plugin_goals;
 
-class LandmarkDecompositionFeature
-    : public plugins::TypedFeature<SubtaskGenerator, LandmarkDecomposition> {
+
+class LandmarkDecompositionFeature : public plugins::TypedFeature<SubtaskGenerator, LandmarkDecomposition> {
 public:
     LandmarkDecompositionFeature() : TypedFeature("landmarks") {
-        document_title("Abstraction by landmarks");
-        document_synopsis(
-            "For each fact landmark of the delete relaxation of the original task one subproblem is generated having only the landmark as goal. This is a generalization of abstractions by goals.");
         add_fact_order_option(*this);
         add_option<bool>(
-            "combine_facts", "combine landmark facts with domain abstraction",
+            "combine_facts",
+            "combine landmark facts with domain abstraction",
             "true");
-    }
-
-    virtual shared_ptr<LandmarkDecomposition> create_component(
-        const plugins::Options &opts) const override {
-        return plugins::make_shared_from_arg_tuples<LandmarkDecomposition>(
-            get_fact_order_arguments_from_options(opts),
-            opts.get<bool>("combine_facts"));
     }
 };
 
 static plugins::FeaturePlugin<LandmarkDecompositionFeature> _plugin_landmarks;
 
-static class SubtaskGeneratorCategoryPlugin
-    : public plugins::TypedCategoryPlugin<SubtaskGenerator> {
+
+static class SubtaskGeneratorCategoryPlugin : public plugins::TypedCategoryPlugin<SubtaskGenerator> {
 public:
     SubtaskGeneratorCategoryPlugin() : TypedCategoryPlugin("SubtaskGenerator") {
-        document_synopsis(
-            "This page describes different subtask (abstraction) generators. They are used by the Evaluator#additive_cartesian_cegar_heuristic .");
+        document_synopsis("Subtask generator (used by the CEGAR heuristic).");
     }
-} _category_plugin;
+}
+_category_plugin;
 
-static plugins::TypedEnumPlugin<FactOrder> _enum_plugin(
-    {{"original", "according to their (internal) variable index"},
-     {"random", "according to a random permutation"},
-     {"hadd_up", "according to their h^add value, lowest first"},
-     {"hadd_down", "according to their h^add value, highest first "}});
+static plugins::TypedEnumPlugin<FactOrder> _enum_plugin({
+        {"original", "according to their (internal) variable index"},
+        {"random", "according to a random permutation"},
+        {"hadd_up", "according to their h^add value, lowest first"},
+        {"hadd_down", "according to their h^add value, highest first "}
+    });
 }

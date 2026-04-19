@@ -19,9 +19,8 @@ class CombiningEvaluator : public Evaluator {
 protected:
     virtual int combine_values(const std::vector<int> &values) = 0;
 public:
-    CombiningEvaluator(
-        const std::vector<std::shared_ptr<Evaluator>> &evals,
-        const std::string &description, utils::Verbosity verbosity);
+    explicit CombiningEvaluator(const plugins::Options &opts);
+    virtual ~CombiningEvaluator() override;
 
     /*
       Note: dead_ends_are_reliable() is a state-independent method, so
@@ -45,11 +44,7 @@ public:
 };
 
 extern void add_combining_evaluator_options_to_feature(
-    plugins::Feature &feature, const std::string &description);
-extern std::tuple<
-    std::vector<std::shared_ptr<Evaluator>>, const std::string,
-    utils::Verbosity>
-get_combining_evaluator_arguments_from_options(const plugins::Options &opts);
+    plugins::Feature &feature);
 }
 
 #endif

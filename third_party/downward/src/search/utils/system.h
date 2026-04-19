@@ -22,10 +22,13 @@
 #include <stdlib.h>
 
 #define ABORT(msg) \
-    ((std::cerr << "Critical error in file " << __FILE__ << ", line " \
-                << __LINE__ << ": " << std::endl \
-                << (msg) << std::endl), \
-     (abort()), (void)0)
+    ( \
+        (std::cerr << "Critical error in file " << __FILE__ \
+                   << ", line " << __LINE__ << ": " << std::endl \
+                   << (msg) << std::endl), \
+        (abort()), \
+        (void)0 \
+    )
 
 namespace utils {
 enum class ExitCode {
@@ -37,8 +40,8 @@ enum class ExitCode {
     SUCCESS = 0,
 
     // 10-19: exit codes denoting no plan was found (without any error)
-    SEARCH_UNSOLVABLE = 11, // Task is provably unsolvable with given bound.
-    SEARCH_UNSOLVED_INCOMPLETE = 12, // Search ended without finding a solution.
+    SEARCH_UNSOLVABLE = 11,  // Task is provably unsolvable with given bound.
+    SEARCH_UNSOLVED_INCOMPLETE = 12,  // Search ended without finding a solution.
 
     // 20-29: "expected" failures
     SEARCH_OUT_OF_MEMORY = 22,
@@ -50,25 +53,13 @@ enum class ExitCode {
     SEARCH_UNSUPPORTED = 34
 };
 
-class ExitException : public std::exception {
-    ExitCode exitcode;
-public:
-    explicit ExitException(ExitCode exitcode) : exitcode(exitcode) {
-    }
-
-    ExitCode get_exitcode() const {
-        return exitcode;
-    }
-};
-
 NO_RETURN extern void exit_with(ExitCode returncode);
-NO_RETURN extern void exit_with_reentrant(ExitCode returncode);
+NO_RETURN extern void exit_after_receiving_signal(ExitCode returncode);
 
 int get_peak_memory_in_kb();
 const char *get_exit_code_message_reentrant(ExitCode exitcode);
 bool is_exit_code_error_reentrant(ExitCode exitcode);
 void register_event_handlers();
-void report_exit_code(ExitCode exitcode);
 void report_exit_code_reentrant(ExitCode exitcode);
 int get_process_id();
 }

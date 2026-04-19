@@ -1,6 +1,7 @@
 #include "additive_heuristic.h"
 
 #include "../plugins/plugin.h"
+
 #include "../task_utils/task_properties.h"
 #include "../utils/logging.h"
 
@@ -12,11 +13,9 @@ using namespace std;
 namespace additive_heuristic {
 const int AdditiveHeuristic::MAX_COST_VALUE;
 
-AdditiveHeuristic::AdditiveHeuristic(
-    tasks::AxiomHandlingType axioms, const shared_ptr<AbstractTask> &transform,
-    bool cache_estimates, const string &description, utils::Verbosity verbosity)
-    : RelaxationHeuristic(
-          axioms, transform, cache_estimates, description, verbosity),
+// construction and destruction
+AdditiveHeuristic::AdditiveHeuristic(const plugins::Options &opts)
+    : RelaxationHeuristic(opts),
       did_write_overflow_warning(false) {
     if (log.is_at_least_normal()) {
         log << "Initializing additive heuristic..." << endl;
@@ -84,7 +83,8 @@ void AdditiveHeuristic::relaxed_exploration() {
             --unary_op->unsatisfied_preconditions;
             assert(unary_op->unsatisfied_preconditions >= 0);
             if (unary_op->unsatisfied_preconditions == 0)
-                enqueue_if_necessary(unary_op->effect, unary_op->cost, op_id);
+                enqueue_if_necessary(unary_op->effect,
+                                     unary_op->cost, op_id);
         }
     }
 }
@@ -145,30 +145,25 @@ void AdditiveHeuristic::compute_heuristic_for_cegar(const State &state) {
     compute_heuristic(state);
 }
 
-class AdditiveHeuristicFeature
-    : public plugins::TypedFeature<Evaluator, AdditiveHeuristic> {
+class AdditiveHeuristicFeature : public plugins::TypedFeature<Evaluator, AdditiveHeuristic> {
 public:
     AdditiveHeuristicFeature() : TypedFeature("add") {
         document_title("Additive heuristic");
 
-        relaxation_heuristic::add_relaxation_heuristic_options_to_feature(
-            *this, "add");
+        Heuristic::add_options_to_feature(*this);
 
         document_language_support("action costs", "supported");
         document_language_support("conditional effects", "supported");
-        document_language_support("axioms", "supported");
+        document_language_support(
+            "axioms",
+            "supported (in the sense that the planner won't complain -- "
+            "handling of axioms might be very stupid "
+            "and even render the heuristic unsafe)");
 
         document_property("admissible", "no");
         document_property("consistent", "no");
-        document_property("safe", "yes");
+        document_property("safe", "yes for tasks without axioms");
         document_property("preferred operators", "yes");
-    }
-
-    virtual shared_ptr<AdditiveHeuristic> create_component(
-        const plugins::Options &opts) const override {
-        return plugins::make_shared_from_arg_tuples<AdditiveHeuristic>(
-            relaxation_heuristic::
-                get_relaxation_heuristic_arguments_from_options(opts));
     }
 };
 

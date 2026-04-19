@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <memory>
-#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,7 +23,8 @@ struct Transition {
     int src;
     int target;
 
-    Transition(int src, int target) : src(src), target(target) {
+    Transition(int src, int target)
+        : src(src), target(target) {
     }
 
     bool operator==(const Transition &other) const {
@@ -41,8 +41,6 @@ struct Transition {
     }
 };
 
-std::ostream &operator<<(std::ostream &os, const Transition &trans);
-
 using LabelGroup = std::vector<int>;
 
 /*
@@ -53,15 +51,15 @@ using LabelGroup = std::vector<int>;
   are sorted and unique.
 */
 class LocalLabelInfo {
-    // The sorted set of labels with identical transitions in a transition
-    // system.
+    // The sorted set of labels with identical transitions in a transition system.
     LabelGroup label_group;
     std::vector<Transition> transitions;
     // The cost is the minimum cost over all labels in label_group.
     int cost;
 public:
     LocalLabelInfo(
-        LabelGroup &&label_group, std::vector<Transition> &&transitions,
+        LabelGroup &&label_group,
+        std::vector<Transition> &&transitions,
         int cost)
         : label_group(move(label_group)),
           transitions(move(transitions)),
@@ -114,6 +112,7 @@ public:
     bool is_consistent() const;
 };
 
+
 /*
   Iterator class for TransitionSystem which provides access to the active
   entries of into local_label_infos.
@@ -141,6 +140,7 @@ public:
         return it != rhs.it;
     }
 };
+
 
 class TransitionSystem {
 private:
@@ -194,10 +194,14 @@ private:
     void dump_label_mapping() const;
 public:
     TransitionSystem(
-        int num_variables, std::vector<int> &&incorporated_variables,
-        const Labels &labels, std::vector<int> &&label_to_local_label,
-        std::vector<LocalLabelInfo> &&local_label_infos, int num_states,
-        std::vector<bool> &&goal_states, int init_state);
+        int num_variables,
+        std::vector<int> &&incorporated_variables,
+        const Labels &labels,
+        std::vector<int> &&label_to_local_label,
+        std::vector<LocalLabelInfo> &&local_label_infos,
+        int num_states,
+        std::vector<bool> &&goal_states,
+        int init_state);
     TransitionSystem(const TransitionSystem &other);
     ~TransitionSystem();
     /*
@@ -207,8 +211,10 @@ public:
       (It is a bug to merge an unsolvable transition system.)
     */
     static std::unique_ptr<TransitionSystem> merge(
-        const Labels &labels, const TransitionSystem &ts1,
-        const TransitionSystem &ts2, utils::LogProxy &log);
+        const Labels &labels,
+        const TransitionSystem &ts1,
+        const TransitionSystem &ts2,
+        utils::LogProxy &log);
 
     /*
       Applies the given state equivalence relation to the transition system.
@@ -219,7 +225,8 @@ public:
     */
     void apply_abstraction(
         const StateEquivalenceRelation &state_equivalence_relation,
-        const std::vector<int> &abstraction_mapping, utils::LogProxy &log);
+        const std::vector<int> &abstraction_mapping,
+        utils::LogProxy &log);
 
     /*
       Applies the given label mapping, mapping old to new label numbers. This
@@ -230,13 +237,11 @@ public:
         bool only_equivalent_labels);
 
     TransitionSystemConstIterator begin() const {
-        return TransitionSystemConstIterator(
-            local_label_infos.begin(), local_label_infos.end());
+        return TransitionSystemConstIterator(local_label_infos.begin(), local_label_infos.end());
     }
 
     TransitionSystemConstIterator end() const {
-        return TransitionSystemConstIterator(
-            local_label_infos.end(), local_label_infos.end());
+        return TransitionSystemConstIterator(local_label_infos.end(), local_label_infos.end());
     }
 
     /*

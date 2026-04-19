@@ -37,7 +37,9 @@ public:
       way.
     */
     virtual StateEquivalenceRelation compute_equivalence_relation(
-        const TransitionSystem &ts, const Distances &distances, int target_size,
+        const TransitionSystem &ts,
+        const Distances &distances,
+        int target_size,
         utils::LogProxy &log) const = 0;
     virtual bool requires_init_distances() const = 0;
     virtual bool requires_goal_distances() const = 0;

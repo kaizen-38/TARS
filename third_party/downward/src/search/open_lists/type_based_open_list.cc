@@ -7,6 +7,7 @@
 #include "../utils/collections.h"
 #include "../utils/hash.h"
 #include "../utils/markup.h"
+#include "../utils/memory.h"
 #include "../utils/rng.h"
 #include "../utils/rng_options.h"
 
@@ -19,8 +20,8 @@ using namespace std;
 namespace type_based_open_list {
 template<class Entry>
 class TypeBasedOpenList : public OpenList<Entry> {
-    vector<shared_ptr<Evaluator>> evaluators;
     shared_ptr<utils::RandomNumberGenerator> rng;
+    vector<shared_ptr<Evaluator>> evaluators;
 
     using Key = vector<int>;
     using Bucket = vector<Entry>;
@@ -32,8 +33,8 @@ protected:
         EvaluationContext &eval_context, const Entry &entry) override;
 
 public:
-    explicit TypeBasedOpenList(
-        const vector<shared_ptr<Evaluator>> &evaluators, int random_seed);
+    explicit TypeBasedOpenList(const plugins::Options &opts);
+    virtual ~TypeBasedOpenList() override = default;
 
     virtual Entry remove_min() override;
     virtual bool empty() const override;
@@ -41,8 +42,7 @@ public:
     virtual bool is_dead_end(EvaluationContext &eval_context) const override;
     virtual bool is_reliable_dead_end(
         EvaluationContext &eval_context) const override;
-    virtual void get_path_dependent_evaluators(
-        set<Evaluator *> &evals) override;
+    virtual void get_path_dependent_evaluators(set<Evaluator *> &evals) override;
 };
 
 template<class Entry>
@@ -67,9 +67,9 @@ void TypeBasedOpenList<Entry>::do_insertion(
 }
 
 template<class Entry>
-TypeBasedOpenList<Entry>::TypeBasedOpenList(
-    const vector<shared_ptr<Evaluator>> &evaluators, int random_seed)
-    : evaluators(evaluators), rng(utils::get_rng(random_seed)) {
+TypeBasedOpenList<Entry>::TypeBasedOpenList(const plugins::Options &opts)
+    : rng(utils::parse_rng_from_options(opts)),
+      evaluators(opts.get_list<shared_ptr<Evaluator>>("evaluators")) {
 }
 
 template<class Entry>
@@ -135,23 +135,21 @@ void TypeBasedOpenList<Entry>::get_path_dependent_evaluators(
 }
 
 TypeBasedOpenListFactory::TypeBasedOpenListFactory(
-    const vector<shared_ptr<Evaluator>> &evaluators, int random_seed)
-    : evaluators(evaluators), random_seed(random_seed) {
-    utils::verify_list_not_empty(evaluators, "evaluators");
+    const plugins::Options &options)
+    : options(options) {
 }
 
-unique_ptr<StateOpenList> TypeBasedOpenListFactory::create_state_open_list() {
-    return make_unique<TypeBasedOpenList<StateOpenListEntry>>(
-        evaluators, random_seed);
+unique_ptr<StateOpenList>
+TypeBasedOpenListFactory::create_state_open_list() {
+    return utils::make_unique_ptr<TypeBasedOpenList<StateOpenListEntry>>(options);
 }
 
-unique_ptr<EdgeOpenList> TypeBasedOpenListFactory::create_edge_open_list() {
-    return make_unique<TypeBasedOpenList<EdgeOpenListEntry>>(
-        evaluators, random_seed);
+unique_ptr<EdgeOpenList>
+TypeBasedOpenListFactory::create_edge_open_list() {
+    return utils::make_unique_ptr<TypeBasedOpenList<EdgeOpenListEntry>>(options);
 }
 
-class TypeBasedOpenListFeature
-    : public plugins::TypedFeature<OpenListFactory, TypeBasedOpenListFactory> {
+class TypeBasedOpenListFeature : public plugins::TypedFeature<OpenListFactory, TypeBasedOpenListFactory> {
 public:
     TypeBasedOpenListFeature() : TypedFeature("type_based") {
         document_title("Type-based open list");
@@ -161,27 +159,26 @@ public:
             "When retrieving an entry, a bucket is chosen uniformly at "
             "random and one of the contained entries is selected "
             "uniformly randomly. "
-            "The algorithm is based on" +
-            utils::format_conference_reference(
+            "The algorithm is based on" + utils::format_conference_reference(
                 {"Fan Xie", "Martin Mueller", "Robert Holte", "Tatsuya Imai"},
                 "Type-Based Exploration with Multiple Search Queues for"
                 " Satisficing Planning",
                 "http://www.aaai.org/ocs/index.php/AAAI/AAAI14/paper/view/8472/8705",
                 "Proceedings of the Twenty-Eigth AAAI Conference Conference"
                 " on Artificial Intelligence (AAAI 2014)",
-                "2395-2401", "AAAI Press", "2014"));
+                "2395-2401",
+                "AAAI Press",
+                "2014"));
 
         add_list_option<shared_ptr<Evaluator>>(
             "evaluators",
             "Evaluators used to determine the bucket for each entry.");
-        utils::add_rng_options_to_feature(*this);
+        utils::add_rng_options(*this);
     }
 
-    virtual shared_ptr<TypeBasedOpenListFactory> create_component(
-        const plugins::Options &opts) const override {
-        return plugins::make_shared_from_arg_tuples<TypeBasedOpenListFactory>(
-            opts.get_list<shared_ptr<Evaluator>>("evaluators"),
-            utils::get_rng_arguments_from_options(opts));
+    virtual shared_ptr<TypeBasedOpenListFactory> create_component(const plugins::Options &options, const utils::Context &context) const override {
+        plugins::verify_list_non_empty<shared_ptr<Evaluator>>(context, options, "evaluators");
+        return make_shared<TypeBasedOpenListFactory>(options);
     }
 };
 

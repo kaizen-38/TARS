@@ -26,8 +26,7 @@ class IncrementalCanonicalPDBs;
 class PatternDatabase;
 
 // Implementation of the pattern generation algorithm by Haslum et al.
-class PatternCollectionGeneratorHillclimbing
-    : public PatternCollectionGenerator {
+class PatternCollectionGeneratorHillclimbing : public PatternCollectionGenerator {
     // maximum number of states for each pdb
     const int pdb_max_size;
     // maximum added size of all pdbs
@@ -56,7 +55,8 @@ class PatternCollectionGeneratorHillclimbing
     int generate_candidate_pdbs(
         const TaskProxy &task_proxy,
         const std::vector<std::vector<int>> &relevant_neighbours,
-        const PatternDatabase &pdb, std::set<Pattern> &generated_patterns,
+        const PatternDatabase &pdb,
+        std::set<Pattern> &generated_patterns,
         PDBCollection &candidate_pdbs);
 
     /*
@@ -70,7 +70,8 @@ class PatternCollectionGeneratorHillclimbing
       a sample state, thus totalling exactly num_samples of sample states.
     */
     void sample_states(
-        const sampling::RandomWalkSampler &sampler, int init_h,
+        const sampling::RandomWalkSampler &sampler,
+        int init_h,
         std::vector<State> &samples);
 
     /*
@@ -90,7 +91,9 @@ class PatternCollectionGeneratorHillclimbing
       the h-value of the current pattern collection.
     */
     bool is_heuristic_improved(
-        const PatternDatabase &pdb, const State &sample, int h_collection,
+        const PatternDatabase &pdb,
+        const State &sample,
+        int h_collection,
         const PDBCollection &pdbs,
         const std::vector<PatternClique> &pattern_cliques);
 
@@ -129,15 +132,9 @@ class PatternCollectionGeneratorHillclimbing
     virtual PatternCollectionInformation compute_patterns(
         const std::shared_ptr<AbstractTask> &task) override;
 public:
-    PatternCollectionGeneratorHillclimbing(
-        int pdb_max_size, int collection_max_size, int num_samples,
-        int min_improvement, double max_time, int random_seed,
-        utils::Verbosity verbosity);
+    explicit PatternCollectionGeneratorHillclimbing(const plugins::Options &opts);
+    virtual ~PatternCollectionGeneratorHillclimbing() = default;
 };
-
-extern void add_hillclimbing_options_to_feature(plugins::Feature &feature);
-std::tuple<int, int, int, int, double, int>
-get_hillclimbing_arguments_from_options(const plugins::Options &opts);
 }
 
 #endif

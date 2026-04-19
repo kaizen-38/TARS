@@ -3,15 +3,14 @@
 
 #include "../open_list_factory.h"
 
+#include "../plugins/plugin.h"
+
 namespace tiebreaking_open_list {
 class TieBreakingOpenListFactory : public OpenListFactory {
-    std::vector<std::shared_ptr<Evaluator>> evals;
-    bool unsafe_pruning;
-    bool pref_only;
+    plugins::Options options;
 public:
-    TieBreakingOpenListFactory(
-        const std::vector<std::shared_ptr<Evaluator>> &evals,
-        bool unsafe_pruning, bool pref_only);
+    explicit TieBreakingOpenListFactory(const plugins::Options &options);
+    virtual ~TieBreakingOpenListFactory() override = default;
 
     virtual std::unique_ptr<StateOpenList> create_state_open_list() override;
     virtual std::unique_ptr<EdgeOpenList> create_edge_open_list() override;

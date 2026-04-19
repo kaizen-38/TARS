@@ -31,6 +31,7 @@ enum class PickSplit {
     MAX_HADD
 };
 
+
 struct Split {
     const int var_id;
     const std::vector<int> values;
@@ -39,6 +40,7 @@ struct Split {
         : var_id(var_id), values(move(values)) {
     }
 };
+
 
 /*
   Select split in case there are multiple possible splits.
@@ -50,8 +52,7 @@ class SplitSelector {
 
     const PickSplit pick;
 
-    int get_num_unwanted_values(
-        const AbstractState &state, const Split &split) const;
+    int get_num_unwanted_values(const AbstractState &state, const Split &split) const;
     double get_refinedness(const AbstractState &state, int var_id) const;
     int get_hadd_value(int var_id, int value) const;
     int get_min_hadd_value(int var_id, const std::vector<int> &values) const;
@@ -64,7 +65,8 @@ public:
     ~SplitSelector();
 
     const Split &pick_split(
-        const AbstractState &state, const std::vector<Split> &splits,
+        const AbstractState &state,
+        const std::vector<Split> &splits,
         utils::RandomNumberGenerator &rng) const;
 };
 }

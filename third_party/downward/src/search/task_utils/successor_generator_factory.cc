@@ -5,6 +5,7 @@
 #include "../task_proxy.h"
 
 #include "../utils/collections.h"
+#include "../utils/memory.h"
 
 #include <algorithm>
 #include <cassert>
@@ -59,7 +60,8 @@ struct OperatorRange {
     int begin;
     int end;
 
-    OperatorRange(int begin, int end) : begin(begin), end(end) {
+    OperatorRange(int begin, int end)
+        : begin(begin), end(end) {
     }
 
     bool empty() const {
@@ -71,6 +73,7 @@ struct OperatorRange {
     }
 };
 
+
 class OperatorInfo {
     /*
       The attributes are not const because we must support
@@ -80,7 +83,8 @@ class OperatorInfo {
     vector<FactPair> precondition;
 public:
     OperatorInfo(OperatorID op, vector<FactPair> precondition)
-        : op(op), precondition(move(precondition)) {
+        : op(op),
+          precondition(move(precondition)) {
     }
 
     bool operator<(const OperatorInfo &other) const {
@@ -105,10 +109,12 @@ public:
     }
 };
 
+
 enum class GroupOperatorsBy {
     VAR,
     VALUE
 };
+
 
 class OperatorGrouper {
     const vector<OperatorInfo> &operator_infos;
@@ -132,8 +138,10 @@ class OperatorGrouper {
     }
 public:
     explicit OperatorGrouper(
-        const vector<OperatorInfo> &operator_infos, int depth,
-        GroupOperatorsBy group_by, OperatorRange range)
+        const vector<OperatorInfo> &operator_infos,
+        int depth,
+        GroupOperatorsBy group_by,
+        OperatorRange range)
         : operator_infos(operator_infos),
           depth(depth),
           group_by(group_by),
@@ -156,6 +164,7 @@ public:
     }
 };
 
+
 SuccessorGeneratorFactory::SuccessorGeneratorFactory(
     const TaskProxy &task_proxy)
     : task_proxy(task_proxy) {
@@ -169,12 +178,12 @@ GeneratorPtr SuccessorGeneratorFactory::construct_fork(
     if (size == 1) {
         return move(nodes.at(0));
     } else if (size == 2) {
-        return make_unique<GeneratorForkBinary>(
+        return utils::make_unique_ptr<GeneratorForkBinary>(
             move(nodes.at(0)), move(nodes.at(1)));
     } else {
         /* This general case includes the case size == 0, which can
            (only) happen for the root for tasks with no operators. */
-        return make_unique<GeneratorForkMulti>(move(nodes));
+        return utils::make_unique_ptr<GeneratorForkMulti>(move(nodes));
     }
 }
 
@@ -189,9 +198,9 @@ GeneratorPtr SuccessorGeneratorFactory::construct_leaf(
     }
 
     if (operators.size() == 1) {
-        return make_unique<GeneratorLeafSingle>(operators.front());
+        return utils::make_unique_ptr<GeneratorLeafSingle>(operators.front());
     } else {
-        return make_unique<GeneratorLeafVector>(move(operators));
+        return utils::make_unique_ptr<GeneratorLeafVector>(move(operators));
     }
 }
 
@@ -206,24 +215,23 @@ GeneratorPtr SuccessorGeneratorFactory::construct_switch(
     if (num_children == 1) {
         int value = values_and_generators[0].first;
         GeneratorPtr generator = move(values_and_generators[0].second);
-        return make_unique<GeneratorSwitchSingle>(
+        return utils::make_unique_ptr<GeneratorSwitchSingle>(
             switch_var_id, value, move(generator));
     }
 
     int vector_bytes = utils::estimate_vector_bytes<GeneratorPtr>(var_domain);
-    int hash_bytes =
-        utils::estimate_unordered_map_bytes<int, GeneratorPtr>(num_children);
+    int hash_bytes = utils::estimate_unordered_map_bytes<int, GeneratorPtr>(num_children);
     if (hash_bytes < vector_bytes) {
         unordered_map<int, GeneratorPtr> generator_by_value;
         for (auto &item : values_and_generators)
             generator_by_value[item.first] = move(item.second);
-        return make_unique<GeneratorSwitchHash>(
+        return utils::make_unique_ptr<GeneratorSwitchHash>(
             switch_var_id, move(generator_by_value));
     } else {
         vector<GeneratorPtr> generator_by_value(var_domain);
         for (auto &item : values_and_generators)
             generator_by_value[item.first] = move(item.second);
-        return make_unique<GeneratorSwitchVector>(
+        return utils::make_unique_ptr<GeneratorSwitchVector>(
             switch_var_id, move(generator_by_value));
     }
 }
@@ -242,8 +250,7 @@ GeneratorPtr SuccessorGeneratorFactory::construct_recursive(
             // Handle a group of immediately applicable operators.
             nodes.push_back(construct_leaf(var_range));
         } else {
-            // Handle a group of operators sharing the first precondition
-            // variable.
+            // Handle a group of operators sharing the first precondition variable.
             ValuesAndGenerators values_and_generators;
             OperatorGrouper grouper_by_value(
                 operator_infos, depth, GroupOperatorsBy::VALUE, var_range);
@@ -256,7 +263,8 @@ GeneratorPtr SuccessorGeneratorFactory::construct_recursive(
                     value, construct_recursive(depth + 1, value_range));
             }
 
-            nodes.push_back(construct_switch(var, move(values_and_generators)));
+            nodes.push_back(construct_switch(
+                                var, move(values_and_generators)));
         }
     }
     return construct_fork(move(nodes));

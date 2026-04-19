@@ -33,6 +33,7 @@ public:
     }
 };
 
+
 namespace utils {
 inline void feed(HashState &hash_state, TaskID id) {
     feed(hash_state, id.hash());

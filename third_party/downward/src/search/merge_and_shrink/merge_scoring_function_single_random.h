@@ -5,6 +5,10 @@
 
 #include <memory>
 
+namespace plugins {
+class Options;
+}
+
 namespace utils {
 class RandomNumberGenerator;
 }
@@ -15,10 +19,10 @@ class MergeScoringFunctionSingleRandom : public MergeScoringFunction {
     std::shared_ptr<utils::RandomNumberGenerator> rng;
 
     virtual std::string name() const override;
-    virtual void dump_function_specific_options(
-        utils::LogProxy &log) const override;
+    virtual void dump_function_specific_options(utils::LogProxy &log) const override;
 public:
-    explicit MergeScoringFunctionSingleRandom(int random_seed);
+    explicit MergeScoringFunctionSingleRandom(const plugins::Options &options);
+    virtual ~MergeScoringFunctionSingleRandom() override = default;
     virtual std::vector<double> compute_scores(
         const FactoredTransitionSystem &fts,
         const std::vector<std::pair<int, int>> &merge_candidates) override;

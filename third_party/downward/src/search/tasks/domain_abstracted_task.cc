@@ -27,9 +27,12 @@ static bool has_conditional_effects(const AbstractTask &task) {
 }
 
 DomainAbstractedTask::DomainAbstractedTask(
-    const shared_ptr<AbstractTask> &parent, vector<int> &&domain_size,
-    vector<int> &&initial_state_values, vector<FactPair> &&goals,
-    vector<vector<string>> &&fact_names, vector<vector<int>> &&value_map)
+    const shared_ptr<AbstractTask> &parent,
+    vector<int> &&domain_size,
+    vector<int> &&initial_state_values,
+    vector<FactPair> &&goals,
+    vector<vector<string>> &&fact_names,
+    vector<vector<int>> &&value_map)
     : DelegatingTask(parent),
       domain_size(move(domain_size)),
       initial_state_values(move(initial_state_values)),
@@ -52,8 +55,7 @@ string DomainAbstractedTask::get_fact_name(const FactPair &fact) const {
     return fact_names[fact.var][fact.value];
 }
 
-bool DomainAbstractedTask::are_facts_mutex(
-    const FactPair &, const FactPair &) const {
+bool DomainAbstractedTask::are_facts_mutex(const FactPair &, const FactPair &) const {
     ABORT("DomainAbstractedTask doesn't support querying mutexes.");
 }
 

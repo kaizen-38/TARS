@@ -1,6 +1,7 @@
 #include "blind_search_heuristic.h"
 
 #include "../plugins/plugin.h"
+
 #include "../task_utils/task_properties.h"
 #include "../utils/logging.h"
 
@@ -11,14 +12,15 @@
 using namespace std;
 
 namespace blind_search_heuristic {
-BlindSearchHeuristic::BlindSearchHeuristic(
-    const shared_ptr<AbstractTask> &transform, bool cache_estimates,
-    const string &description, utils::Verbosity verbosity)
-    : Heuristic(transform, cache_estimates, description, verbosity),
+BlindSearchHeuristic::BlindSearchHeuristic(const plugins::Options &opts)
+    : Heuristic(opts),
       min_operator_cost(task_properties::get_min_operator_cost(task_proxy)) {
     if (log.is_at_least_normal()) {
         log << "Initializing blind search heuristic..." << endl;
     }
+}
+
+BlindSearchHeuristic::~BlindSearchHeuristic() {
 }
 
 int BlindSearchHeuristic::compute_heuristic(const State &ancestor_state) {
@@ -29,8 +31,7 @@ int BlindSearchHeuristic::compute_heuristic(const State &ancestor_state) {
         return min_operator_cost;
 }
 
-class BlindSearchHeuristicFeature
-    : public plugins::TypedFeature<Evaluator, BlindSearchHeuristic> {
+class BlindSearchHeuristicFeature : public plugins::TypedFeature<Evaluator, BlindSearchHeuristic> {
 public:
     BlindSearchHeuristicFeature() : TypedFeature("blind") {
         document_title("Blind heuristic");
@@ -38,7 +39,7 @@ public:
             "Returns cost of cheapest action for non-goal states, "
             "0 for goal states");
 
-        add_heuristic_options_to_feature(*this, "blind");
+        Heuristic::add_options_to_feature(*this);
 
         document_language_support("action costs", "supported");
         document_language_support("conditional effects", "supported");
@@ -48,12 +49,6 @@ public:
         document_property("consistent", "yes");
         document_property("safe", "yes");
         document_property("preferred operators", "no");
-    }
-
-    virtual shared_ptr<BlindSearchHeuristic> create_component(
-        const plugins::Options &opts) const override {
-        return plugins::make_shared_from_arg_tuples<BlindSearchHeuristic>(
-            get_heuristic_arguments_from_options(opts));
     }
 };
 

@@ -17,13 +17,12 @@ using namespace std;
 
 namespace merge_and_shrink {
 MergeScoringFunctionTotalOrder::MergeScoringFunctionTotalOrder(
-    AtomicTSOrder atomic_ts_order, ProductTSOrder product_ts_order,
-    bool atomic_before_product, int random_seed)
-    : atomic_ts_order(atomic_ts_order),
-      product_ts_order(product_ts_order),
-      atomic_before_product(atomic_before_product),
-      random_seed(random_seed),
-      rng(utils::get_rng(random_seed)) {
+    const plugins::Options &options)
+    : atomic_ts_order(options.get<AtomicTSOrder>("atomic_ts_order")),
+      product_ts_order(options.get<ProductTSOrder>("product_ts_order")),
+      atomic_before_product(options.get<bool>("atomic_before_product")),
+      random_seed(options.get<int>("random_seed")),
+      rng(utils::parse_rng_from_options(options)) {
 }
 
 vector<double> MergeScoringFunctionTotalOrder::compute_scores(
@@ -89,23 +88,23 @@ void MergeScoringFunctionTotalOrder::initialize(const TaskProxy &task_proxy) {
 
     // Put the orders in the correct order
     if (atomic_before_product) {
-        transition_system_order.insert(
-            transition_system_order.end(), atomic_tso.begin(),
-            atomic_tso.end());
-        transition_system_order.insert(
-            transition_system_order.end(), product_tso.begin(),
-            product_tso.end());
+        transition_system_order.insert(transition_system_order.end(),
+                                       atomic_tso.begin(),
+                                       atomic_tso.end());
+        transition_system_order.insert(transition_system_order.end(),
+                                       product_tso.begin(),
+                                       product_tso.end());
     } else {
-        transition_system_order.insert(
-            transition_system_order.end(), product_tso.begin(),
-            product_tso.end());
-        transition_system_order.insert(
-            transition_system_order.end(), atomic_tso.begin(),
-            atomic_tso.end());
+        transition_system_order.insert(transition_system_order.end(),
+                                       product_tso.begin(),
+                                       product_tso.end());
+        transition_system_order.insert(transition_system_order.end(),
+                                       atomic_tso.begin(),
+                                       atomic_tso.end());
     }
 
-    merge_candidate_order.reserve(
-        max_transition_system_count * max_transition_system_count / 2);
+    merge_candidate_order.reserve(max_transition_system_count *
+                                  max_transition_system_count / 2);
     for (size_t i = 0; i < transition_system_order.size(); ++i) {
         for (size_t j = i + 1; j < transition_system_order.size(); ++j) {
             merge_candidate_order.emplace_back(
@@ -118,8 +117,7 @@ string MergeScoringFunctionTotalOrder::name() const {
     return "total order";
 }
 
-void MergeScoringFunctionTotalOrder::dump_function_specific_options(
-    utils::LogProxy &log) const {
+void MergeScoringFunctionTotalOrder::dump_function_specific_options(utils::LogProxy &log) const {
     if (log.is_at_least_normal()) {
         log << "Atomic transition system order: ";
         switch (atomic_ts_order) {
@@ -149,9 +147,8 @@ void MergeScoringFunctionTotalOrder::dump_function_specific_options(
         }
         log << endl;
 
-        log << "Consider "
-            << (atomic_before_product ? "atomic before product"
-                                      : "product before atomic")
+        log << "Consider " << (atomic_before_product ?
+                               "atomic before product" : "product before atomic")
             << " transition systems" << endl;
         log << "Random seed: " << random_seed << endl;
     }
@@ -176,12 +173,10 @@ void MergeScoringFunctionTotalOrder::add_options_to_feature(
         "Consider atomic transition systems before composite ones iff true.",
         "false");
 
-    utils::add_rng_options_to_feature(feature);
+    utils::add_rng_options(feature);
 }
 
-class MergeScoringFunctionTotalOrderFeature
-    : public plugins::TypedFeature<
-          MergeScoringFunction, MergeScoringFunctionTotalOrder> {
+class MergeScoringFunctionTotalOrderFeature : public plugins::TypedFeature<MergeScoringFunction, MergeScoringFunctionTotalOrder> {
 public:
     MergeScoringFunctionTotalOrderFeature() : TypedFeature("total_order") {
         document_title("Total order");
@@ -190,42 +185,41 @@ public:
             "based on the specified options. The score for each merge candidate "
             "correponds to its position in the order. This scoring function is "
             "mainly intended as tie-breaking, and has been introduced in the "
-            "following paper:" +
-            utils::format_conference_reference(
+            "following paper:"
+            + utils::format_conference_reference(
                 {"Silvan Sievers", "Martin Wehrle", "Malte Helmert"},
                 "An Analysis of Merge Strategies for Merge-and-Shrink Heuristics",
                 "https://ai.dmi.unibas.ch/papers/sievers-et-al-icaps2016.pdf",
                 "Proceedings of the 26th International Conference on Automated "
                 "Planning and Scheduling (ICAPS 2016)",
-                "294-298", "AAAI Press", "2016") +
+                "294-298",
+                "AAAI Press",
+                "2016") +
             "Furthermore, using the atomic_ts_order option, this scoring function, "
             "if used alone in a score based filtering merge selector, can be used "
             "to emulate the corresponding (precomputed) linear merge strategies "
             "reverse level/level (independently of the other options).");
         MergeScoringFunctionTotalOrder::add_options_to_feature(*this);
     }
-
-    virtual shared_ptr<MergeScoringFunctionTotalOrder> create_component(
-        const plugins::Options &opts) const override {
-        return plugins::make_shared_from_arg_tuples<
-            MergeScoringFunctionTotalOrder>(
-            opts.get<AtomicTSOrder>("atomic_ts_order"),
-            opts.get<ProductTSOrder>("product_ts_order"),
-            opts.get<bool>("atomic_before_product"),
-            utils::get_rng_arguments_from_options(opts));
-    }
 };
 
 static plugins::FeaturePlugin<MergeScoringFunctionTotalOrderFeature> _plugin;
 
-static plugins::TypedEnumPlugin<AtomicTSOrder> _atomic_ts_order_enum_plugin(
-    {{"reverse_level", "the variable order of Fast Downward"},
-     {"level", "opposite of reverse_level"},
-     {"random", "a randomized order"}});
+static plugins::TypedEnumPlugin<AtomicTSOrder> _atomic_ts_order_enum_plugin({
+        {"reverse_level",
+         "the variable order of Fast Downward"},
+        {"level",
+         "opposite of reverse_level"},
+        {"random",
+         "a randomized order"}
+    });
 
-static plugins::TypedEnumPlugin<ProductTSOrder> _product_ts_order_enum_plugin(
-    {{"old_to_new",
-      "consider composite transition systems from oldest to most recent"},
-     {"new_to_old", "opposite of old_to_new"},
-     {"random", "a randomized order"}});
+static plugins::TypedEnumPlugin<ProductTSOrder> _product_ts_order_enum_plugin({
+        {"old_to_new",
+         "consider composite transition systems from oldest to most recent"},
+        {"new_to_old",
+         "opposite of old_to_new"},
+        {"random",
+         "a randomized order"}
+    });
 }

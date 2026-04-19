@@ -3,9 +3,9 @@
 
 import itertools
 
-from translate import normalize
-from translate import pddl
-from translate import timers
+import normalize
+import pddl
+import timers
 
 class PrologProgram:
     def __init__(self):
@@ -36,7 +36,7 @@ class PrologProgram:
         self.split_duplicate_arguments()
         self.convert_trivial_rules()
     def split_rules(self):
-        from translate import split_rules
+        import split_rules
         # Splits rules whose conditions can be partitioned in such a way that
         # the parts have disjoint variable sets, then split n-ary joins into
         # a number of binary joins, introducing new pseudo-predicates for the
@@ -155,10 +155,6 @@ def translate_facts(prog, task):
         assert isinstance(fact, pddl.Atom) or isinstance(fact, pddl.Assign)
         if isinstance(fact, pddl.Atom):
             prog.add_fact(fact)
-        else:
-            # Add a fact to indicate that the primitive numeric expression in
-            # fact.fluent has been defined.
-            prog.add_fact(normalize.get_pne_definition_predicate(fact.fluent))
 
 def translate(task):
     # Note: The function requires that the task has been normalized.
@@ -176,10 +172,7 @@ def translate(task):
 
 
 if __name__ == "__main__":
-    from translate import pddl_parser
-    from translate.options import set_options
-
-    set_options() # use command line options
+    import pddl_parser
     task = pddl_parser.open()
     normalize.normalize(task)
     prog = translate(task)

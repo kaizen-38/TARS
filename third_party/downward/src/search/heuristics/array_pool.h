@@ -24,10 +24,12 @@ using Value = int;
 class ArrayPoolIndex {
     friend class ArrayPool;
     int position;
-    ArrayPoolIndex(int position) : position(position) {
+    ArrayPoolIndex(int position)
+        : position(position) {
     }
 public:
-    ArrayPoolIndex() : position(INVALID_INDEX) {
+    ArrayPoolIndex()
+        : position(INVALID_INDEX) {
     }
 };
 
@@ -47,7 +49,9 @@ private:
     Iterator first;
     Iterator last;
 
-    ArrayPoolSlice(Iterator first, Iterator last) : first(first), last(last) {
+    ArrayPoolSlice(Iterator first, Iterator last)
+        : first(first),
+          last(last) {
     }
 };
 
@@ -61,12 +65,10 @@ public:
     }
 
     ArrayPoolSlice get_slice(ArrayPoolIndex index, int size) const {
-        assert(
-            index.position >= 0 && size >= 0 &&
-            index.position + size <= static_cast<int>(data.size()));
-        return ArrayPoolSlice(
-            data.begin() + index.position,
-            data.begin() + index.position + size);
+        assert(index.position >= 0 &&
+               size >= 0 &&
+               index.position + size <= static_cast<int>(data.size()));
+        return ArrayPoolSlice(data.begin() + index.position, data.begin() + index.position + size);
     }
 };
 }

@@ -9,12 +9,10 @@
 using namespace std;
 
 namespace stubborn_sets_atom_centric {
-StubbornSetsAtomCentric::StubbornSetsAtomCentric(
-    bool use_sibling_shortcut, AtomSelectionStrategy atom_selection_strategy,
-    utils::Verbosity verbosity)
-    : StubbornSets(verbosity),
-      use_sibling_shortcut(use_sibling_shortcut),
-      atom_selection_strategy(atom_selection_strategy) {
+StubbornSetsAtomCentric::StubbornSetsAtomCentric(const plugins::Options &opts)
+    : StubbornSets(opts),
+      use_sibling_shortcut(opts.get<bool>("use_sibling_shortcut")),
+      atom_selection_strategy(opts.get<AtomSelectionStrategy>("atom_selection_strategy")) {
 }
 
 void StubbornSetsAtomCentric::initialize(const shared_ptr<AbstractTask> &task) {
@@ -60,8 +58,7 @@ void StubbornSetsAtomCentric::compute_consumers(const TaskProxy &task_proxy) {
     }
 }
 
-bool StubbornSetsAtomCentric::operator_is_applicable(
-    int op, const State &state) const {
+bool StubbornSetsAtomCentric::operator_is_applicable(int op, const State &state) const {
     return find_unsatisfied_precondition(op, state) == FactPair::no_fact;
 }
 
@@ -86,8 +83,7 @@ void StubbornSetsAtomCentric::enqueue_sibling_producers(const FactPair &fact) {
       given fact v=d.
     */
     int dummy_mark = MARKED_VALUES_NONE;
-    int &mark =
-        use_sibling_shortcut ? marked_producer_variables[fact.var] : dummy_mark;
+    int &mark = use_sibling_shortcut ? marked_producer_variables[fact.var] : dummy_mark;
     if (mark == MARKED_VALUES_NONE) {
         /*
           If we don't have marking info for variable v, enqueue all sibling
@@ -113,8 +109,7 @@ void StubbornSetsAtomCentric::enqueue_sibling_producers(const FactPair &fact) {
 void StubbornSetsAtomCentric::enqueue_sibling_consumers(const FactPair &fact) {
     // For documentation, see enqueue_sibling_producers().
     int dummy_mark = MARKED_VALUES_NONE;
-    int &mark =
-        use_sibling_shortcut ? marked_consumer_variables[fact.var] : dummy_mark;
+    int &mark = use_sibling_shortcut ? marked_consumer_variables[fact.var] : dummy_mark;
     if (mark == MARKED_VALUES_NONE) {
         int domain_size = consumers[fact.var].size();
         for (int value = 0; value < domain_size; ++value) {
@@ -160,16 +155,13 @@ FactPair StubbornSetsAtomCentric::select_fact(
                 }
             }
         }
-    } else if (
-        atom_selection_strategy == AtomSelectionStrategy::DYNAMIC_SMALL) {
+    } else if (atom_selection_strategy == AtomSelectionStrategy::DYNAMIC_SMALL) {
         int min_count = numeric_limits<int>::max();
         for (const FactPair &condition : facts) {
             if (state[condition.var].get_value() != condition.value) {
-                const vector<int> &ops =
-                    achievers[condition.var][condition.value];
-                int count = count_if(ops.begin(), ops.end(), [&](int op) {
-                    return !stubborn[op];
-                });
+                const vector<int> &ops = achievers[condition.var][condition.value];
+                int count = count_if(
+                    ops.begin(), ops.end(), [&](int op) {return !stubborn[op];});
                 if (count < min_count) {
                     fact = condition;
                     min_count = count;
@@ -239,8 +231,7 @@ void StubbornSetsAtomCentric::compute_stubborn_set(const State &state) {
     }
 }
 
-void StubbornSetsAtomCentric::handle_stubborn_operator(
-    const State &state, int op) {
+void StubbornSetsAtomCentric::handle_stubborn_operator(const State &state, int op) {
     if (!stubborn[op]) {
         stubborn[op] = true;
         if (operator_is_applicable(op, state)) {
@@ -251,11 +242,9 @@ void StubbornSetsAtomCentric::handle_stubborn_operator(
     }
 }
 
-class StubbornSetsAtomCentricFeature
-    : public plugins::TypedFeature<PruningMethod, StubbornSetsAtomCentric> {
+class StubbornSetsAtomCentricFeature : public plugins::TypedFeature<PruningMethod, StubbornSetsAtomCentric> {
 public:
-    StubbornSetsAtomCentricFeature()
-        : TypedFeature("atom_centric_stubborn_sets") {
+    StubbornSetsAtomCentricFeature() : TypedFeature("atom_centric_stubborn_sets") {
         document_title("Atom-centric stubborn sets");
         document_synopsis(
             "Stubborn sets are a state pruning method which computes a subset "
@@ -265,13 +254,14 @@ public:
             "this implementation focuses on atomic propositions (atoms), which "
             "often speeds up the computation on IPC benchmarks. For details, see" +
             utils::format_conference_reference(
-                {"Gabriele Roeger", "Malte Helmert", "Jendrik Seipp",
-                 "Silvan Sievers"},
+                {"Gabriele Roeger", "Malte Helmert", "Jendrik Seipp", "Silvan Sievers"},
                 "An Atom-Centric Perspective on Stubborn Sets",
                 "https://ai.dmi.unibas.ch/papers/roeger-et-al-socs2020.pdf",
                 "Proceedings of the 13th Annual Symposium on Combinatorial Search "
                 "(SoCS 2020)",
-                "57-65", "AAAI Press", "2020"));
+                "57-65",
+                "AAAI Press",
+                "2020"));
 
         add_option<bool>(
             "use_sibling_shortcut",
@@ -285,27 +275,20 @@ public:
             "quick_skip");
         add_pruning_options_to_feature(*this);
     }
-
-    virtual shared_ptr<StubbornSetsAtomCentric> create_component(
-        const plugins::Options &opts) const override {
-        return plugins::make_shared_from_arg_tuples<StubbornSetsAtomCentric>(
-            opts.get<bool>("use_sibling_shortcut"),
-            opts.get<AtomSelectionStrategy>("atom_selection_strategy"),
-            get_pruning_arguments_from_options(opts));
-    }
 };
 
 static plugins::FeaturePlugin<StubbornSetsAtomCentricFeature> _plugin;
 
-static plugins::TypedEnumPlugin<AtomSelectionStrategy> _enum_plugin(
-    {{"fast_downward",
-      "select the atom (v, d) with the variable v that comes first in the Fast "
-      "Downward variable ordering (which is based on the causal graph)"},
-     {"quick_skip",
-      "if possible, select an unsatisfied atom whose producers are already marked"},
-     {"static_small",
-      "select the atom achieved by the fewest number of actions"},
-     {"dynamic_small",
-      "select the atom achieved by the fewest number of actions that are not "
-      "yet part of the stubborn set"}});
+static plugins::TypedEnumPlugin<AtomSelectionStrategy> _enum_plugin({
+        {"fast_downward",
+         "select the atom (v, d) with the variable v that comes first in the Fast "
+         "Downward variable ordering (which is based on the causal graph)"},
+        {"quick_skip",
+         "if possible, select an unsatisfied atom whose producers are already marked"},
+        {"static_small",
+         "select the atom achieved by the fewest number of actions"},
+        {"dynamic_small",
+         "select the atom achieved by the fewest number of actions that are not "
+         "yet part of the stubborn set"}
+    });
 }

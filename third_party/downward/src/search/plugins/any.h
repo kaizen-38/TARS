@@ -2,6 +2,7 @@
 #define PLUGINS_ANY_H
 
 #include "../utils/language.h"
+#include "../utils/memory.h"
 
 #include <algorithm>
 #include <exception>
@@ -24,9 +25,8 @@
 namespace plugins {
 class Any {
     class Placeholder {
-    public:
-        virtual ~Placeholder() {
-        }
+public:
+        virtual ~Placeholder() {}
         virtual std::unique_ptr<Placeholder> clone() const = 0;
         virtual const std::type_info &type() const = 0;
         virtual std::string type_name() const = 0;
@@ -35,14 +35,15 @@ class Any {
     template<typename ValueType>
     class Holder : public Placeholder {
         Holder &operator=(const Holder &) = delete;
-    public:
+public:
         ValueType held;
 
-        Holder(const ValueType &value) : held(value) {
+        Holder(const ValueType &value)
+            : held(value) {
         }
 
         virtual std::unique_ptr<Placeholder> clone() const override {
-            return std::make_unique<Holder<ValueType>>(held);
+            return utils::make_unique_ptr<Holder<ValueType>>(held);
         }
 
         virtual const std::type_info &type() const override {
@@ -69,7 +70,7 @@ public:
 
     template<typename ValueType>
     Any(const ValueType &value)
-        : content(std::make_unique<Holder<ValueType>>(value)) {
+        : content(utils::make_unique_ptr<Holder<ValueType>>(value)) {
     }
 
     ~Any() = default;
@@ -107,11 +108,11 @@ public:
     }
 };
 
+
 template<typename ValueType>
 ValueType *any_cast(Any *operand) {
     if (operand && operand->type() == typeid(ValueType))
-        return &static_cast<Any::Holder<ValueType> *>(operand->content.get())
-                    ->held;
+        return &static_cast<Any::Holder<ValueType> *>(operand->content.get())->held;
     else
         return nullptr;
 }
@@ -120,6 +121,7 @@ template<typename ValueType>
 inline const ValueType *any_cast(const Any *operand) {
     return any_cast<ValueType>(const_cast<Any *>(operand));
 }
+
 
 template<typename ValueType>
 ValueType any_cast(Any &operand) {

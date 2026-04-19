@@ -26,9 +26,12 @@ static bool time_limit_reached(
 }
 
 Pattern generate_random_pattern(
-    int max_pdb_size, double max_time, utils::LogProxy &log,
+    int max_pdb_size,
+    double max_time,
+    utils::LogProxy &log,
     const shared_ptr<utils::RandomNumberGenerator> &rng,
-    const TaskProxy &task_proxy, int goal_variable,
+    const TaskProxy &task_proxy,
+    int goal_variable,
     vector<vector<int>> &cg_neighbors) {
     utils::CountdownTimer timer(max_time);
     int current_var = goal_variable;
@@ -46,8 +49,7 @@ Pattern generate_random_pattern(
         bool found_neighbor = false;
         for (int neighbor : cg_neighbors[current_var]) {
             int neighbor_dom_size = variables[neighbor].get_domain_size();
-            if (!visited_vars.count(neighbor) &&
-                utils::is_product_within_limit(
+            if (!visited_vars.count(neighbor) && utils::is_product_within_limit(
                     pdb_size, neighbor_dom_size, max_pdb_size)) {
                 pdb_size *= neighbor_dom_size;
                 visited_vars.insert(neighbor);
@@ -90,8 +92,7 @@ void add_random_pattern_implementation_notes_to_feature(
         true);
 }
 
-void add_random_pattern_bidirectional_option_to_feature(
-    plugins::Feature &feature) {
+void add_random_pattern_bidirectional_option_to_feature(plugins::Feature &feature) {
     feature.add_option<bool>(
         "bidirectional",
         "this option decides if the causal graph is considered to be "
@@ -101,10 +102,5 @@ void add_random_pattern_bidirectional_option_to_feature(
         "considered to be directed (a variable is a neighbor only if it is a "
         "predecessor.",
         "true");
-}
-
-tuple<bool> get_random_pattern_bidirectional_arguments_from_options(
-    const plugins::Options &opts) {
-    return make_tuple(opts.get<bool>("bidirectional"));
 }
 }

@@ -5,6 +5,12 @@
 
 #include "../utils/logging.h"
 
+#include <list>
+#include <map>
+#include <memory>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 class TaskProxy;
@@ -15,60 +21,66 @@ class Feature;
 }
 
 namespace landmarks {
+/*
+  TODO: Change order to private -> protected -> public
+   (omitted so far to minimize diff)
+*/
 class LandmarkFactory {
-    AbstractTask *landmark_graph_task;
-    std::vector<std::vector<std::vector<int>>> operators_providing_effect;
-
-    virtual void generate_landmarks(
-        const std::shared_ptr<AbstractTask> &task) = 0;
-    void log_landmark_graph_info(
-        const TaskProxy &task_proxy,
-        const utils::Timer &landmark_generation_timer) const;
-
-    void resize_operators_providing_effect(const TaskProxy &task_proxy);
-    void add_operator_or_axiom_providing_effects(
-        const OperatorProxy &op_or_axiom);
-    void compute_operators_providing_effect(const TaskProxy &task_proxy);
-
-    void add_ordering(
-        LandmarkNode &from, LandmarkNode &to, OrderingType type) const;
-
-protected:
-    mutable utils::LogProxy log;
-    std::shared_ptr<LandmarkGraph> landmark_graph;
-    bool achievers_calculated = false;
-
-    explicit LandmarkFactory(utils::Verbosity verbosity);
-
-    void add_or_replace_ordering_if_stronger(
-        LandmarkNode &from, LandmarkNode &to, OrderingType type) const;
-
-    void discard_all_orderings() const;
-
-    const std::vector<int> &get_operators_including_effect(
-        const FactPair &eff) const {
-        return operators_providing_effect[eff.var][eff.value];
-    }
-
 public:
     virtual ~LandmarkFactory() = default;
     LandmarkFactory(const LandmarkFactory &) = delete;
 
-    std::shared_ptr<LandmarkGraph> compute_landmark_graph(
-        const std::shared_ptr<AbstractTask> &task);
+    std::shared_ptr<LandmarkGraph> compute_lm_graph(const std::shared_ptr<AbstractTask> &task);
 
+    /*
+      TODO: Currently reasonable orders are not supported for admissible landmark count
+      heuristics, which is why the heuristic needs to know whether the factory computes
+      reasonable orders. Once issue383 is dealt with we should be able to use reasonable
+      orders for admissible heuristics and this method can be removed.
+    */
+    virtual bool computes_reasonable_orders() const = 0;
     virtual bool supports_conditional_effects() const = 0;
 
     bool achievers_are_calculated() const {
         return achievers_calculated;
     }
+
+protected:
+    explicit LandmarkFactory(const plugins::Options &opts);
+    mutable utils::LogProxy log;
+    std::shared_ptr<LandmarkGraph> lm_graph;
+    bool achievers_calculated = false;
+
+    void edge_add(LandmarkNode &from, LandmarkNode &to, EdgeType type);
+
+    void discard_all_orderings();
+    void mk_acyclic_graph();
+
+    bool is_landmark_precondition(const OperatorProxy &op,
+                                  const Landmark &landmark) const;
+
+    const std::vector<int> &get_operators_including_eff(const FactPair &eff) const {
+        return operators_eff_lookup[eff.var][eff.value];
+    }
+
+private:
+    AbstractTask *lm_graph_task;
+
+    virtual void generate_landmarks(const std::shared_ptr<AbstractTask> &task) = 0;
+
+    std::vector<std::vector<std::vector<int>>> operators_eff_lookup;
+
+    int loop_acyclic_graph(LandmarkNode &lmn,
+                           std::unordered_set<LandmarkNode *> &acyclic_node_set);
+    void remove_first_weakest_cycle_edge(
+        std::list<std::pair<LandmarkNode *, EdgeType>> &path,
+        std::list<std::pair<LandmarkNode *, EdgeType>>::iterator it);
+    void generate_operators_lookups(const TaskProxy &task_proxy);
 };
 
 extern void add_landmark_factory_options_to_feature(plugins::Feature &feature);
-extern std::tuple<utils::Verbosity> get_landmark_factory_arguments_from_options(
-    const plugins::Options &opts);
 extern void add_use_orders_option_to_feature(plugins::Feature &feature);
-extern bool get_use_orders_arguments_from_options(const plugins::Options &opts);
+extern void add_only_causal_landmarks_option_to_feature(plugins::Feature &feature);
 }
 
 #endif

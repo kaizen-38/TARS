@@ -30,8 +30,8 @@ class CostSaturation {
     const int max_states;
     const int max_non_looping_transitions;
     const double max_time;
-    const PickSplit pick_split;
     const bool use_general_costs;
+    const PickSplit pick_split;
     utils::RandomNumberGenerator &rng;
     utils::LogProxy &log;
 
@@ -49,16 +49,19 @@ class CostSaturation {
     void build_abstractions(
         const std::vector<std::shared_ptr<AbstractTask>> &subtasks,
         const utils::CountdownTimer &timer,
-        const std::function<bool()> &should_abort);
+        std::function<bool()> should_abort);
     void print_statistics(utils::Duration init_time) const;
 
 public:
     CostSaturation(
-        const std::vector<std::shared_ptr<SubtaskGenerator>>
-            &subtask_generators,
-        int max_states, int max_non_looping_transitions, double max_time,
-        PickSplit pick_split, bool use_general_costs,
-        utils::RandomNumberGenerator &rng, utils::LogProxy &log);
+        const std::vector<std::shared_ptr<SubtaskGenerator>> &subtask_generators,
+        int max_states,
+        int max_non_looping_transitions,
+        double max_time,
+        bool use_general_costs,
+        PickSplit pick_split,
+        utils::RandomNumberGenerator &rng,
+        utils::LogProxy &log);
 
     std::vector<CartesianHeuristicFunction> generate_heuristic_functions(
         const std::shared_ptr<AbstractTask> &task);

@@ -18,9 +18,7 @@ class PatternGeneratorRandom : public PatternGenerator {
     virtual PatternInformation compute_pattern(
         const std::shared_ptr<AbstractTask> &task) override;
 public:
-    PatternGeneratorRandom(
-        int max_pdb_size, double max_time, bool bidirectional, int random_seed,
-        utils::Verbosity verbosity);
+    explicit PatternGeneratorRandom(const plugins::Options &opts);
 };
 }
 

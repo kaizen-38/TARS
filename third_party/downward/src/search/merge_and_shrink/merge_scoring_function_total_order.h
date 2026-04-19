@@ -6,6 +6,7 @@
 #include <memory>
 
 namespace plugins {
+class Options;
 class Feature;
 }
 
@@ -35,12 +36,10 @@ class MergeScoringFunctionTotalOrder : public MergeScoringFunction {
     std::vector<std::pair<int, int>> merge_candidate_order;
 
     virtual std::string name() const override;
-    virtual void dump_function_specific_options(
-        utils::LogProxy &log) const override;
+    virtual void dump_function_specific_options(utils::LogProxy &log) const override;
 public:
-    explicit MergeScoringFunctionTotalOrder(
-        AtomicTSOrder atomic_ts_order, ProductTSOrder product_ts_order,
-        bool atomic_before_product, int random_seed);
+    explicit MergeScoringFunctionTotalOrder(const plugins::Options &options);
+    virtual ~MergeScoringFunctionTotalOrder() override = default;
     virtual std::vector<double> compute_scores(
         const FactoredTransitionSystem &fts,
         const std::vector<std::pair<int, int>> &merge_candidates) override;

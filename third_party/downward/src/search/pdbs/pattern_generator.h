@@ -29,7 +29,7 @@ class PatternCollectionGenerator {
 protected:
     mutable utils::LogProxy log;
 public:
-    explicit PatternCollectionGenerator(utils::Verbosity verbosity);
+    explicit PatternCollectionGenerator(const plugins::Options &opts);
     virtual ~PatternCollectionGenerator() = default;
 
     PatternCollectionInformation generate(
@@ -43,15 +43,13 @@ class PatternGenerator {
 protected:
     mutable utils::LogProxy log;
 public:
-    explicit PatternGenerator(utils::Verbosity verbosity);
+    explicit PatternGenerator(const plugins::Options &opts);
     virtual ~PatternGenerator() = default;
 
     PatternInformation generate(const std::shared_ptr<AbstractTask> &task);
 };
 
 extern void add_generator_options_to_feature(plugins::Feature &feature);
-extern std::tuple<utils::Verbosity> get_generator_arguments_from_options(
-    const plugins::Options &opts);
 }
 
 #endif

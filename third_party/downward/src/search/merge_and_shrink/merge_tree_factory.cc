@@ -12,8 +12,9 @@
 using namespace std;
 
 namespace merge_and_shrink {
-MergeTreeFactory::MergeTreeFactory(int random_seed, UpdateOption update_option)
-    : rng(utils::get_rng(random_seed)), update_option(update_option) {
+MergeTreeFactory::MergeTreeFactory(const plugins::Options &options)
+    : rng(utils::parse_rng_from_options(options)),
+      update_option(options.get<UpdateOption>("update_option")) {
 }
 
 void MergeTreeFactory::dump_options(utils::LogProxy &log) const {
@@ -36,15 +37,16 @@ void MergeTreeFactory::dump_options(utils::LogProxy &log) const {
 }
 
 unique_ptr<MergeTree> MergeTreeFactory::compute_merge_tree(
-    const TaskProxy &, const FactoredTransitionSystem &, const vector<int> &) {
+    const TaskProxy &,
+    const FactoredTransitionSystem &,
+    const vector<int> &) {
     cerr << "This merge tree does not support being computed on a subset "
-            "of indices for a given factored transition system!"
-         << endl;
+        "of indices for a given factored transition system!" << endl;
     utils::exit_with(utils::ExitCode::SEARCH_CRITICAL_ERROR);
 }
 
-void add_merge_tree_options_to_feature(plugins::Feature &feature) {
-    utils::add_rng_options_to_feature(feature);
+void MergeTreeFactory::add_options_to_feature(plugins::Feature &feature) {
+    utils::add_rng_options(feature);
     feature.add_option<UpdateOption>(
         "update_option",
         "When the merge tree is used within another merge strategy, how "
@@ -53,15 +55,7 @@ void add_merge_tree_options_to_feature(plugins::Feature &feature) {
         "use_random");
 }
 
-tuple<int, UpdateOption> get_merge_tree_arguments_from_options(
-    const plugins::Options &opts) {
-    return tuple_cat(
-        utils::get_rng_arguments_from_options(opts),
-        make_tuple(opts.get<UpdateOption>("update_option")));
-}
-
-static class MergeTreeFactoryCategoryPlugin
-    : public plugins::TypedCategoryPlugin<MergeTreeFactory> {
+static class MergeTreeFactoryCategoryPlugin : public plugins::TypedCategoryPlugin<MergeTreeFactory> {
 public:
     MergeTreeFactoryCategoryPlugin() : TypedCategoryPlugin("MergeTree") {
         document_synopsis(
@@ -72,12 +66,15 @@ public:
             "'precomputed', but they can also be used as fallback merge strategies in "
             "'combined' merge strategies.");
     }
-} _category_plugin;
+}
+_category_plugin;
 
-static plugins::TypedEnumPlugin<UpdateOption> _enum_plugin(
-    {{"use_first",
-      "the node representing the index that would have been merged earlier survives"},
-     {"use_second",
-      "the node representing the index that would have been merged later survives"},
-     {"use_random", "a random node (of the above two) survives"}});
+static plugins::TypedEnumPlugin<UpdateOption> _enum_plugin({
+        {"use_first",
+         "the node representing the index that would have been merged earlier survives"},
+        {"use_second",
+         "the node representing the index that would have been merged later survives"},
+        {"use_random",
+         "a random node (of the above two) survives"}
+    });
 }

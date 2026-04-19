@@ -4,14 +4,14 @@
 #include "../plugins/types.h"
 #include "../utils/logging.h"
 #include "../utils/math.h"
+#include "../utils/memory.h"
 
 #include <limits>
 
 using namespace std;
 
 namespace parser {
-void ConstructContext::set_variable(
-    const string &name, const plugins::Any &value) {
+void ConstructContext::set_variable(const string &name, const plugins::Any &value) {
     variables[name] = value;
 }
 
@@ -28,8 +28,7 @@ plugins::Any ConstructContext::get_variable(const string &name) const {
     return variable;
 }
 
-LazyValue::LazyValue(
-    const DecoratedASTNode &node, const ConstructContext &context)
+LazyValue::LazyValue(const DecoratedASTNode &node, const ConstructContext &context)
     : context(context), node(node.clone()) {
 }
 
@@ -57,9 +56,9 @@ vector<LazyValue> LazyValue::construct_lazy_list() {
     elements.reserve(list_node->get_elements().size());
     int elem = 1;
     for (const DecoratedASTNodePtr &element : list_node->get_elements()) {
-        utils::TraceBlock(
-            context,
-            "Create LazyValue for " + to_string(elem) + ". list element");
+        utils::TraceBlock(context,
+                          "Create LazyValue for " + to_string(elem) +
+                          ". list element");
         elements.emplace_back(LazyValue(*element, context));
         elem++;
     }
@@ -72,8 +71,8 @@ plugins::Any DecoratedASTNode::construct() const {
     return construct(context);
 }
 
-FunctionArgument::FunctionArgument(
-    const string &key, DecoratedASTNodePtr value, bool lazy_construction)
+FunctionArgument::FunctionArgument(const string &key, DecoratedASTNodePtr value,
+                                   bool lazy_construction)
     : key(key), value(move(value)), lazy_construction(lazy_construction) {
 }
 
@@ -85,7 +84,7 @@ const DecoratedASTNode &FunctionArgument::get_value() const {
     return *value;
 }
 
-void FunctionArgument::dump(const string &indent) const {
+void FunctionArgument::dump(string indent) const {
     cout << indent << key << " = " << endl;
     value->dump("| " + indent);
 }
@@ -95,7 +94,8 @@ bool FunctionArgument::is_lazily_constructed() const {
 }
 
 DecoratedLetNode::DecoratedLetNode(
-    const string &variable_name, DecoratedASTNodePtr variable_definition,
+    const string &variable_name,
+    DecoratedASTNodePtr variable_definition,
     DecoratedASTNodePtr nested_value)
     : variable_name(variable_name),
       variable_definition(move(variable_definition)),
@@ -106,8 +106,7 @@ plugins::Any DecoratedLetNode::construct(ConstructContext &context) const {
     utils::TraceBlock block(context, "Constructing let-expression");
     plugins::Any variable_value;
     {
-        utils::TraceBlock block(
-            context, "Constructing variable '" + variable_name + "'");
+        utils::TraceBlock block(context, "Constructing variable '" + variable_name + "'");
         variable_value = variable_definition->construct(context);
     }
     plugins::Any result;
@@ -129,23 +128,18 @@ void DecoratedLetNode::dump(string indent) const {
 }
 
 DecoratedFunctionCallNode::DecoratedFunctionCallNode(
-    const shared_ptr<const plugins::Feature> &feature,
-    vector<FunctionArgument> &&arguments, const string &unparsed_config)
-    : feature(feature),
-      arguments(move(arguments)),
-      unparsed_config(unparsed_config) {
+    shared_ptr<const plugins::Feature> feature, vector<FunctionArgument> &&arguments,
+    const string &unparsed_config)
+    : feature(feature), arguments(move(arguments)), unparsed_config(unparsed_config) {
 }
 
-plugins::Any DecoratedFunctionCallNode::construct(
-    ConstructContext &context) const {
-    utils::TraceBlock block(
-        context, "Constructing feature '" + feature->get_key() +
-                     "': " + unparsed_config);
+plugins::Any DecoratedFunctionCallNode::construct(ConstructContext &context) const {
+    utils::TraceBlock block(context, "Constructing feature '" + feature->get_key() + "': " +
+                            unparsed_config);
     plugins::Options opts;
     opts.set_unparsed_config(unparsed_config);
     for (const FunctionArgument &arg : arguments) {
-        utils::TraceBlock block(
-            context, "Constructing argument '" + arg.get_key() + "'");
+        utils::TraceBlock block(context, "Constructing argument '" + arg.get_key() + "'");
         if (arg.is_lazily_constructed()) {
             opts.set(arg.get_key(), LazyValue(arg.get_value(), context));
         } else {
@@ -156,8 +150,8 @@ plugins::Any DecoratedFunctionCallNode::construct(
 }
 
 void DecoratedFunctionCallNode::dump(string indent) const {
-    cout << indent << "FUNC:" << feature->get_title() << " (returns "
-         << feature->get_type().name() << ")" << endl;
+    cout << indent << "FUNC:" << feature->get_title()
+         << " (returns " << feature->get_type().name() << ")" << endl;
     indent = "| " + indent;
     cout << indent << "ARGUMENTS:" << endl;
     for (const FunctionArgument &arg : arguments) {
@@ -174,8 +168,7 @@ plugins::Any DecoratedListNode::construct(ConstructContext &context) const {
     vector<plugins::Any> result;
     int i = 0;
     for (const DecoratedASTNodePtr &element : elements) {
-        utils::TraceBlock block(
-            context, "Constructing element " + to_string(i));
+        utils::TraceBlock block(context, "Constructing element " + to_string(i));
         result.push_back(element->construct(context));
         ++i;
     }
@@ -190,7 +183,8 @@ void DecoratedListNode::dump(string indent) const {
     }
 }
 
-VariableNode::VariableNode(const string &name) : name(name) {
+VariableNode::VariableNode(const string &name)
+    : name(name) {
 }
 
 plugins::Any VariableNode::construct(ConstructContext &context) const {
@@ -205,19 +199,17 @@ void VariableNode::dump(string indent) const {
     cout << indent << "VAR: " << name << endl;
 }
 
-BoolLiteralNode::BoolLiteralNode(const string &value) : value(value) {
+BoolLiteralNode::BoolLiteralNode(const string &value)
+    : value(value) {
 }
 
 plugins::Any BoolLiteralNode::construct(ConstructContext &context) const {
-    utils::TraceBlock block(
-        context, "Constructing bool value from '" + value + "'");
+    utils::TraceBlock block(context, "Constructing bool value from '" + value + "'");
     istringstream stream(value);
     bool x;
     if ((stream >> boolalpha >> x).fail()) {
-        ABORT(
-            "Could not parse bool constant '" + value +
-            "'"
-            " (this should have been caught before constructing this node).");
+        ABORT("Could not parse bool constant '" + value + "'"
+              " (this should have been caught before constructing this node).");
     }
     return x;
 }
@@ -226,57 +218,15 @@ void BoolLiteralNode::dump(string indent) const {
     cout << indent << "BOOL: " << value << endl;
 }
 
-StringLiteralNode::StringLiteralNode(const string &value) : value(value) {
-}
-
-plugins::Any StringLiteralNode::construct(ConstructContext &context) const {
-    utils::TraceBlock block(
-        context, "Constructing string value from '" + value + "'");
-    if (!(value.starts_with('"') && value.ends_with('"'))) {
-        ABORT("String literal value is not enclosed in quotation marks"
-              " (this should have been caught before constructing this node).");
-    }
-    /*
-      We are not doing any further syntax checking. Escaped symbols other than
-      \n will just ignore the escaping \ (e.g., \t is treated as t, not as a
-      tab). Strings ending in \ will not produce an error but should be excluded
-      by the previous steps.
-    */
-    string result;
-    result.reserve(value.length() - 2);
-    bool escaped = false;
-    for (char c : value.substr(1, value.size() - 2)) {
-        if (escaped) {
-            escaped = false;
-            if (c == 'n') {
-                result += '\n';
-            } else {
-                result += c;
-            }
-        } else if (c == '\\') {
-            escaped = true;
-        } else {
-            result += c;
-        }
-    }
-    return result;
-}
-
-void StringLiteralNode::dump(string indent) const {
-    cout << indent << "STRING: " << value << endl;
-}
-
-IntLiteralNode::IntLiteralNode(const string &value) : value(value) {
+IntLiteralNode::IntLiteralNode(const string &value)
+    : value(value) {
 }
 
 plugins::Any IntLiteralNode::construct(ConstructContext &context) const {
-    utils::TraceBlock block(
-        context, "Constructing int value from '" + value + "'");
+    utils::TraceBlock block(context, "Constructing int value from '" + value + "'");
     if (value.empty()) {
-        ABORT(
-            "Empty value in int constant '" + value +
-            "'"
-            " (this should have been caught before constructing this node).");
+        ABORT("Empty value in int constant '" + value + "'"
+              " (this should have been caught before constructing this node).");
     } else if (value == "infinity") {
         return numeric_limits<int>::max();
     }
@@ -293,10 +243,8 @@ plugins::Any IntLiteralNode::construct(ConstructContext &context) const {
         } else if (suffix == 'g') {
             factor = 1000000000;
         } else {
-            ABORT(
-                "Invalid suffix in int constant '" + value +
-                "'"
-                " (this should have been caught before constructing this node).");
+            ABORT("Invalid suffix in int constant '" + value + "'"
+                  " (this should have been caught before constructing this node).");
         }
         prefix.pop_back();
     }
@@ -305,10 +253,8 @@ plugins::Any IntLiteralNode::construct(ConstructContext &context) const {
     int x;
     stream >> noskipws >> x;
     if (stream.fail() || !stream.eof()) {
-        ABORT(
-            "Could not parse int constant '" + value +
-            "'"
-            " (this should have been caught before constructing this node).");
+        ABORT("Could not parse int constant '" + value + "'"
+              " (this should have been caught before constructing this node).");
     }
 
     int min_int = numeric_limits<int>::min();
@@ -325,12 +271,12 @@ void IntLiteralNode::dump(string indent) const {
     cout << indent << "INT: " << value << endl;
 }
 
-FloatLiteralNode::FloatLiteralNode(const string &value) : value(value) {
+FloatLiteralNode::FloatLiteralNode(const string &value)
+    : value(value) {
 }
 
 plugins::Any FloatLiteralNode::construct(ConstructContext &context) const {
-    utils::TraceBlock block(
-        context, "Constructing float value from '" + value + "'");
+    utils::TraceBlock block(context, "Constructing float value from '" + value + "'");
     if (value == "infinity") {
         return numeric_limits<double>::infinity();
     } else {
@@ -338,10 +284,8 @@ plugins::Any FloatLiteralNode::construct(ConstructContext &context) const {
         double x;
         stream >> noskipws >> x;
         if (stream.fail() || !stream.eof()) {
-            ABORT(
-                "Could not parse double constant '" + value +
-                "'"
-                " (this should have been caught before constructing this node).");
+            ABORT("Could not parse double constant '" + value + "'"
+                  " (this should have been caught before constructing this node).");
         }
         return x;
     }
@@ -351,7 +295,8 @@ void FloatLiteralNode::dump(string indent) const {
     cout << indent << "FLOAT: " << value << endl;
 }
 
-SymbolNode::SymbolNode(const string &value) : value(value) {
+SymbolNode::SymbolNode(const string &value)
+    : value(value) {
 }
 
 plugins::Any SymbolNode::construct(ConstructContext &) const {
@@ -369,8 +314,7 @@ ConvertNode::ConvertNode(
 }
 
 plugins::Any ConvertNode::construct(ConstructContext &context) const {
-    utils::TraceBlock block(
-        context, "Constructing value that requires conversion");
+    utils::TraceBlock block(context, "Constructing value that requires conversion");
     plugins::Any constructed_value;
     {
         utils::TraceBlock block(
@@ -379,33 +323,28 @@ plugins::Any ConvertNode::construct(ConstructContext &context) const {
     }
     plugins::Any converted_value;
     {
-        utils::TraceBlock block(
-            context, "Converting constructed value from '" + from_type.name() +
-                         "' to '" + to_type.name() + "'");
-        converted_value =
-            plugins::convert(constructed_value, from_type, to_type, context);
+        utils::TraceBlock block(context, "Converting constructed value from '" + from_type.name() +
+                                "' to '" + to_type.name() + "'");
+        converted_value = plugins::convert(constructed_value, from_type,
+                                           to_type, context);
     }
     return converted_value;
 }
 
 void ConvertNode::dump(string indent) const {
-    cout << indent << "CONVERT: " << from_type.name() << " to "
-         << to_type.name() << endl;
+    cout << indent << "CONVERT: "
+         << from_type.name() << " to " << to_type.name() << endl;
     value->dump("| " + indent);
 }
 
 CheckBoundsNode::CheckBoundsNode(
-    DecoratedASTNodePtr value, DecoratedASTNodePtr min_value,
-    DecoratedASTNodePtr max_value)
-    : value(move(value)),
-      min_value(move(min_value)),
-      max_value(move(max_value)) {
+    DecoratedASTNodePtr value, DecoratedASTNodePtr min_value, DecoratedASTNodePtr max_value)
+    : value(move(value)), min_value(move(min_value)), max_value(move(max_value)) {
 }
 
 template<typename T>
-static bool satisfies_bounds(
-    const plugins::Any &v_, const plugins::Any &min_,
-    const plugins::Any &max_) {
+static bool satisfies_bounds(const plugins::Any &v_, const plugins::Any &min_,
+                             const plugins::Any &max_) {
     T v = plugins::any_cast<T>(v_);
     T min = plugins::any_cast<T>(min_);
     T max = plugins::any_cast<T>(max_);
@@ -433,11 +372,10 @@ plugins::Any CheckBoundsNode::construct(ConstructContext &context) const {
         utils::TraceBlock block(context, "Checking bounds");
         const type_info &type = v.type();
         if (min.type() != type || max.type() != type) {
-            ABORT(
-                "Types of bounds (" + string(min.type().name()) + ", " +
-                max.type().name() + ") do not match type of value (" +
-                type.name() + ")" +
-                " (this should have been caught before constructing this node).");
+            ABORT("Types of bounds (" +
+                  string(min.type().name()) + ", " + max.type().name() +
+                  ") do not match type of value (" + type.name() + ")" +
+                  " (this should have been caught before constructing this node).");
         }
 
         bool bounds_satisfied = true;
@@ -446,8 +384,7 @@ plugins::Any CheckBoundsNode::construct(ConstructContext &context) const {
         } else if (type == typeid(double)) {
             bounds_satisfied = satisfies_bounds<double>(v, min, max);
         } else {
-            ABORT(
-                "Bounds are only supported for arguments of type int or double.");
+            ABORT("Bounds are only supported for arguments of type int or double.");
         }
         if (!bounds_satisfied) {
             context.error("Value is not in bounds.");
@@ -463,11 +400,9 @@ void CheckBoundsNode::dump(string indent) const {
     max_value->dump("| " + indent);
 }
 
-// We are keeping all copy functionality together because it should be removed
-// soon.
+// We are keeping all copy functionality together because it should be removed soon.
 FunctionArgument::FunctionArgument(const FunctionArgument &other)
-    : key(other.key),
-      value(other.value->clone()),
+    : key(other.key), value(other.value->clone()),
       lazy_construction(other.lazy_construction) {
 }
 
@@ -482,13 +417,12 @@ shared_ptr<DecoratedASTNode> DecoratedLetNode::clone_shared() const {
 }
 
 unique_ptr<DecoratedASTNode> DecoratedLetNode::clone() const {
-    return make_unique<DecoratedLetNode>(*this);
+    return utils::make_unique_ptr<DecoratedLetNode>(*this);
 }
 
 DecoratedFunctionCallNode::DecoratedFunctionCallNode(
     const DecoratedFunctionCallNode &other)
-    : feature(other.feature),
-      arguments(other.arguments),
+    : feature(other.feature), arguments(other.arguments),
       unparsed_config(other.unparsed_config) {
 }
 
@@ -497,7 +431,7 @@ shared_ptr<DecoratedASTNode> DecoratedFunctionCallNode::clone_shared() const {
 }
 
 unique_ptr<DecoratedASTNode> DecoratedFunctionCallNode::clone() const {
-    return make_unique<DecoratedFunctionCallNode>(*this);
+    return utils::make_unique_ptr<DecoratedFunctionCallNode>(*this);
 }
 
 DecoratedListNode::DecoratedListNode(const DecoratedListNode &other) {
@@ -508,18 +442,19 @@ DecoratedListNode::DecoratedListNode(const DecoratedListNode &other) {
 }
 
 unique_ptr<DecoratedASTNode> DecoratedListNode::clone() const {
-    return make_unique<DecoratedListNode>(*this);
+    return utils::make_unique_ptr<DecoratedListNode>(*this);
 }
 
 shared_ptr<DecoratedASTNode> DecoratedListNode::clone_shared() const {
     return make_shared<DecoratedListNode>(*this);
 }
 
-VariableNode::VariableNode(const VariableNode &other) : name(other.name) {
+VariableNode::VariableNode(const VariableNode &other)
+    : name(other.name) {
 }
 
 unique_ptr<DecoratedASTNode> VariableNode::clone() const {
-    return make_unique<VariableNode>(*this);
+    return utils::make_unique_ptr<VariableNode>(*this);
 }
 
 shared_ptr<DecoratedASTNode> VariableNode::clone_shared() const {
@@ -531,23 +466,11 @@ BoolLiteralNode::BoolLiteralNode(const BoolLiteralNode &other)
 }
 
 unique_ptr<DecoratedASTNode> BoolLiteralNode::clone() const {
-    return make_unique<BoolLiteralNode>(*this);
+    return utils::make_unique_ptr<BoolLiteralNode>(*this);
 }
 
 shared_ptr<DecoratedASTNode> BoolLiteralNode::clone_shared() const {
     return make_shared<BoolLiteralNode>(*this);
-}
-
-StringLiteralNode::StringLiteralNode(const StringLiteralNode &other)
-    : value(other.value) {
-}
-
-unique_ptr<DecoratedASTNode> StringLiteralNode::clone() const {
-    return make_unique<StringLiteralNode>(*this);
-}
-
-shared_ptr<DecoratedASTNode> StringLiteralNode::clone_shared() const {
-    return make_shared<StringLiteralNode>(*this);
 }
 
 IntLiteralNode::IntLiteralNode(const IntLiteralNode &other)
@@ -555,7 +478,7 @@ IntLiteralNode::IntLiteralNode(const IntLiteralNode &other)
 }
 
 unique_ptr<DecoratedASTNode> IntLiteralNode::clone() const {
-    return make_unique<IntLiteralNode>(*this);
+    return utils::make_unique_ptr<IntLiteralNode>(*this);
 }
 
 shared_ptr<DecoratedASTNode> IntLiteralNode::clone_shared() const {
@@ -567,18 +490,19 @@ FloatLiteralNode::FloatLiteralNode(const FloatLiteralNode &other)
 }
 
 unique_ptr<DecoratedASTNode> FloatLiteralNode::clone() const {
-    return make_unique<FloatLiteralNode>(*this);
+    return utils::make_unique_ptr<FloatLiteralNode>(*this);
 }
 
 shared_ptr<DecoratedASTNode> FloatLiteralNode::clone_shared() const {
     return make_shared<FloatLiteralNode>(*this);
 }
 
-SymbolNode::SymbolNode(const SymbolNode &other) : value(other.value) {
+SymbolNode::SymbolNode(const SymbolNode &other)
+    : value(other.value) {
 }
 
 unique_ptr<DecoratedASTNode> SymbolNode::clone() const {
-    return make_unique<SymbolNode>(*this);
+    return utils::make_unique_ptr<SymbolNode>(*this);
 }
 
 shared_ptr<DecoratedASTNode> SymbolNode::clone_shared() const {
@@ -586,13 +510,12 @@ shared_ptr<DecoratedASTNode> SymbolNode::clone_shared() const {
 }
 
 ConvertNode::ConvertNode(const ConvertNode &other)
-    : value(other.value->clone()),
-      from_type(other.from_type),
+    : value(other.value->clone()), from_type(other.from_type),
       to_type(other.to_type) {
 }
 
 unique_ptr<DecoratedASTNode> ConvertNode::clone() const {
-    return make_unique<ConvertNode>(*this);
+    return utils::make_unique_ptr<ConvertNode>(*this);
 }
 
 shared_ptr<DecoratedASTNode> ConvertNode::clone_shared() const {
@@ -600,13 +523,12 @@ shared_ptr<DecoratedASTNode> ConvertNode::clone_shared() const {
 }
 
 CheckBoundsNode::CheckBoundsNode(const CheckBoundsNode &other)
-    : value(other.value->clone()),
-      min_value(other.min_value->clone()),
+    : value(other.value->clone()), min_value(other.min_value->clone()),
       max_value(other.max_value->clone()) {
 }
 
 unique_ptr<DecoratedASTNode> CheckBoundsNode::clone() const {
-    return make_unique<CheckBoundsNode>(*this);
+    return utils::make_unique_ptr<CheckBoundsNode>(*this);
 }
 
 shared_ptr<DecoratedASTNode> CheckBoundsNode::clone_shared() const {

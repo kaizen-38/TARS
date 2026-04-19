@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
   provision_env = {}
   if !ENV["DOWNWARD_LP_INSTALLERS"].nil?
       cplex_installer = ENV["DOWNWARD_LP_INSTALLERS"] + "/cplex_studio2211.linux_x86_64.bin"
-      if File.file?(cplex_installer)
+      if File.exists?(cplex_installer)
           config.vm.synced_folder ENV["DOWNWARD_LP_INSTALLERS"], "/lp", :mount_options => ["ro"]
           provision_env["CPLEX_INSTALLER"] = "/lp/" + File.basename(cplex_installer)
       end
@@ -43,7 +43,7 @@ Vagrant.configure("2") do |config|
     if [ -f "$CPLEX_INSTALLER" ]; then
         # Set environment variables for CPLEX.
         cat > /etc/profile.d/downward-cplex.sh <<-EOM
-			export cplex_DIR="/opt/ibm/ILOG/CPLEX_Studio2211/cplex"
+			export DOWNWARD_CPLEX_ROOT="/opt/ibm/ILOG/CPLEX_Studio2211/cplex"
 		EOM
         source /etc/profile.d/downward-cplex.sh
 
@@ -53,19 +53,20 @@ Vagrant.configure("2") do |config|
 
     # Set environment variables for SoPlex.
     cat > /etc/profile.d/downward-soplex.sh <<-EOM
-		export soplex_DIR="/opt/soplex"
+		export DOWNWARD_SOPLEX_ROOT="/opt/soplex"
 	EOM
     source /etc/profile.d/downward-soplex.sh
-    git clone --depth 1 --branch release-710 https://github.com/scipopt/soplex.git soplex
+    git clone --branch master https://github.com/scipopt/soplex.git soplex
     cd soplex
-    cmake -DCMAKE_INSTALL_PREFIX="$soplex_DIR" -S . -B build
+    git checkout a5df081
+    cmake -DCMAKE_INSTALL_PREFIX="$DOWNWARD_SOPLEX_ROOT" -S . -B build
     cmake --build build
     cmake --install build
 
     cd /home/vagrant
 
     if ! [ -e downward ] ; then
-        git clone --branch BRANCH https://github.com/aibasel/downward.git downward
+        git clone --branch TAG https://github.com/aibasel/downward.git downward
         ./downward/build.py release debug
         chown -R vagrant.vagrant downward
     fi

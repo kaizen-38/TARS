@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 
 from . import aliases
@@ -7,6 +8,7 @@ from . import cleanup
 from . import limits
 from . import run_components
 from . import util
+from . import __version__
 
 
 def main():
@@ -14,10 +16,10 @@ def main():
     logging.basicConfig(level=getattr(logging, args.log_level.upper()),
                         format="%(levelname)-8s %(message)s",
                         stream=sys.stdout)
-    logging.debug(f"processed args: {args}")
+    logging.debug("processed args: %s" % args)
 
     if args.version:
-        run_components.report_version(args.build)
+        print(__version__)
         sys.exit()
 
     if args.show_aliases:
@@ -38,16 +40,16 @@ def main():
         elif component == "search":
             (exitcode, continue_execution) = run_components.run_search(args)
             if not args.keep_sas_file:
-                print(f"Remove intermediate file {args.sas_file}")
-                args.sas_file.unlink()
+                print("Remove intermediate file {}".format(args.sas_file))
+                os.remove(args.sas_file)
         elif component == "validate":
             (exitcode, continue_execution) = run_components.run_validate(args)
         else:
-            assert False, f"Error: unhandled component: {component}"
-        print(f"{component} exit code: {exitcode}")
+            assert False, "Error: unhandled component: {}".format(component)
+        print("{component} exit code: {exitcode}".format(**locals()))
         print()
         if not continue_execution:
-            print(f"Driver aborting after {component}")
+            print("Driver aborting after {}".format(component))
             break
 
     try:

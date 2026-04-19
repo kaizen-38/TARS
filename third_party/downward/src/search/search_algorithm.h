@@ -28,12 +28,7 @@ namespace successor_generator {
 class SuccessorGenerator;
 }
 
-enum SearchStatus {
-    IN_PROGRESS,
-    TIMEOUT,
-    FAILED,
-    SOLVED
-};
+enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
 
 class SearchAlgorithm {
     std::string description;
@@ -41,8 +36,7 @@ class SearchAlgorithm {
     bool solution_found;
     Plan plan;
 protected:
-    // Hold a reference to the task implementation and pass it to objects that
-    // need it.
+    // Hold a reference to the task implementation and pass it to objects that need it.
     const std::shared_ptr<AbstractTask> task;
     // Use task_proxy to access task information.
     TaskProxy task_proxy;
@@ -59,21 +53,14 @@ protected:
     bool is_unit_cost;
     double max_time;
 
-    virtual void initialize() {
-    }
+    virtual void initialize() {}
     virtual SearchStatus step() = 0;
 
     void set_plan(const Plan &plan);
     bool check_goal_and_set_plan(const State &state);
     int get_adjusted_cost(const OperatorProxy &op) const;
 public:
-    SearchAlgorithm(
-        OperatorCost cost_type, int bound, double max_time,
-        const std::string &description, utils::Verbosity verbosity);
-    explicit SearchAlgorithm(
-        const plugins::Options
-            &opts); // TODO options object is needed for iterated search, the
-                    // prototype for issue559 resolves this
+    SearchAlgorithm(const plugins::Options &opts);
     virtual ~SearchAlgorithm();
     virtual void print_statistics() const = 0;
     virtual void save_plan_if_necessary();
@@ -81,21 +68,17 @@ public:
     SearchStatus get_status() const;
     const Plan &get_plan() const;
     void search();
-    const SearchStatistics &get_statistics() const {
-        return statistics;
-    }
-    void set_bound(int b) {
-        bound = b;
-    }
-    int get_bound() {
-        return bound;
-    }
-    PlanManager &get_plan_manager() {
-        return plan_manager;
-    }
-    std::string get_description() {
-        return description;
-    }
+    const SearchStatistics &get_statistics() const {return statistics;}
+    void set_bound(int b) {bound = b;}
+    int get_bound() {return bound;}
+    PlanManager &get_plan_manager() {return plan_manager;}
+    std::string get_description() {return description;}
+
+    /* The following three methods should become functions as they
+       do not require access to private/protected class members. */
+    static void add_pruning_option(plugins::Feature &feature);
+    static void add_options_to_feature(plugins::Feature &feature);
+    static void add_succ_order_options(plugins::Feature &feature);
 };
 
 /*
@@ -107,18 +90,5 @@ extern void print_initial_evaluator_values(
 extern void collect_preferred_operators(
     EvaluationContext &eval_context, Evaluator *preferred_operator_evaluator,
     ordered_set::OrderedSet<OperatorID> &preferred_operators);
-
-class PruningMethod;
-
-extern void add_search_pruning_options_to_feature(plugins::Feature &feature);
-extern std::tuple<std::shared_ptr<PruningMethod>>
-get_search_pruning_arguments_from_options(const plugins::Options &opts);
-extern void add_search_algorithm_options_to_feature(
-    plugins::Feature &feature, const std::string &description);
-extern std::tuple<OperatorCost, int, double, std::string, utils::Verbosity>
-get_search_algorithm_arguments_from_options(const plugins::Options &opts);
-extern void add_successors_order_options_to_feature(plugins::Feature &feature);
-extern std::tuple<bool, bool, int> get_successors_order_arguments_from_options(
-    const plugins::Options &opts);
 
 #endif

@@ -2,15 +2,16 @@
 
 #include "plugins/plugin.h"
 #include "task_utils/task_properties.h"
+
 #include "utils/logging.h"
 
 #include <cassert>
 
 using namespace std;
 
-PruningMethod::PruningMethod(utils::Verbosity verbosity)
+PruningMethod::PruningMethod(const plugins::Options &opts)
     : timer(false),
-      log(utils::get_log_for_verbosity(verbosity)),
+      log(utils::get_log_from_options(opts)),
       task(nullptr) {
 }
 
@@ -47,11 +48,9 @@ void PruningMethod::print_statistics() const {
             << num_successors_before_pruning << endl
             << "total successors after pruning: "
             << num_successors_after_pruning << endl;
-        double pruning_ratio =
-            (num_successors_before_pruning == 0)
-                ? 1.
-                : 1. - (static_cast<double>(num_successors_after_pruning) /
-                        static_cast<double>(num_successors_before_pruning));
+        double pruning_ratio = (num_successors_before_pruning == 0) ? 1. : 1. - (
+            static_cast<double>(num_successors_after_pruning) /
+            static_cast<double>(num_successors_before_pruning));
         log << "Pruning ratio: " << pruning_ratio << endl;
         if (log.is_at_least_verbose()) {
             log << "Time for pruning operators: " << timer << endl;
@@ -70,16 +69,10 @@ void add_pruning_options_to_feature(plugins::Feature &feature) {
         "normal verbosity for running experiments.");
 }
 
-tuple<utils::Verbosity> get_pruning_arguments_from_options(
-    const plugins::Options &opts) {
-    return utils::get_log_arguments_from_options(opts);
-}
-
-static class PruningMethodCategoryPlugin
-    : public plugins::TypedCategoryPlugin<PruningMethod> {
+static class PruningMethodCategoryPlugin : public plugins::TypedCategoryPlugin<PruningMethod> {
 public:
     PruningMethodCategoryPlugin() : TypedCategoryPlugin("PruningMethod") {
-        document_synopsis(
-            "This page describes available pruning and reordering methods for applicable operators.");
+        document_synopsis("Prune or reorder applicable operators.");
     }
-} _category_plugin;
+}
+_category_plugin;

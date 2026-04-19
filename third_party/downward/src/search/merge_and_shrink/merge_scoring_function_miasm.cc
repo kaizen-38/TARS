@@ -3,9 +3,9 @@
 #include "distances.h"
 #include "factored_transition_system.h"
 #include "merge_and_shrink_algorithm.h"
-#include "merge_scoring_function_miasm_utils.h"
 #include "shrink_strategy.h"
 #include "transition_system.h"
+#include "merge_scoring_function_miasm_utils.h"
 
 #include "../task_proxy.h"
 
@@ -17,19 +17,13 @@ using namespace std;
 
 namespace merge_and_shrink {
 MergeScoringFunctionMIASM::MergeScoringFunctionMIASM(
-    shared_ptr<ShrinkStrategy> shrink_strategy, int max_states,
-    int max_states_before_merge, int threshold_before_merge, bool use_caching)
-    : use_caching(use_caching),
-      shrink_strategy(move(shrink_strategy)),
-      max_states(max_states),
-      max_states_before_merge(max_states_before_merge),
-      shrink_threshold_before_merge(threshold_before_merge),
+    const plugins::Options &options)
+    : use_caching(options.get<bool>("use_caching")),
+      shrink_strategy(options.get<shared_ptr<ShrinkStrategy>>("shrink_strategy")),
+      max_states(options.get<int>("max_states")),
+      max_states_before_merge(options.get<int>("max_states_before_merge")),
+      shrink_threshold_before_merge(options.get<int>("threshold_before_merge")),
       silent_log(utils::get_silent_log()) {
-    tie(this->max_states, this->max_states_before_merge,
-        this->shrink_threshold_before_merge) =
-        handle_shrink_limit_defaults(
-            this->max_states, this->max_states_before_merge,
-            this->shrink_threshold_before_merge, silent_log);
 }
 
 vector<double> MergeScoringFunctionMIASM::compute_scores(
@@ -41,22 +35,24 @@ vector<double> MergeScoringFunctionMIASM::compute_scores(
         double score;
         int index1 = merge_candidate.first;
         int index2 = merge_candidate.second;
-        if (use_caching &&
-            cached_scores_by_merge_candidate_indices[index1][index2]) {
+        if (use_caching && cached_scores_by_merge_candidate_indices[index1][index2]) {
             score = *cached_scores_by_merge_candidate_indices[index1][index2];
         } else {
-            unique_ptr<TransitionSystem> product =
-                shrink_before_merge_externally(
-                    fts, index1, index2, *shrink_strategy, max_states,
-                    max_states_before_merge, shrink_threshold_before_merge,
-                    silent_log);
+            unique_ptr<TransitionSystem> product = shrink_before_merge_externally(
+                fts,
+                index1,
+                index2,
+                *shrink_strategy,
+                max_states,
+                max_states_before_merge,
+                shrink_threshold_before_merge,
+                silent_log);
 
             // Compute distances for the product and count the alive states.
-            unique_ptr<Distances> distances = make_unique<Distances>(*product);
+            unique_ptr<Distances> distances = utils::make_unique_ptr<Distances>(*product);
             const bool compute_init_distances = true;
             const bool compute_goal_distances = true;
-            distances->compute_distances(
-                compute_init_distances, compute_goal_distances, silent_log);
+            distances->compute_distances(compute_init_distances, compute_goal_distances, silent_log);
             int num_states = product->get_size();
             int alive_states_count = 0;
             for (int state = 0; state < num_states; ++state) {
@@ -72,10 +68,9 @@ vector<double> MergeScoringFunctionMIASM::compute_scores(
             */
             assert(num_states);
             score = static_cast<double>(alive_states_count) /
-                    static_cast<double>(num_states);
+                static_cast<double>(num_states);
             if (use_caching) {
-                cached_scores_by_merge_candidate_indices[index1][index2] =
-                    score;
+                cached_scores_by_merge_candidate_indices[index1][index2] = score;
             }
         }
         scores.push_back(score);
@@ -88,11 +83,11 @@ void MergeScoringFunctionMIASM::initialize(const TaskProxy &task_proxy) {
     int num_variables = task_proxy.get_variables().size();
     int max_factor_index = 2 * num_variables - 1;
     cached_scores_by_merge_candidate_indices.resize(
-        max_factor_index, vector<optional<double>>(max_factor_index));
+        max_factor_index,
+        vector<optional<double>>(max_factor_index));
 }
 
-void MergeScoringFunctionMIASM::dump_function_specific_options(
-    utils::LogProxy &log) const {
+void MergeScoringFunctionMIASM::dump_function_specific_options(utils::LogProxy &log) const {
     if (log.is_at_least_normal()) {
         log << "Use caching: " << (use_caching ? "yes" : "no") << endl;
     }
@@ -102,9 +97,7 @@ string MergeScoringFunctionMIASM::name() const {
     return "miasm";
 }
 
-class MergeScoringFunctionMIASMFeature
-    : public plugins::TypedFeature<
-          MergeScoringFunction, MergeScoringFunctionMIASM> {
+class MergeScoringFunctionMIASMFeature : public plugins::TypedFeature<MergeScoringFunction, MergeScoringFunctionMIASM> {
 public:
     MergeScoringFunctionMIASMFeature() : TypedFeature("sf_miasm") {
         document_title("MIASM");
@@ -118,18 +111,19 @@ public:
             "the transition systems before if otherwise their product would exceed "
             "the specified size limits. A stateless merge strategy using this "
             "scoring function is called dyn-MIASM (nowadays also called sbMIASM "
-            "for score-based MIASM) and is described in the following paper:" +
-            utils::format_conference_reference(
+            "for score-based MIASM) and is described in the following paper:"
+            + utils::format_conference_reference(
                 {"Silvan Sievers", "Martin Wehrle", "Malte Helmert"},
                 "An Analysis of Merge Strategies for Merge-and-Shrink Heuristics",
                 "https://ai.dmi.unibas.ch/papers/sievers-et-al-icaps2016.pdf",
                 "Proceedings of the 26th International Conference on Planning and "
                 "Scheduling (ICAPS 2016)",
-                "2358-2366", "AAAI Press", "2016"));
+                "2358-2366",
+                "AAAI Press",
+                "2016"));
 
-        // TODO: use shrink strategy and limit options from
-        // MergeAndShrinkHeuristic instead of having the identical options here
-        // again.
+        // TODO: use shrink strategy and limit options from MergeAndShrinkHeuristic
+        // instead of having the identical options here again.
         add_option<shared_ptr<ShrinkStrategy>>(
             "shrink_strategy",
             "We recommend setting this to match the shrink strategy configuration "
@@ -141,19 +135,14 @@ public:
             "To obtain the configurations called dyn-MIASM described in the paper, "
             "use the following configuration of the merge-and-shrink heuristic "
             "and adapt the tie-breaking criteria of {{{total_order}}} as desired:\n"
-            "{{{\nmerge_and_shrink(\n"
-            "   merge_strategy=merge_stateless(\n"
-            "       merge_selector=score_based_filtering(\n"
-            "           scoring_functions=[\n"
-            "               sf_miasm(shrink_strategy=shrink_bisimulation(greedy=false),\n"
-            "                        max_states=50000,threshold_before_merge=1),\n"
-            "               total_order(atomic_ts_order=reverse_level,\n"
-            "                           product_ts_order=new_to_old,\n"
-            "                           atomic_before_product=true)])),\n"
-            "   shrink_strategy=shrink_bisimulation(greedy=false),\n"
-            "   label_reduction=exact(before_shrinking=true,before_merging=false),\n"
-            "   max_states=50000,\n"
-            "   threshold_before_merge=1)\n}}}");
+            "{{{\nmerge_and_shrink(merge_strategy=merge_stateless(merge_selector="
+            "score_based_filtering(scoring_functions=[sf_miasm(shrink_strategy="
+            "shrink_bisimulation(greedy=false),max_states=50000,"
+            "threshold_before_merge=1),total_order(atomic_ts_order=reverse_level,"
+            "product_ts_order=new_to_old,atomic_before_product=true)])),"
+            "shrink_strategy=shrink_bisimulation(greedy=false),label_reduction="
+            "exact(before_shrinking=true,before_merging=false),max_states=50000,"
+            "threshold_before_merge=1)\n}}}");
         document_note(
             "Note",
             "Unless you know what you are doing, we recommend using the same "
@@ -177,12 +166,10 @@ public:
             "true");
     }
 
-    virtual shared_ptr<MergeScoringFunctionMIASM> create_component(
-        const plugins::Options &opts) const override {
-        return plugins::make_shared_from_arg_tuples<MergeScoringFunctionMIASM>(
-            opts.get<shared_ptr<ShrinkStrategy>>("shrink_strategy"),
-            get_transition_system_size_limit_arguments_from_options(opts),
-            opts.get<bool>("use_caching"));
+    virtual shared_ptr<MergeScoringFunctionMIASM> create_component(const plugins::Options &options, const utils::Context &context) const override {
+        plugins::Options options_copy(options);
+        handle_shrink_limit_options_defaults(options_copy, context);
+        return make_shared<MergeScoringFunctionMIASM>(options_copy);
     }
 };
 

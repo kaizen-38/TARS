@@ -6,7 +6,7 @@
 ###############################################################################
 # A first image to build the planner
 ###############################################################################
-FROM ubuntu:24.04 AS builder
+FROM ubuntu:22.04 AS builder
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
     ca-certificates \
@@ -20,13 +20,19 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 # Set up some environment variables.
 ENV CXX g++
-ENV SOPLEX_REVISION release-710
-ENV soplex_DIR /opt/soplex
+# TODO: on next release, replace this with a tagged SoPlex release > 6.0.3.
+ENV SOPLEX_REVISION a5df081
+ENV DOWNWARD_SOPLEX_ROOT /opt/soplex
 
 # Install SoPlex.
 WORKDIR /workspace/soplex
-RUN git clone --depth 1 --branch $SOPLEX_REVISION https://github.com/scipopt/soplex.git . && \
-    cmake -DCMAKE_INSTALL_PREFIX="$soplex_DIR" -S . -B build && \
+# TODO: on next release, work with a tagged SoPlex release again if possible.
+# We might continue using git clone, replacing this with `--depth 1 --branch $SOPLEX_REVISION`
+# ($SOPLEX_REVISION needs to be a branch or tag, not a commit hash) or use
+# another distribution mechanism.
+RUN git clone --branch master https://github.com/scipopt/soplex.git . && \
+    git checkout $SOPLEX_REVISION && \
+    cmake -DCMAKE_INSTALL_PREFIX="$DOWNWARD_SOPLEX_ROOT" -S . -B build && \
     cmake --build build && \
     cmake --install build
 
@@ -40,7 +46,7 @@ RUN git clone --depth 1 --branch TAG https://github.com/aibasel/downward.git . &
 ###############################################################################
 # The final image to run the planner
 ###############################################################################
-FROM ubuntu:24.04 AS runner
+FROM ubuntu:22.04 AS runner
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
     python3  \
@@ -55,7 +61,7 @@ COPY --from=builder /workspace/downward/builds/debug/bin/ ./builds/debug/bin/
 COPY --from=builder /workspace/downward/driver ./driver
 COPY --from=builder /opt/soplex /opt/soplex
 
-ENV soplex_DIR=/opt/soplex
-ENV LD_LIBRARY_PATH=$soplex_DIR/lib
+ENV DOWNWARD_SOPLEX_ROOT=/opt/soplex
+ENV LD_LIBRARY_PATH=$DOWNWARD_SOPLEX_ROOT/lib
 
 ENTRYPOINT ["/workspace/downward/fast-downward.py"]

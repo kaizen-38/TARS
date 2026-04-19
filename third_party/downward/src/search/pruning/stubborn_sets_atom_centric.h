@@ -19,8 +19,7 @@ class StubbornSetsAtomCentric : public stubborn_sets::StubbornSets {
     const bool use_sibling_shortcut;
     const AtomSelectionStrategy atom_selection_strategy;
 
-    // consumers[v][d] contains the ID of operator o if pre(o) contains the fact
-    // v=d.
+    // consumers[v][d] contains the ID of operator o if pre(o) contains the fact v=d.
     std::vector<std::vector<std::vector<int>>> consumers;
     /*
       Marked producer and consumer facts.
@@ -46,17 +45,13 @@ class StubbornSetsAtomCentric : public stubborn_sets::StubbornSets {
     void enqueue_consumers(const FactPair &fact);
     void enqueue_sibling_consumers(const FactPair &fact);
     void enqueue_sibling_producers(const FactPair &fact);
-    FactPair select_fact(
-        const std::vector<FactPair> &facts, const State &state) const;
+    FactPair select_fact(const std::vector<FactPair> &facts, const State &state) const;
     void enqueue_nes(int op, const State &state);
     void enqueue_interferers(int op);
     void handle_stubborn_operator(const State &state, int op);
     virtual void compute_stubborn_set(const State &state) override;
 public:
-    explicit StubbornSetsAtomCentric(
-        bool use_sibling_shortcut,
-        AtomSelectionStrategy atom_selection_strategy,
-        utils::Verbosity verbosity);
+    explicit StubbornSetsAtomCentric(const plugins::Options &opts);
     virtual void initialize(const std::shared_ptr<AbstractTask> &task) override;
 };
 }

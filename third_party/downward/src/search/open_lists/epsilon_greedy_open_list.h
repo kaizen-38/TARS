@@ -3,6 +3,8 @@
 
 #include "../open_list_factory.h"
 
+#include "../plugins/options.h"
+
 /*
     Epsilon-greedy open list based on Valenzano et al. (ICAPS 2014).
 
@@ -42,14 +44,10 @@
 
 namespace epsilon_greedy_open_list {
 class EpsilonGreedyOpenListFactory : public OpenListFactory {
-    std::shared_ptr<Evaluator> eval;
-    double epsilon;
-    int random_seed;
-    bool pref_only;
+    plugins::Options options;
 public:
-    EpsilonGreedyOpenListFactory(
-        const std::shared_ptr<Evaluator> &eval, double epsilon, int random_seed,
-        bool pref_only);
+    explicit EpsilonGreedyOpenListFactory(const plugins::Options &options);
+    virtual ~EpsilonGreedyOpenListFactory() override = default;
 
     virtual std::unique_ptr<StateOpenList> create_state_open_list() override;
     virtual std::unique_ptr<EdgeOpenList> create_edge_open_list() override;

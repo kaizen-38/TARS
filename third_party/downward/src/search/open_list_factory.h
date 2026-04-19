@@ -3,9 +3,8 @@
 
 #include "open_list.h"
 
-#include "plugins/plugin.h"
-
 #include <memory>
+
 
 class OpenListFactory {
 public:
@@ -27,7 +26,4 @@ public:
     std::unique_ptr<OpenList<T>> create_open_list();
 };
 
-extern void add_open_list_options_to_feature(plugins::Feature &feature);
-extern std::tuple<bool> get_open_list_arguments_from_options(
-    const plugins::Options &opts);
 #endif

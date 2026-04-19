@@ -12,16 +12,15 @@ namespace utils {
 class RandomNumberGenerator;
 
 // Add random_seed option to parser.
-extern void add_rng_options_to_feature(plugins::Feature &feature);
-extern std::tuple<int> get_rng_arguments_from_options(
-    const plugins::Options &opts);
+extern void add_rng_options(plugins::Feature &feature);
 
 /*
-  Return an RNG for the given seed, which can either be the global
-  RNG or a local one with a user-specified seed. Only use this together
-  with "add_rng_options_to_feature()".
+  Return an RNG based on the given options, which can either be the global
+  RNG or a local one with a user-specified seed. Only use this together with
+  "add_rng_options()".
 */
-extern std::shared_ptr<RandomNumberGenerator> get_rng(int seed);
+extern std::shared_ptr<RandomNumberGenerator> parse_rng_from_options(
+    const plugins::Options &options);
 }
 
 #endif

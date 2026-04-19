@@ -1,6 +1,5 @@
 #include "shrink_bucket_based.h"
 
-#include "../plugins/plugin.h"
 #include "../utils/logging.h"
 #include "../utils/rng.h"
 #include "../utils/rng_options.h"
@@ -12,13 +11,16 @@
 using namespace std;
 
 namespace merge_and_shrink {
-ShrinkBucketBased::ShrinkBucketBased(int random_seed)
-    : rng(utils::get_rng(random_seed)) {
+ShrinkBucketBased::ShrinkBucketBased(const plugins::Options &opts)
+    : rng(utils::parse_rng_from_options(opts)) {
+}
+
+void ShrinkBucketBased::add_options_to_feature(plugins::Feature &feature) {
+    utils::add_rng_options(feature);
 }
 
 StateEquivalenceRelation ShrinkBucketBased::compute_abstraction(
-    const vector<Bucket> &buckets, int target_size,
-    utils::LogProxy &log) const {
+    const vector<Bucket> &buckets, int target_size, utils::LogProxy &log) const {
     bool show_combine_buckets_warning = true;
     StateEquivalenceRelation equiv_relation;
     equiv_relation.reserve(target_size);
@@ -56,8 +58,7 @@ StateEquivalenceRelation ShrinkBucketBased::compute_abstraction(
                 }
             }
             StateEquivalenceClass &group = equiv_relation.back();
-            group.insert_after(
-                group.before_begin(), bucket.begin(), bucket.end());
+            group.insert_after(group.before_begin(), bucket.begin(), bucket.end());
         } else {
             // Complicated case: must combine until bucket budget is met.
             // First create singleton groups.
@@ -66,9 +67,8 @@ StateEquivalenceRelation ShrinkBucketBased::compute_abstraction(
                 groups[i].push_front(bucket[i]);
 
             // Then combine groups until required size is reached.
-            assert(
-                budget_for_this_bucket >= 2 &&
-                budget_for_this_bucket < static_cast<int>(groups.size()));
+            assert(budget_for_this_bucket >= 2 &&
+                   budget_for_this_bucket < static_cast<int>(groups.size()));
             while (static_cast<int>(groups.size()) > budget_for_this_bucket) {
                 auto it1 = rng->choose(groups);
                 auto it2 = it1;
@@ -92,18 +92,11 @@ StateEquivalenceRelation ShrinkBucketBased::compute_abstraction(
 }
 
 StateEquivalenceRelation ShrinkBucketBased::compute_equivalence_relation(
-    const TransitionSystem &ts, const Distances &distances, int target_size,
+    const TransitionSystem &ts,
+    const Distances &distances,
+    int target_size,
     utils::LogProxy &log) const {
     vector<Bucket> buckets = partition_into_buckets(ts, distances);
     return compute_abstraction(buckets, target_size, log);
-}
-
-void add_shrink_bucket_options_to_feature(plugins::Feature &feature) {
-    utils::add_rng_options_to_feature(feature);
-}
-
-tuple<int> get_shrink_bucket_arguments_from_options(
-    const plugins::Options &opts) {
-    return utils::get_rng_arguments_from_options(opts);
 }
 }

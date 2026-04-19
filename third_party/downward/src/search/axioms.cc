@@ -1,6 +1,7 @@
 #include "axioms.h"
 
 #include "task_utils/task_properties.h"
+#include "utils/memory.h"
 
 #include <algorithm>
 #include <cassert>
@@ -21,31 +22,35 @@ AxiomEvaluator::AxiomEvaluator(const TaskProxy &task_proxy) {
             axiom_literals.emplace_back(var.get_domain_size());
 
         // Initialize rules
+        // Since we are skipping some axioms, we cannot access them through
+        // their id position directly.
+        vector<int> axiom_id_to_position(axioms.size(), -1);
         for (OperatorProxy axiom : axioms) {
             assert(axiom.get_effects().size() == 1);
             EffectProxy cond_effect = axiom.get_effects()[0];
             FactPair effect = cond_effect.get_fact().get_pair();
             int num_conditions = cond_effect.get_conditions().size();
-
-            // We don't allow axioms that set the variable to its default value.
-            assert(
-                effect.value !=
-                variables[effect.var].get_default_axiom_value());
-            AxiomLiteral *eff_literal =
-                &axiom_literals[effect.var][effect.value];
-            rules.emplace_back(
-                num_conditions, effect.var, effect.value, eff_literal);
+            // Ignore axioms which set the variable to its default value.
+            if (effect.value != variables[effect.var].get_default_axiom_value()) {
+                AxiomLiteral *eff_literal = &axiom_literals[effect.var][effect.value];
+                axiom_id_to_position[axiom.get_id()] = rules.size();
+                rules.emplace_back(
+                    num_conditions, effect.var, effect.value, eff_literal);
+            }
         }
 
         // Cross-reference rules and literals
         for (OperatorProxy axiom : axioms) {
-            int id = axiom.get_id();
-            EffectProxy effect = axiom.get_effects()[0];
-            for (FactProxy condition : effect.get_conditions()) {
-                int var_id = condition.get_variable().get_id();
-                int val = condition.get_value();
-                AxiomRule *rule = &rules[id];
-                axiom_literals[var_id][val].condition_of.push_back(rule);
+            // Ignore axioms which set the variable to its default value.
+            int position = axiom_id_to_position[axiom.get_id()];
+            if (position != -1) {
+                EffectProxy effect = axiom.get_effects()[0];
+                for (FactProxy condition : effect.get_conditions()) {
+                    int var_id = condition.get_variable().get_id();
+                    int val = condition.get_value();
+                    AxiomRule *rule = &rules[position];
+                    axiom_literals[var_id][val].condition_of.push_back(rule);
+                }
             }
         }
 
@@ -64,8 +69,7 @@ AxiomEvaluator::AxiomEvaluator(const TaskProxy &task_proxy) {
                 if (layer != last_layer) {
                     int var_id = var.get_id();
                     int nbf_value = var.get_default_axiom_value();
-                    AxiomLiteral *nbf_literal =
-                        &axiom_literals[var_id][nbf_value];
+                    AxiomLiteral *nbf_literal = &axiom_literals[var_id][nbf_value];
                     nbf_info_by_layer[layer].emplace_back(var_id, nbf_literal);
                 }
             }
@@ -143,8 +147,7 @@ void AxiomEvaluator::evaluate(vector<int> &state) {
           to save some time (see issue420, msg3058).
         */
         if (layer_no != nbf_info_by_layer.size() - 1) {
-            const vector<NegationByFailureInfo> &nbf_info =
-                nbf_info_by_layer[layer_no];
+            const vector<NegationByFailureInfo> &nbf_info = nbf_info_by_layer[layer_no];
             for (size_t i = 0; i < nbf_info.size(); ++i) {
                 int var_no = nbf_info[i].var_no;
                 // Verify that variable is derived.

@@ -47,7 +47,9 @@ class PatternDatabase {
     */
     std::vector<int> distances;
 public:
-    PatternDatabase(Projection &&projection, std::vector<int> &&distances);
+    PatternDatabase(
+        Projection &&projection,
+        std::vector<int> &&distances);
     int get_value(const std::vector<int> &state) const;
 
     const Pattern &get_pattern() const {

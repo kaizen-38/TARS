@@ -15,19 +15,22 @@ using namespace std;
 namespace utils {
 void out_of_memory_handler() {
     cout << "Failed to allocate memory." << endl;
-    exit_with_reentrant(ExitCode::SEARCH_OUT_OF_MEMORY);
+    exit_with(ExitCode::SEARCH_OUT_OF_MEMORY);
 }
 
 void signal_handler(int signal_number) {
-    cout << "Peak memory: " << get_peak_memory_in_kb() << " KB" << endl;
-    cout << "caught signal " << signal_number << " -- exiting" << endl;
+    cout << "Peak memory: "
+         << get_peak_memory_in_kb() << " KB" << endl;
+    cout << "caught signal " << signal_number
+         << " -- exiting" << endl;
     raise(signal_number);
 }
 
 int get_peak_memory_in_kb() {
     PROCESS_MEMORY_COUNTERS_EX pmc;
     bool success = GetProcessMemoryInfo(
-        GetCurrentProcess(), reinterpret_cast<PROCESS_MEMORY_COUNTERS *>(&pmc),
+        GetCurrentProcess(),
+        reinterpret_cast<PROCESS_MEMORY_COUNTERS *>(&pmc),
         sizeof(pmc));
     if (!success) {
         cerr << "warning: could not determine peak memory" << endl;
@@ -55,10 +58,16 @@ void register_event_handlers() {
 }
 
 void report_exit_code_reentrant(ExitCode exitcode) {
-    /* We call a function that uses ostreams even though this is unsafe in
-       reentrant code, because we don't know how to do it otherwise on Windows.
-     */
-    report_exit_code(exitcode);
+    const char *message = get_exit_code_message_reentrant(exitcode);
+    bool is_error = is_exit_code_error_reentrant(exitcode);
+    if (message) {
+        ostream &stream = is_error ? cerr : cout;
+        stream << message << endl;
+    } else {
+        cerr << "Exitcode: " << static_cast<int>(exitcode) << endl
+             << "Unknown exitcode." << endl;
+        abort();
+    }
 }
 
 int get_process_id() {

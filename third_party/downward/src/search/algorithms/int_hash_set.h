@@ -79,8 +79,7 @@ template<typename Hasher, typename Equal>
 class IntHashSet {
     // Max distance from the ideal bucket to the actual bucket for each key.
     static const int MAX_DISTANCE = 32;
-    static const unsigned int MAX_BUCKETS =
-        std::numeric_limits<unsigned int>::max();
+    static const unsigned int MAX_BUCKETS = std::numeric_limits<unsigned int>::max();
 
     struct Bucket {
         KeyType key;
@@ -88,10 +87,14 @@ class IntHashSet {
 
         static const KeyType empty_bucket_key = -1;
 
-        Bucket() : key(empty_bucket_key), hash(0) {
+        Bucket()
+            : key(empty_bucket_key),
+              hash(0) {
         }
 
-        Bucket(KeyType key, HashType hash) : key(key), hash(hash) {
+        Bucket(KeyType key, HashType hash)
+            : key(key),
+              hash(hash) {
         }
 
         bool full() const {
@@ -132,10 +135,10 @@ class IntHashSet {
         assert((num_buckets & (num_buckets - 1)) == 0);
         if (num_buckets > MAX_BUCKETS / 2) {
             std::cerr << "IntHashSet surpassed maximum capacity. This means"
-                         " you either use IntHashSet for high-memory"
-                         " applications for which it was not designed, or there"
-                         " is an unexpectedly high number of hash collisions"
-                         " that should be investigated. Aborting."
+                " you either use IntHashSet for high-memory"
+                " applications for which it was not designed, or there"
+                " is an unexpectedly high number of hash collisions"
+                " that should be investigated. Aborting."
                       << std::endl;
             utils::exit_with(utils::ExitCode::SEARCH_CRITICAL_ERROR);
         }
@@ -181,8 +184,7 @@ class IntHashSet {
         for (int i = 0; i < MAX_DISTANCE; ++i) {
             int index = get_bucket(ideal_index + i);
             const Bucket &bucket = buckets[index];
-            if (bucket.full() && bucket.hash == hash &&
-                equal(bucket.key, key)) {
+            if (bucket.full() && bucket.hash == hash && equal(bucket.key, key)) {
                 return bucket.key;
             }
         }
@@ -243,8 +245,7 @@ class IntHashSet {
                 candidate_index = get_bucket(candidate_index);
                 HashType candidate_hash = buckets[candidate_index].hash;
                 int candidate_ideal_index = get_bucket(candidate_hash);
-                if (get_distance(candidate_ideal_index, free_index) <
-                    MAX_DISTANCE) {
+                if (get_distance(candidate_ideal_index, free_index) < MAX_DISTANCE) {
                     // Candidate can be swapped.
                     std::swap(buckets[candidate_index], buckets[free_index]);
                     free_index = candidate_index;
@@ -312,8 +313,9 @@ public:
         assert(!buckets.empty());
         int num_buckets = capacity();
         assert(num_buckets != 0);
-        log << "Int hash set load factor: " << num_entries << "/" << num_buckets
-            << " = " << static_cast<double>(num_entries) / num_buckets
+        log << "Int hash set load factor: " << num_entries << "/"
+            << num_buckets << " = "
+            << static_cast<double>(num_entries) / num_buckets
             << std::endl;
         log << "Int hash set resizes: " << num_resizes << std::endl;
     }

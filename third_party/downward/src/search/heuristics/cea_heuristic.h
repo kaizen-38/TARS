@@ -6,7 +6,6 @@
 #include "../heuristic.h"
 
 #include "../algorithms/priority_queues.h"
-#include "../tasks/default_value_axioms_task.h"
 
 #include <vector>
 
@@ -18,8 +17,7 @@ struct LocalProblemNode;
 struct LocalTransition;
 
 class ContextEnhancedAdditiveHeuristic : public Heuristic {
-    std::vector<std::unique_ptr<domain_transition_graph::DomainTransitionGraph>>
-        transition_graphs;
+    std::vector<std::unique_ptr<domain_transition_graph::DomainTransitionGraph>> transition_graphs;
     std::vector<LocalProblem *> local_problems;
     std::vector<std::vector<LocalProblem *>> local_problem_index;
     LocalProblem *goal_problem;
@@ -37,9 +35,8 @@ class ContextEnhancedAdditiveHeuristic : public Heuristic {
     void add_to_heap(LocalProblemNode *node);
 
     bool is_local_problem_set_up(const LocalProblem *problem) const;
-    void set_up_local_problem(
-        LocalProblem *problem, int base_priority, int start_value,
-        const State &state);
+    void set_up_local_problem(LocalProblem *problem, int base_priority,
+                              int start_value, const State &state);
 
     void try_to_fire_transition(LocalTransition *trans);
     void expand_node(LocalProblemNode *node);
@@ -53,10 +50,7 @@ class ContextEnhancedAdditiveHeuristic : public Heuristic {
 protected:
     virtual int compute_heuristic(const State &ancestor_state) override;
 public:
-    ContextEnhancedAdditiveHeuristic(
-        tasks::AxiomHandlingType axioms,
-        const std::shared_ptr<AbstractTask> &transform, bool cache_estimates,
-        const std::string &description, utils::Verbosity verbosity);
+    explicit ContextEnhancedAdditiveHeuristic(const plugins::Options &opts);
     ~ContextEnhancedAdditiveHeuristic();
     virtual bool dead_ends_are_reliable() const override;
 };

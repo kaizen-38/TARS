@@ -53,6 +53,9 @@ LandmarkCutLandmarks::LandmarkCutLandmarks(const TaskProxy &task_proxy) {
     }
 }
 
+LandmarkCutLandmarks::~LandmarkCutLandmarks() {
+}
+
 void LandmarkCutLandmarks::build_relaxed_operator(const OperatorProxy &op) {
     vector<RelaxedProposition *> precondition;
     vector<RelaxedProposition *> effects;
@@ -68,7 +71,8 @@ void LandmarkCutLandmarks::build_relaxed_operator(const OperatorProxy &op) {
 
 void LandmarkCutLandmarks::add_relaxed_operator(
     vector<RelaxedProposition *> &&precondition,
-    vector<RelaxedProposition *> &&effects, int op_id, int base_cost) {
+    vector<RelaxedProposition *> &&effects,
+    int op_id, int base_cost) {
     RelaxedOperator relaxed_op(
         move(precondition), move(effects), op_id, base_cost);
     if (relaxed_op.preconditions.empty())
@@ -98,7 +102,7 @@ void LandmarkCutLandmarks::setup_exploration_queue() {
 
     for (RelaxedOperator &op : relaxed_operators) {
         op.unsatisfied_preconditions = op.preconditions.size();
-        op.h_max_supporter = nullptr;
+        op.h_max_supporter = 0;
         op.h_max_supporter_cost = numeric_limits<int>::max();
     }
 }
@@ -270,8 +274,8 @@ void LandmarkCutLandmarks::validate_h_max() const {
 }
 
 bool LandmarkCutLandmarks::compute_landmarks(
-    const State &state, const CostCallback &cost_callback,
-    const LandmarkCallback &landmark_callback) {
+    const State &state, CostCallback cost_callback,
+    LandmarkCallback landmark_callback) {
     for (RelaxedOperator &op : relaxed_operators) {
         op.cost = op.base_cost;
     }
@@ -287,7 +291,9 @@ bool LandmarkCutLandmarks::compute_landmarks(
     if (artificial_goal.status == UNREACHED)
         return true;
 
+    int num_iterations = 0;
     while (artificial_goal.h_max_cost != 0) {
+        ++num_iterations;
         mark_goal_plateau(&artificial_goal);
         assert(cut.empty());
         second_exploration(state, second_exploration_queue, cut);

@@ -5,16 +5,21 @@
 #include "../task_proxy.h"
 
 #include "../task_utils/task_properties.h"
+#include "../utils/memory.h"
 #include "../utils/rng.h"
 
 using namespace std;
 
+
 namespace sampling {
 static State sample_state_with_random_walk(
-    const OperatorsProxy &operators, const State &initial_state,
+    const OperatorsProxy &operators,
+    const State &initial_state,
     const successor_generator::SuccessorGenerator &successor_generator,
-    int init_h, double average_operator_cost, utils::RandomNumberGenerator &rng,
-    const function<bool(State)> &is_dead_end) {
+    int init_h,
+    double average_operator_cost,
+    utils::RandomNumberGenerator &rng,
+    function<bool(State)> is_dead_end) {
     assert(init_h != numeric_limits<int>::max());
     int n;
     if (init_h == 0) {
@@ -27,8 +32,7 @@ static State sample_state_with_random_walk(
           must have costs of 0 and in this case the if-clause triggers.
         */
         assert(average_operator_cost != 0);
-        int solution_steps_estimate =
-            int((init_h / average_operator_cost) + 0.5);
+        int solution_steps_estimate = int((init_h / average_operator_cost) + 0.5);
         n = 4 * solution_steps_estimate;
     }
     double p = 0.5;
@@ -48,8 +52,8 @@ static State sample_state_with_random_walk(
     vector<OperatorID> applicable_operators;
     for (int j = 0; j < length; ++j) {
         applicable_operators.clear();
-        successor_generator.generate_applicable_ops(
-            current_state, applicable_operators);
+        successor_generator.generate_applicable_ops(current_state,
+                                                    applicable_operators);
         // If there are no applicable operators, do not walk further.
         if (applicable_operators.empty()) {
             break;
@@ -69,14 +73,14 @@ static State sample_state_with_random_walk(
     return current_state;
 }
 
+
 RandomWalkSampler::RandomWalkSampler(
-    const TaskProxy &task_proxy, utils::RandomNumberGenerator &rng)
+    const TaskProxy &task_proxy,
+    utils::RandomNumberGenerator &rng)
     : operators(task_proxy.get_operators()),
-      successor_generator(
-          make_unique<successor_generator::SuccessorGenerator>(task_proxy)),
+      successor_generator(utils::make_unique_ptr<successor_generator::SuccessorGenerator>(task_proxy)),
       initial_state(task_proxy.get_initial_state()),
-      average_operator_costs(
-          task_properties::get_average_operator_cost(task_proxy)),
+      average_operator_costs(task_properties::get_average_operator_cost(task_proxy)),
       rng(rng) {
 }
 
@@ -86,7 +90,12 @@ RandomWalkSampler::~RandomWalkSampler() {
 State RandomWalkSampler::sample_state(
     int init_h, const DeadEndDetector &is_dead_end) const {
     return sample_state_with_random_walk(
-        operators, initial_state, *successor_generator, init_h,
-        average_operator_costs, rng, is_dead_end);
+        operators,
+        initial_state,
+        *successor_generator,
+        init_h,
+        average_operator_costs,
+        rng,
+        is_dead_end);
 }
 }

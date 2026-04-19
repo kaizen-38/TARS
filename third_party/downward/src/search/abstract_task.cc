@@ -15,11 +15,11 @@ ostream &operator<<(ostream &os, const FactPair &fact_pair) {
     return os;
 }
 
-static class AbstractTaskCategoryPlugin
-    : public plugins::TypedCategoryPlugin<AbstractTask> {
+static class AbstractTaskCategoryPlugin : public plugins::TypedCategoryPlugin<AbstractTask> {
 public:
     AbstractTaskCategoryPlugin() : TypedCategoryPlugin("AbstractTask") {
-        document_synopsis(
-            "This page describes available transformations of the root task.");
+        // TODO: Replace empty string by synopsis for the wiki page.
+        document_synopsis("");
     }
-} _category_plugin;
+}
+_category_plugin;

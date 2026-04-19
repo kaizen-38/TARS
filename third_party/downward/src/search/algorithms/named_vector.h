@@ -19,17 +19,13 @@ class NamedVector {
     std::vector<T> elements;
     std::vector<std::string> names;
 public:
-    template<typename... _Args>
-    void emplace_back(_Args &&...__args) {
-        elements.emplace_back(std::forward<_Args>(__args)...);
+    template<typename ... _Args>
+    void emplace_back(_Args && ... __args) {
+        elements.emplace_back(std::forward<_Args>(__args) ...);
     }
 
     void push_back(const T &element) {
         elements.push_back(element);
-    }
-
-    void push_back(T &&element) {
-        elements.push_back(std::move(element));
     }
 
     T &operator[](int index) {
@@ -46,8 +42,7 @@ public:
 
     void set_name(int index, const std::string &name) {
         assert(index >= 0 && index < size());
-        int num_names = names.size();
-        if (index >= num_names) {
+        if (index >= names.size()) {
             if (name.empty()) {
                 // All unspecified names are empty by default.
                 return;
@@ -57,18 +52,14 @@ public:
         names[index] = name;
     }
 
-    const std::string &get_name(int index) const {
+    std::string get_name(int index) const {
         assert(index >= 0 && index < size());
         int num_names = names.size();
         if (index < num_names) {
             return names[index];
         } else {
-            /*
-              All unspecified names are empty by default. We use a static
-              string here to avoid returning a reference to a local object.
-            */
-            static std::string empty;
-            return empty;
+            // All unspecified names are empty by default.
+            return "";
         }
     }
 

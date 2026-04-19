@@ -1,14 +1,14 @@
 from typing import List, Union
 
-from translate.pddl import axioms
-from translate.pddl import predicates
-from translate.pddl.actions import Action
-from translate.pddl.axioms import Axiom
-from translate.pddl.conditions import Atom, Condition
-from translate.pddl.f_expression import Assign
-from translate.pddl.functions import Function
-from translate.pddl.pddl_types import Type, TypedObject
-from translate.pddl.predicates import Predicate
+from . import axioms
+from . import predicates
+from .actions import Action
+from .axioms import Axiom
+from .conditions import Atom, Condition
+from .f_expression import Assign
+from .functions import Function
+from .pddl_types import Type, TypedObject
+from .predicates import Predicate
 
 class Task:
     def __init__(self, domain_name: str, task_name: str,
@@ -68,22 +68,15 @@ class Task:
             for axiom in self.axioms:
                 axiom.dump()
 
-
-REQUIREMENT_LABELS = [
-    ":strips", ":adl", ":typing", ":negation", ":equality",
-    ":negative-preconditions", ":disjunctive-preconditions",
-    ":existential-preconditions", ":universal-preconditions",
-    ":quantified-preconditions", ":conditional-effects",
-    ":derived-predicates", ":action-costs"
-]
-
-
 class Requirements:
     def __init__(self, requirements: List[str]):
         self.requirements = requirements
         for req in requirements:
-            if req not in REQUIREMENT_LABELS:
-                raise ValueError(f"Invalid requirement. Got: {req}\n"
-                                 f"Expected: {', '.join(REQUIREMENT_LABELS)}")
+            assert req in (
+              ":strips", ":adl", ":typing", ":negation", ":equality",
+              ":negative-preconditions", ":disjunctive-preconditions",
+              ":existential-preconditions", ":universal-preconditions",
+              ":quantified-preconditions", ":conditional-effects",
+              ":derived-predicates", ":action-costs"), req
     def __str__(self):
         return ", ".join(self.requirements)

@@ -7,6 +7,7 @@
 
 class AbstractTask;
 
+
 namespace extra_tasks {
 using ValueGroup = std::vector<int>;
 using ValueGroups = std::vector<ValueGroup>;

@@ -24,31 +24,31 @@ LogProxy g_log(global_log);
 
 void add_log_options_to_feature(plugins::Feature &feature) {
     feature.add_option<Verbosity>(
-        "verbosity", "Option to specify the verbosity level.", "normal");
+        "verbosity",
+        "Option to specify the verbosity level.",
+        "normal");
 }
 
-tuple<Verbosity> get_log_arguments_from_options(const plugins::Options &opts) {
-    return make_tuple<Verbosity>(opts.get<Verbosity>("verbosity"));
-}
-
-LogProxy get_log_for_verbosity(const Verbosity &verbosity) {
-    if (verbosity == Verbosity::NORMAL) {
+LogProxy get_log_from_options(const plugins::Options &options) {
+    /* NOTE: We return (a proxy to) the global log if all options match the
+       default values of the global log. */
+    if (options.get<Verbosity>("verbosity") == Verbosity::NORMAL) {
         return LogProxy(global_log);
     }
-    return LogProxy(make_shared<Log>(verbosity));
+    return LogProxy(make_shared<Log>(options.get<Verbosity>("verbosity")));
 }
 
 LogProxy get_silent_log() {
-    return utils::get_log_for_verbosity(utils::Verbosity::SILENT);
+    plugins::Options opts;
+    opts.set<utils::Verbosity>("verbosity", utils::Verbosity::SILENT);
+    return utils::get_log_from_options(opts);
 }
 
-ContextError::ContextError(const string &msg) : Exception(msg) {
+ContextError::ContextError(const string &msg)
+    : Exception(msg) {
 }
 
 const string Context::INDENT = "  ";
-
-Context::Context() : initial_stack_size(0) {
-}
 
 Context::Context(const Context &context)
     : initial_stack_size(context.block_stack.size()),
@@ -73,10 +73,9 @@ void Context::enter_block(const string &block_name) {
 void Context::leave_block(const string &block_name) {
     if (block_stack.empty() || block_stack.back() != block_name) {
         cerr << str() << endl;
-        ABORT(
-            "Tried to pop a block '" + block_name +
-            "' from an empty stack or the block to remove "
-            "is not on the top of the stack.");
+        ABORT("Tried to pop a block '" + block_name +
+              "' from an empty stack or the block to remove "
+              "is not on the top of the stack.");
     }
     block_stack.pop_back();
 }
@@ -87,7 +86,8 @@ string Context::str() const {
     if (block_stack.empty()) {
         message << INDENT << "Empty";
     } else {
-        message << INDENT << utils::join(block_stack, "\n" + INDENT + "-> ");
+        message << INDENT
+                << utils::join(block_stack, "\n" + INDENT + "-> ");
     }
     return message.str();
 }
@@ -101,7 +101,8 @@ void Context::warn(const string &message) const {
 }
 
 TraceBlock::TraceBlock(Context &context, const string &block_name)
-    : context(context), block_name(context.decorate_block_name(block_name)) {
+    : context(context),
+      block_name(context.decorate_block_name(block_name)) {
     context.enter_block(this->block_name);
 }
 
@@ -113,7 +114,8 @@ MemoryContext _memory_context;
 
 string MemoryContext::decorate_block_name(const string &msg) const {
     ostringstream decorated_msg;
-    decorated_msg << "[TRACE] " << setw(TIME_FIELD_WIDTH) << g_timer << " "
+    decorated_msg << "[TRACE] "
+                  << setw(TIME_FIELD_WIDTH) << g_timer << " "
                   << setw(MEM_FIELD_WIDTH) << get_peak_memory_in_kb() << " KB";
     for (size_t i = 0; i < block_stack.size(); ++i)
         decorated_msg << INDENT;
@@ -125,20 +127,10 @@ void trace_memory(const string &msg) {
     g_log << _memory_context.decorate_block_name(msg);
 }
 
-static plugins::TypedEnumPlugin<Verbosity> _enum_plugin(
-    {{"silent", "only the most basic output"},
-     {"normal", "relevant information to monitor progress"},
-     {"verbose", "full output"},
-     {"debug", "like verbose with additional debug output"}});
-
-void Log::add_prefix() const {
-    stream << "[t=";
-    streamsize previous_precision = cout.precision(TIMER_PRECISION);
-    ios_base::fmtflags previous_flags = stream.flags();
-    stream.setf(ios_base::fixed, ios_base::floatfield);
-    stream << g_timer;
-    stream.flags(previous_flags);
-    cout.precision(previous_precision);
-    stream << ", " << get_peak_memory_in_kb() << " KB] ";
-}
+static plugins::TypedEnumPlugin<Verbosity> _enum_plugin({
+        {"silent", "only the most basic output"},
+        {"normal", "relevant information to monitor progress"},
+        {"verbose", "full output"},
+        {"debug", "like verbose with additional debug output"}
+    });
 }

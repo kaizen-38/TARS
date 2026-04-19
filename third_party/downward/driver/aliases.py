@@ -1,7 +1,9 @@
+import os
+
 from .util import DRIVER_DIR
 
 
-PORTFOLIO_DIR = DRIVER_DIR / "portfolios"
+PORTFOLIO_DIR = os.path.join(DRIVER_DIR, "portfolios")
 
 ALIASES = {}
 
@@ -133,7 +135,7 @@ ALIASES["lama-first"] = [
 
 ALIASES["seq-opt-bjolp"] = [
     "--search",
-    "let(lmc, landmark_cost_partitioning(lm_reasonable_orders_hps(lm_merged([lm_rhw(),lm_hm(m=1)]))),"
+    "let(lmc, landmark_cost_partitioning(lm_merged([lm_rhw(),lm_hm(m=1)])),"
     "astar(lmc,lazy_evaluator=lmc))"]
 
 ALIASES["seq-opt-lmcut"] = [
@@ -141,11 +143,12 @@ ALIASES["seq-opt-lmcut"] = [
 
 
 PORTFOLIOS = {}
-for portfolio in PORTFOLIO_DIR.iterdir():
-    if portfolio.name == "__pycache__":
+for portfolio in os.listdir(PORTFOLIO_DIR):
+    if portfolio == "__pycache__":
         continue
-    assert portfolio.suffix == ".py", str(portfolio)
-    PORTFOLIOS[portfolio.stem.replace("_", "-")] = PORTFOLIO_DIR / portfolio
+    name, ext = os.path.splitext(portfolio)
+    assert ext == ".py", portfolio
+    PORTFOLIOS[name.replace("_", "-")] = os.path.join(PORTFOLIO_DIR, portfolio)
 
 
 def show_aliases():

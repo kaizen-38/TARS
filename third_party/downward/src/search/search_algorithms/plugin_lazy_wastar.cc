@@ -8,24 +8,31 @@ using namespace std;
 namespace plugin_lazy_wastar {
 static const string DEFAULT_LAZY_BOOST = "1000";
 
-class LazyWAstarSearchFeature
-    : public plugins::TypedFeature<SearchAlgorithm, lazy_search::LazySearch> {
+class LazyWAstarSearchFeature : public plugins::TypedFeature<SearchAlgorithm, lazy_search::LazySearch> {
 public:
     LazyWAstarSearchFeature() : TypedFeature("lazy_wastar") {
         document_title("(Weighted) A* search (lazy)");
         document_synopsis(
             "Weighted A* is a special case of lazy best first search.");
 
-        add_list_option<shared_ptr<Evaluator>>("evals", "evaluators");
         add_list_option<shared_ptr<Evaluator>>(
-            "preferred", "use preferred operators of these evaluators", "[]");
-        add_option<bool>("reopen_closed", "reopen closed nodes", "true");
+            "evals",
+            "evaluators");
+        add_list_option<shared_ptr<Evaluator>>(
+            "preferred",
+            "use preferred operators of these evaluators",
+            "[]");
+        add_option<bool>(
+            "reopen_closed",
+            "reopen closed nodes",
+            "true");
         add_option<int>(
-            "boost", "boost value for preferred operator open lists",
+            "boost",
+            "boost value for preferred operator open lists",
             DEFAULT_LAZY_BOOST);
         add_option<int>("w", "evaluator weight", "1");
-        add_successors_order_options_to_feature(*this);
-        add_search_algorithm_options_to_feature(*this, "lazy_wastar");
+        SearchAlgorithm::add_succ_order_options(*this);
+        SearchAlgorithm::add_options_to_feature(*this);
 
         document_note(
             "Open lists",
@@ -39,46 +46,46 @@ public:
             "is ranked by g + w * h. ");
         document_note(
             "Equivalent statements using general lazy search",
-            "\n```\n--search \"let(h1, eval1,\n"
-            "              lazy_wastar([h1, eval2], w=2, preferred=h1, bound=100, boost=500))\"\n```\n"
+            "\n```\n--evaluator h1=eval1\n"
+            "--search lazy_wastar([h1, eval2], w=2, preferred=h1,\n"
+            "                     bound=100, boost=500)\n```\n"
             "is equivalent to\n"
-            "```\n--search \"let(h1, eval1, let(h2, eval2,\n"
-            "              lazy(alt([single(sum([g(), weight(h1, 2)])),\n"
-            "                        single(sum([g(), weight(h1, 2)]), pref_only=true),\n"
-            "                        single(sum([g(), weight(h2, 2)])),\n"
-            "                        single(sum([g(), weight(h2, 2)]), pref_only=true)],\n"
-            "                       boost=500),\n"
-            "                    preferred=h1, reopen_closed=true, bound=100)))\"\n```\n"
+            "```\n--evaluator h1=eval1 --heuristic h2=eval2\n"
+            "--search lazy(alt([single(sum([g(), weight(h1, 2)])),\n"
+            "                   single(sum([g(), weight(h1, 2)]), pref_only=true),\n"
+            "                   single(sum([g(), weight(h2, 2)])),\n"
+            "                   single(sum([g(), weight(h2, 2)]), pref_only=true)],\n"
+            "                  boost=500),\n"
+            "              preferred=h1, reopen_closed=true, bound=100)\n```\n"
             "------------------------------------------------------------\n"
-            "```\n--search \"lazy_wastar([eval1, eval2], w=2, bound=100)\"\n```\n"
+            "```\n--search lazy_wastar([eval1, eval2], w=2, bound=100)\n```\n"
             "is equivalent to\n"
-            "```\n--search \"lazy(alt([single(sum([g(), weight(eval1, 2)])),\n"
-            "                    single(sum([g(), weight(eval2, 2)]))], boost=1000),\n"
-            "               reopen_closed=true, bound=100)\"\n```\n"
+            "```\n--search lazy(alt([single(sum([g(), weight(eval1, 2)])),\n"
+            "                   single(sum([g(), weight(eval2, 2)]))],\n"
+            "                  boost=1000),\n"
+            "              reopen_closed=true, bound=100)\n```\n"
             "------------------------------------------------------------\n"
-            "```\n--search \"lazy_wastar([eval1, eval2], bound=100, boost=0)\"\n```\n"
+            "```\n--search lazy_wastar([eval1, eval2], bound=100, boost=0)\n```\n"
             "is equivalent to\n"
-            "```\n--search \"lazy(alt([single(sum([g(), eval1])), single(sum([g(), eval2]))])\n"
-            "               reopen_closed=true, bound=100)\"\n```\n"
+            "```\n--search lazy(alt([single(sum([g(), eval1])),\n"
+            "                   single(sum([g(), eval2]))])\n"
+            "              reopen_closed=true, bound=100)\n```\n"
             "------------------------------------------------------------\n"
-            "```\n--search \"lazy_wastar(eval1, w=2)\"\n```\n"
+            "```\n--search lazy_wastar(eval1, w=2)\n```\n"
             "is equivalent to\n"
-            "```\n--search \"lazy(single(sum([g(), weight(eval1, 2)])), reopen_closed=true)\"\n```\n",
+            "```\n--search lazy(single(sum([g(), weight(eval1, 2)])), reopen_closed=true)\n```\n",
             true);
     }
 
-    virtual shared_ptr<lazy_search::LazySearch> create_component(
-        const plugins::Options &opts) const override {
-        return plugins::make_shared_from_arg_tuples<lazy_search::LazySearch>(
-            search_common::create_wastar_open_list_factory(
-                opts.get_list<shared_ptr<Evaluator>>("evals"),
-                opts.get_list<shared_ptr<Evaluator>>("preferred"),
-                opts.get<int>("boost"), opts.get<int>("w"),
-                opts.get<utils::Verbosity>("verbosity")),
-            opts.get<bool>("reopen_closed"),
-            opts.get_list<shared_ptr<Evaluator>>("preferred"),
-            get_successors_order_arguments_from_options(opts),
-            get_search_algorithm_arguments_from_options(opts));
+    virtual shared_ptr<lazy_search::LazySearch> create_component(const plugins::Options &options, const utils::Context &context) const override {
+        plugins::verify_list_non_empty<shared_ptr<Evaluator>>(context, options, "evals");
+        plugins::Options options_copy(options);
+        options_copy.set("open", search_common::create_wastar_open_list_factory(options_copy));
+        shared_ptr<lazy_search::LazySearch> search_algorithm = make_shared<lazy_search::LazySearch>(options_copy);
+        // TODO: The following two lines look fishy. See similar comment in _parse.
+        vector<shared_ptr<Evaluator>> preferred_list = options_copy.get_list<shared_ptr<Evaluator>>("preferred");
+        search_algorithm->set_preferred_operator_evaluators(preferred_list);
+        return search_algorithm;
     }
 };
 

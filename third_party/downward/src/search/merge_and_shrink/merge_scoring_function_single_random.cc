@@ -13,8 +13,9 @@ using namespace std;
 
 namespace merge_and_shrink {
 MergeScoringFunctionSingleRandom::MergeScoringFunctionSingleRandom(
-    int random_seed)
-    : random_seed(random_seed), rng(utils::get_rng(random_seed)) {
+    const plugins::Options &options)
+    : random_seed(options.get<int>("random_seed")),
+      rng(utils::parse_rng_from_options(options)) {
 }
 
 vector<double> MergeScoringFunctionSingleRandom::compute_scores(
@@ -45,9 +46,7 @@ void MergeScoringFunctionSingleRandom::dump_function_specific_options(
     }
 }
 
-class MergeScoringFunctionSingleRandomFeature
-    : public plugins::TypedFeature<
-          MergeScoringFunction, MergeScoringFunctionSingleRandom> {
+class MergeScoringFunctionSingleRandomFeature : public plugins::TypedFeature<MergeScoringFunction, MergeScoringFunctionSingleRandom> {
 public:
     MergeScoringFunctionSingleRandomFeature() : TypedFeature("single_random") {
         document_title("Single random");
@@ -55,14 +54,7 @@ public:
             "This scoring function assigns exactly one merge candidate a score of "
             "0, chosen randomly, and infinity to all others.");
 
-        utils::add_rng_options_to_feature(*this);
-    }
-
-    virtual shared_ptr<MergeScoringFunctionSingleRandom> create_component(
-        const plugins::Options &opts) const override {
-        return plugins::make_shared_from_arg_tuples<
-            MergeScoringFunctionSingleRandom>(
-            utils::get_rng_arguments_from_options(opts));
+        utils::add_rng_options(*this);
     }
 };
 

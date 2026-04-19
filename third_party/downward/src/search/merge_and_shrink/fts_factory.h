@@ -21,8 +21,10 @@ namespace merge_and_shrink {
 class FactoredTransitionSystem;
 
 extern FactoredTransitionSystem create_factored_transition_system(
-    const TaskProxy &task_proxy, bool compute_init_distances,
-    bool compute_goal_distances, utils::LogProxy &log);
+    const TaskProxy &task_proxy,
+    bool compute_init_distances,
+    bool compute_goal_distances,
+    utils::LogProxy &log);
 }
 
 #endif

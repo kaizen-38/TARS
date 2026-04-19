@@ -9,13 +9,12 @@
 namespace pref_evaluator {
 class PrefEvaluator : public Evaluator {
 public:
-    PrefEvaluator(const std::string &description, utils::Verbosity verbosity);
+    explicit PrefEvaluator(const plugins::Options &opts);
+    virtual ~PrefEvaluator() override;
 
     virtual EvaluationResult compute_result(
         EvaluationContext &eval_context) override;
-    virtual void get_path_dependent_evaluators(
-        std::set<Evaluator *> &) override {
-    }
+    virtual void get_path_dependent_evaluators(std::set<Evaluator *> &) override {}
 };
 }
 

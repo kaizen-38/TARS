@@ -7,20 +7,19 @@
 using namespace std;
 
 namespace utils {
-void add_rng_options_to_feature(plugins::Feature &feature) {
+void add_rng_options(plugins::Feature &feature) {
     feature.add_option<int>(
         "random_seed",
         "Set to -1 (default) to use the global random number generator. "
         "Set to any other value to use a local random number generator with "
         "the given seed.",
-        "-1", plugins::Bounds("-1", "infinity"));
+        "-1",
+        plugins::Bounds("-1", "infinity"));
 }
 
-tuple<int> get_rng_arguments_from_options(const plugins::Options &opts) {
-    return make_tuple(opts.get<int>("random_seed"));
-}
-
-shared_ptr<RandomNumberGenerator> get_rng(int seed) {
+shared_ptr<RandomNumberGenerator> parse_rng_from_options(
+    const plugins::Options &options) {
+    int seed = options.get<int>("random_seed");
     if (seed == -1) {
         // Use an arbitrary default seed.
         static shared_ptr<utils::RandomNumberGenerator> rng =

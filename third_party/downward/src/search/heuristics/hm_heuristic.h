@@ -50,11 +50,10 @@ class HMHeuristic : public Heuristic {
     void generate_all_tuples();
     void generate_all_tuples_aux(int var, int sz, const Tuple &base);
 
-    void generate_all_partial_tuples(
-        const Tuple &base_tuple, std::vector<Tuple> &res) const;
-    void generate_all_partial_tuples_aux(
-        const Tuple &base_tuple, const Tuple &t, int index, int sz,
-        std::vector<Tuple> &res) const;
+    void generate_all_partial_tuples(const Tuple &base_tuple,
+                                     std::vector<Tuple> &res) const;
+    void generate_all_partial_tuples_aux(const Tuple &base_tuple, const Tuple &t, int index,
+                                         int sz, std::vector<Tuple> &res) const;
 
     void dump_table() const;
 
@@ -62,10 +61,7 @@ protected:
     virtual int compute_heuristic(const State &ancestor_state) override;
 
 public:
-    HMHeuristic(
-        int m, const std::shared_ptr<AbstractTask> &transform,
-        bool cache_estimates, const std::string &description,
-        utils::Verbosity verbosity);
+    explicit HMHeuristic(const plugins::Options &opts);
 
     virtual bool dead_ends_are_reliable() const override;
 };

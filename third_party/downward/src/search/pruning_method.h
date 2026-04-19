@@ -25,14 +25,15 @@ class PruningMethod {
     utils::Timer timer;
     friend class limited_pruning::LimitedPruning;
 
-    virtual void prune(const State &state, std::vector<OperatorID> &op_ids) = 0;
+    virtual void prune(
+        const State &state, std::vector<OperatorID> &op_ids) = 0;
 protected:
     mutable utils::LogProxy log;
     std::shared_ptr<AbstractTask> task;
     long num_successors_before_pruning;
     long num_successors_after_pruning;
 public:
-    explicit PruningMethod(utils::Verbosity verbosity);
+    explicit PruningMethod(const plugins::Options &opts);
     virtual ~PruningMethod() = default;
     virtual void initialize(const std::shared_ptr<AbstractTask> &task);
     void prune_operators(const State &state, std::vector<OperatorID> &op_ids);
@@ -40,7 +41,5 @@ public:
 };
 
 extern void add_pruning_options_to_feature(plugins::Feature &feature);
-extern std::tuple<utils::Verbosity> get_pruning_arguments_from_options(
-    const plugins::Options &opts);
 
 #endif

@@ -10,21 +10,19 @@ Feature::Feature(const Type &type, const string &key)
 }
 
 void Feature::document_subcategory(const string &subcategory) {
-    assert(this->subcategory.empty());
     this->subcategory = subcategory;
 }
 
 void Feature::document_title(const string &title) {
-    assert(this->title.empty());
     this->title = title;
 }
 
 void Feature::document_synopsis(const string &note) {
-    assert(this->synopsis.empty());
     synopsis = note;
 }
 
-void Feature::document_property(const string &property, const string &note) {
+void Feature::document_property(
+    const string &property, const string &note) {
     properties.emplace_back(property, note);
 }
 
@@ -79,12 +77,9 @@ Plugin::Plugin() {
 }
 
 CategoryPlugin::CategoryPlugin(
-    type_index pointer_type, const string &class_name,
-    const string &category_name)
-    : pointer_type(pointer_type),
-      class_name(class_name),
-      category_name(category_name),
-      can_be_bound_to_variable(false) {
+    type_index pointer_type, const string &class_name, const string &category_name)
+    : pointer_type(pointer_type), class_name(class_name),
+      category_name(category_name), can_be_bound_to_variable(false) {
     RawRegistry::instance()->insert_category_plugin(*this);
 }
 
@@ -109,7 +104,6 @@ bool CategoryPlugin::supports_variable_binding() const {
 }
 
 void CategoryPlugin::document_synopsis(const string &synopsis) {
-    assert(this->synopsis.empty());
     this->synopsis = synopsis;
 }
 
@@ -123,12 +117,10 @@ SubcategoryPlugin::SubcategoryPlugin(const string &subcategory)
 }
 
 void SubcategoryPlugin::document_title(const string &title) {
-    assert(this->title.empty());
     this->title = title;
 }
 
 void SubcategoryPlugin::document_synopsis(const string &synopsis) {
-    assert(this->synopsis.empty());
     this->synopsis = synopsis;
 }
 
@@ -144,9 +136,8 @@ string SubcategoryPlugin::get_synopsis() const {
     return synopsis;
 }
 
-EnumPlugin::EnumPlugin(
-    type_index type, const string &class_name,
-    initializer_list<pair<string, string>> enum_values)
+EnumPlugin::EnumPlugin(type_index type, const string &class_name,
+                       initializer_list<pair<string, string>> enum_values)
     : type(type), class_name(class_name), enum_info(enum_values) {
     RawRegistry::instance()->insert_enum_plugin(*this);
 }

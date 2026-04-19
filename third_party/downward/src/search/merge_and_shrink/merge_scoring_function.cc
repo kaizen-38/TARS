@@ -8,7 +8,8 @@
 using namespace std;
 
 namespace merge_and_shrink {
-MergeScoringFunction::MergeScoringFunction() : initialized(false) {
+MergeScoringFunction::MergeScoringFunction()
+    : initialized(false) {
 }
 
 void MergeScoringFunction::dump_options(utils::LogProxy &log) const {
@@ -19,11 +20,9 @@ void MergeScoringFunction::dump_options(utils::LogProxy &log) const {
     }
 }
 
-static class MergeScoringFunctionCategoryPlugin
-    : public plugins::TypedCategoryPlugin<MergeScoringFunction> {
+static class MergeScoringFunctionCategoryPlugin : public plugins::TypedCategoryPlugin<MergeScoringFunction> {
 public:
-    MergeScoringFunctionCategoryPlugin()
-        : TypedCategoryPlugin("MergeScoringFunction") {
+    MergeScoringFunctionCategoryPlugin() : TypedCategoryPlugin("MergeScoringFunction") {
         document_synopsis(
             "This page describes various merge scoring functions. A scoring function, "
             "given a list of merge candidates and a factored transition system, "
@@ -32,5 +31,6 @@ public:
             "Scoring functions are currently only used within the score based "
             "filtering merge selector.");
     }
-} _category_plugin;
+}
+_category_plugin;
 }

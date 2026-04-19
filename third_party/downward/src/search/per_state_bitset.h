@@ -5,11 +5,13 @@
 
 #include <vector>
 
+
 class BitsetMath {
 public:
     using Block = unsigned int;
     static_assert(
-        !std::numeric_limits<Block>::is_signed, "Block type must be unsigned");
+        !std::numeric_limits<Block>::is_signed,
+        "Block type must be unsigned");
 
     static const Block zeros = Block(0);
     // MSVC's bitwise negation always returns a signed type.
@@ -22,35 +24,15 @@ public:
     static Block bit_mask(std::size_t pos);
 };
 
-class ConstBitsetView {
-    ConstArrayView<BitsetMath::Block> data;
-    int num_bits;
-public:
-    ConstBitsetView(ConstArrayView<BitsetMath::Block> data, int num_bits)
-        : data(data), num_bits(num_bits) {
-    }
-
-    ConstBitsetView(const ConstBitsetView &other) = default;
-    ConstBitsetView &operator=(const ConstBitsetView &other) = default;
-
-    bool test(int index) const;
-    int size() const;
-};
 
 class BitsetView {
     ArrayView<BitsetMath::Block> data;
     int num_bits;
 public:
-    BitsetView(ArrayView<BitsetMath::Block> data, int num_bits)
-        : data(data), num_bits(num_bits) {
-    }
+    BitsetView(ArrayView<BitsetMath::Block> data, int num_bits);
 
     BitsetView(const BitsetView &other) = default;
     BitsetView &operator=(const BitsetView &other) = default;
-
-    operator ConstBitsetView() const {
-        return ConstBitsetView(data, num_bits);
-    }
 
     void set(int index);
     void reset(int index);
@@ -59,6 +41,7 @@ public:
     void intersect(const BitsetView &other);
     int size() const;
 };
+
 
 class PerStateBitset {
     int num_bits_per_entry;
@@ -70,7 +53,6 @@ public:
     PerStateBitset &operator=(const PerStateBitset &) = delete;
 
     BitsetView operator[](const State &state);
-    ConstBitsetView operator[](const State &state) const;
 };
 
 #endif

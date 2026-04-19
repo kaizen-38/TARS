@@ -83,7 +83,7 @@ pushd $RELEASESDIR
 
 mkdir -p $MAJOR
 fill_template "_Dockerfile.tpl" "TAG" "$TAG" > $MAJOR/Dockerfile.$MAJOR
-fill_template "_Vagrantfile.tpl" "BRANCH" "$BRANCH" > $MAJOR/Vagrantfile.$MAJOR
+fill_template "_Vagrantfile.tpl" "TAG" "$TAG" > $MAJOR/Vagrantfile.$MAJOR
 git add $MAJOR
 
 mkdir -p latest
@@ -116,5 +116,5 @@ cat << EOF
 ===============================================================================
 Successfully prepared tag $TAG.
 Please continue with the steps on
-https://www.fast-downward.org/latest/for-developers/release-workflow/
+https://www.fast-downward.org/ForDevelopers/ReleaseWorkflow
 EOF

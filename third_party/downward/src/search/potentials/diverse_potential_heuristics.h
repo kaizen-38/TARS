@@ -54,11 +54,7 @@ class DiversePotentialHeuristics {
     void cover_samples(SamplesToFunctionsMap &samples_to_functions);
 
 public:
-    DiversePotentialHeuristics(
-        int num_samples, int max_num_heuristics, double max_potential,
-        lp::LPSolverType lpsolver,
-        const std::shared_ptr<AbstractTask> &transform, int random_seed,
-        utils::Verbosity verbosity);
+    explicit DiversePotentialHeuristics(const plugins::Options &opts);
     ~DiversePotentialHeuristics() = default;
 
     // Sample states, then cover them.

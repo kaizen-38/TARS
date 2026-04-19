@@ -3,34 +3,18 @@
 
 #include "landmark_heuristic.h"
 
-#include "../lp/lp_solver.h"
-
 namespace landmarks {
-class CostPartitioningAlgorithm;
-
-enum class CostPartitioningMethod {
-    OPTIMAL,
-    UNIFORM,
-};
+class LandmarkCostAssignment;
 
 class LandmarkCostPartitioningHeuristic : public LandmarkHeuristic {
-    std::unique_ptr<CostPartitioningAlgorithm> cost_partitioning_algorithm;
+    std::unique_ptr<LandmarkCostAssignment> lm_cost_assignment;
 
-    void check_unsupported_features(
-        const std::shared_ptr<LandmarkFactory> &landmark_factory);
-    void set_cost_partitioning_algorithm(
-        CostPartitioningMethod cost_partitioning, lp::LPSolverType lpsolver,
-        bool use_action_landmarks);
+    void check_unsupported_features(const plugins::Options &opts);
+    void set_cost_assignment(const plugins::Options &opts);
 
-    int get_heuristic_value(const State &ancestor_state) override;
+    int get_heuristic_value(const State &state) override;
 public:
-    LandmarkCostPartitioningHeuristic(
-        const std::shared_ptr<LandmarkFactory> &lm_factory, bool pref,
-        bool prog_goal, bool prog_gn, bool prog_r,
-        const std::shared_ptr<AbstractTask> &transform, bool cache_estimates,
-        const std::string &description, utils::Verbosity verbosity,
-        CostPartitioningMethod cost_partitioning, bool alm,
-        lp::LPSolverType lpsolver);
+    explicit LandmarkCostPartitioningHeuristic(const plugins::Options &opts);
 
     virtual bool dead_ends_are_reliable() const override;
 };

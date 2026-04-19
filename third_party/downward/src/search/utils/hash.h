@@ -26,7 +26,7 @@ namespace utils {
   that are "fed" to the main hashing function (implemented in class
   HashState) one by one. This allows a compositional approach to
   hashing. For example, the code for a pair p is the concatenation of
-  code(p.first) and code(p.second).
+  code(x.first) and code(x.second).
 
   A simpler compositional approach to hashing would first hash the
   components of an object and then combine the hash values, and this
@@ -145,7 +145,11 @@ class HashState {
     }
 
 public:
-    HashState() : a(0xdeadbeef), b(a), c(a), pending_values(0) {
+    HashState()
+        : a(0xdeadbeef),
+          b(a),
+          c(a),
+          pending_values(0) {
     }
 
     void feed(std::uint32_t value) {
@@ -200,6 +204,7 @@ public:
     }
 };
 
+
 /*
   These functions add a new object to an existing HashState object.
 
@@ -228,8 +233,7 @@ inline void feed(HashState &hash_state, std::uint64_t value) {
 
 template<typename T>
 void feed(HashState &hash_state, const T *p) {
-    // This is wasteful in 32-bit mode, but we plan to discontinue 32-bit
-    // compiles anyway.
+    // This is wasteful in 32-bit mode, but we plan to discontinue 32-bit compiles anyway.
     feed(hash_state, reinterpret_cast<std::uint64_t>(p));
 }
 
@@ -254,11 +258,6 @@ void feed(HashState &hash_state, const std::vector<T> &vec) {
     }
 }
 
-template<typename... T>
-void feed(HashState &hash_state, const std::tuple<T...> &t) {
-    std::apply(
-        [&](auto &&...element) { ((feed(hash_state, element)), ...); }, t);
-}
 
 /*
   Public hash functions.
@@ -285,6 +284,7 @@ template<typename T>
 std::size_t get_hash(const T &value) {
     return static_cast<std::size_t>(get_hash64(value));
 }
+
 
 // This struct should only be used by HashMap and HashSet below.
 template<typename T>
