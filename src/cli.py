@@ -56,6 +56,28 @@ def generate_smoke(
 
 
 @app.command()
+def generate_one(
+    domain: str = typer.Argument(..., help="Domain name"),
+    split: str = typer.Option(..., help="'train' or 'heldout'"),
+    n_instances: int = typer.Option(..., help="Number of instances to generate"),
+    seed: int = typer.Option(42),
+    output_dir: Path = typer.Option(_REPO_ROOT / "data" / "generated" / "instances"),
+) -> None:
+    """Generate instances for a single domain (used by Slurm array jobs)."""
+    from generation.generate_instances import generate_domain_split
+
+    typer.echo(f"Generating {n_instances} instances for {domain} ({split})")
+    metas = generate_domain_split(
+        domain=domain,
+        split=split,
+        n_instances=n_instances,
+        seed=seed,
+        output_dir=output_dir,
+    )
+    typer.echo(f"Generated {len(metas)} instances for {domain}")
+
+
+@app.command()
 def solve_smoke(
     seed: int = typer.Option(42),
     backend: str = typer.Option("fd", help="Planner backend"),
