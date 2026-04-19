@@ -16,6 +16,9 @@ mamba create -n "${ENV_NAME}" python=3.11 -y
 echo "==> Activating environment..."
 source activate "${ENV_NAME}"
 
+echo "==> Upgrading pip and setuptools..."
+pip install --upgrade "pip>=24" "setuptools>=68" wheel --quiet
+
 echo "==> Installing project in editable mode..."
 cd "$REPO_ROOT"
 pip install -e ".[dev]" --quiet

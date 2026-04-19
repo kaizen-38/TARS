@@ -108,8 +108,10 @@ class FastDownwardBackend(PlannerBackend):
             result = subprocess.run(
                 cmd, capture_output=True, text=True, timeout=timeout, cwd=tmpdir
             )
-            sas_plan = Path(tmpdir) / "sas_plan"
-            actions = _parse_fd_plan(sas_plan.read_text()) if sas_plan.exists() else []
+            # lama-first (iterated search) writes sas_plan.1, sas_plan.2, …
+            # lazy_greedy writes sas_plan. Glob both; last file = best plan.
+            plan_files = sorted(Path(tmpdir).glob("sas_plan*"))
+            actions = _parse_fd_plan(plan_files[-1].read_text()) if plan_files else []
         return result.returncode, result.stdout, result.stderr, actions
 
 

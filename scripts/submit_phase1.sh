@@ -182,7 +182,6 @@ JID_TRAIN_MINI=$(submit "06_train_mini" \
 JID_EVAL_PILOT=$(submit "07_eval_pilot" \
     --dependency=afterok:${JID_TRAIN_MINI} \
     --array=0-3 \
-    --export=ALL,CHECKPOINT="" \
     slurm/07_eval_pilot_gpu_array.sbatch)
 
 JID_AGG_PILOT=$(submit "10_aggregate_pilot" \

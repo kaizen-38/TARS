@@ -28,6 +28,7 @@ export PYTHONPATH="${REPO_ROOT}/src"
 cd "${REPO_ROOT}"
 mkdir -p logs
 
+CHECKPOINT="${CHECKPOINT:-$(cat runs/latest_checkpoint.txt 2>/dev/null | tr -d '[:space:]')}"
 CHECKPOINT="${CHECKPOINT:-Qwen/Qwen3-1.7B}"
 
 LINE=$(awk "NR==$(( SLURM_ARRAY_TASK_ID + 2 ))" "$MANIFEST")

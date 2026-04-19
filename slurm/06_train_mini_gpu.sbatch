@@ -31,5 +31,7 @@ echo "GPU: $(nvidia-smi --query-gpu=name,memory.total --format=csv,noheader)"
 # lora_debug gives 20-step LoRA — use full for real mini baseline
 MODE=full bash scripts/train_phase1.sh
 
-echo "[$(date)] Mini training complete."
-ls -lh runs/sft_qwen3_*/  2>/dev/null | tail -5
+CKPT_DIR=$(ls -td runs/sft_qwen3_*/ 2>/dev/null | head -1)
+echo "[$(date)] Mini training complete. Checkpoint: ${CKPT_DIR}"
+mkdir -p runs
+echo "${CKPT_DIR}" > runs/latest_checkpoint.txt

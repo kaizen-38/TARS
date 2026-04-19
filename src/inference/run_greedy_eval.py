@@ -92,7 +92,7 @@ def main(
     for meta_path in sorted(instance_files):
         meta = load_json(meta_path)
         instance_id = meta["instance_id"]
-        domain = meta["domain"]
+        inst_domain = meta["domain"]
 
         domain_file = _REPO_ROOT / meta["domain_file"]
         problem_file = _REPO_ROOT / meta["problem_file"]
@@ -165,7 +165,7 @@ def main(
             run_logger.log_run_result(
                 run_id=run_id,
                 seed=seed,
-                domain=domain,
+                domain=inst_domain,
                 problem_id=instance_id,
                 representation=repr_name,
                 split=split,
