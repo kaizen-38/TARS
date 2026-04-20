@@ -135,8 +135,19 @@ def _gen_spanner(seed: int, idx: int) -> tuple[str, str]:
     )
     domain = (cwd / "domain.pddl").read_text()
     return domain, problem
-
-
+def _gen_delivery(seed: int, idx: int) -> tuple[str, str]:
+    static_dir = _REPO_ROOT / "data" / "static" / "delivery" / "train"
+    instances = sorted(static_dir.glob("instance_*.pddl"))
+    if not instances:
+        raise RuntimeError(
+            "No pre-generated delivery instances found in data/static/delivery/train/. "
+            "Run: cd third_party/pddl-generators/delivery && "
+            "uv run generate.py --grid_size_splits=3,5,7 --max_nr_packages=2 --nr_instances_per_setup=15"
+        )
+    domain_file = static_dir / "domain.pddl"
+    instance_file = instances[idx % len(instances)]
+    return domain_file.read_text(), instance_file.read_text()
+    
 def _gen_miconic(seed: int, idx: int) -> tuple[str, str]:
     rng = random.Random(seed)
     floors = rng.randint(2, 6)
@@ -203,11 +214,12 @@ _GENERATORS: dict[str, callable] = {
     "sokoban":     _gen_sokoban,
     "transport":   _gen_transport,
     "satellite":   _gen_satellite,
+    "delivery":    _gen_delivery,
 }
 
 
 # ---------------------------------------------------------------------------
-# Public API
+# Public API (matches Rhythm's expected interface)
 # ---------------------------------------------------------------------------
 
 def generate_instance(
