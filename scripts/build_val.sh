@@ -20,10 +20,10 @@ if [ -f "CMakeLists.txt" ]; then
     mkdir -p build
     cd build
     cmake .. -DCMAKE_BUILD_TYPE=Release
-    make -j"$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
+    make -j2
     echo "==> VAL built at: $VAL_DIR/build/bin/Validate"
 elif [ -f "Makefile" ]; then
-    make -j"$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
+    make -j2
     echo "==> VAL built."
 else
     echo "ERROR: No CMakeLists.txt or Makefile found in $VAL_DIR"
