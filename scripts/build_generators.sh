@@ -85,7 +85,7 @@ else
     echo ""
     echo "==> Building Fast Downward (this takes ~5 min)..."
     cd "$FD_DIR"
-    python3 build.py release 2>&1 | tail -20
+    CXX=/packages/apps/gcc/15.2.0/bin/g++ CC=/packages/apps/gcc/15.2.0/bin/gcc python3 build.py release -- -j2 2>&1 | tail -20
     echo "==> Fast Downward built."
 fi
 
