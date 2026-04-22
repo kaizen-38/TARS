@@ -39,9 +39,9 @@ class VALResult:
 
 
 # Patterns in VAL's output
-_VALID_RE = re.compile(r"Plan\s+valid\s*!", re.IGNORECASE)
+_VALID_RE = re.compile(r"Plan\s+valid", re.IGNORECASE)
 _INVALID_RE = re.compile(r"Plan\s+(invalid|not valid)", re.IGNORECASE)
-_GOAL_RE = re.compile(r"Goal\s+(reached|not reached)", re.IGNORECASE)
+_GOAL_RE = re.compile(r"(Goal\s+(reached|not reached)|Plan executed successfully - checking goal)", re.IGNORECASE)
 
 
 def _find_val_binary() -> Path:

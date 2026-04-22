@@ -1,18 +1,10 @@
-"""Solve PDDL problems using Fast Downward (default) or a pluggable backend.
-
-Fast Downward is the default teacher planner for Phase 1.
-PROBE can be added later as an alternative backend by implementing
-PlannerBackend and registering it in PLANNER_REGISTRY.
-
-Output files per instance:
-  <output_dir>/<problem_id>.raw_plan.txt   — raw stdout from planner
-  <output_dir>/<problem_id>.plan.pddl      — normalized action sequence (one action per line)
-  <output_dir>/<problem_id>.solve_meta.json
-"""
+"""Solve PDDL problems using Fast Downward (default) or a pluggable backend."""
 from __future__ import annotations
 
 import subprocess
+import tempfile
 import time
+import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
@@ -45,8 +37,6 @@ class SolveResult:
 
 
 class PlannerBackend(ABC):
-    """Abstract interface for planner backends."""
-
     @abstractmethod
     def solve(
         self,
@@ -54,18 +44,11 @@ class PlannerBackend(ABC):
         problem_file: Path,
         timeout: int,
     ) -> tuple[int, str, str, list[str]]:
-        """Run the planner.
-
-        Returns:
-            (exit_code, stdout, stderr, action_sequence)
-        """
+        pass
 
 
 class FastDownwardBackend(PlannerBackend):
-    """Wrapper around Fast Downward (aibasel/downward)."""
-
-    # Default search configuration — lama-first is a solid anytime planner.
-    DEFAULT_SEARCH = "--alias lama-first"
+    DEFAULT_SEARCH = "--search lazy_greedy([ff()], preferred=[ff()])"
 
     def __init__(self, fd_root: Path = _FD_ROOT, search_config: Optional[str] = None) -> None:
         self.fd_root = fd_root
@@ -95,39 +78,65 @@ class FastDownwardBackend(PlannerBackend):
         timeout: int,
     ) -> tuple[int, str, str, list[str]]:
         binary = self._get_binary()
-        cmd = (
-            ["python", str(binary), str(domain_file), str(problem_file)]
-            + self.search_config.split()
-        )
+        fd_dir = binary.resolve().parent
+        plan_file = Path(tempfile.gettempdir()) / f"sas_plan_{uuid.uuid4().hex}"
+
+        if self.search_config.startswith("--search "):
+            search_expr = self.search_config[len("--search "):]
+            cmd = [
+                "python", str(binary.resolve()),
+                str(domain_file.resolve()), str(problem_file.resolve()),
+                "--search", search_expr,
+                "--internal-plan-file", str(plan_file),
+            ]
+        elif self.search_config.startswith("--alias "):
+            alias = self.search_config[len("--alias "):]
+            cmd = [
+                "python", str(binary.resolve()),
+                str(domain_file.resolve()), str(problem_file.resolve()),
+                "--alias", alias,
+                "--internal-plan-file", str(plan_file),
+            ]
+        else:
+            cmd = (
+                ["python", str(binary.resolve()),
+                 str(domain_file.resolve()), str(problem_file.resolve())]
+                + self.search_config.split()
+                + ["--internal-plan-file", str(plan_file)]
+            )
+
         logger.info("FD solve: %s", " ".join(cmd))
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-        actions = _parse_fd_plan(result.stdout)
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=timeout,
+            cwd=str(fd_dir)
+        )
+
+        plan_files = sorted(Path(tempfile.gettempdir()).glob(f"{plan_file.name}*"))
+        actions = _parse_fd_plan(plan_files[-1].read_text()) if plan_files else []
+
+        for f in plan_files:
+            try:
+                f.unlink()
+            except Exception:
+                pass
+
         return result.returncode, result.stdout, result.stderr, actions
 
 
-def _parse_fd_plan(stdout: str) -> list[str]:
-    """Extract the action sequence from Fast Downward's plan output.
-
-    FD writes plans to sas_plan files, but it also echoes them in stdout
-    in the format:  (action arg1 arg2) [cost: N]
-    """
+def _parse_fd_plan(text: str) -> list[str]:
     actions: list[str] = []
-    for line in stdout.splitlines():
+    for line in text.splitlines():
         stripped = line.strip()
-        if stripped.startswith("(") and stripped.endswith("]"):
-            # Remove cost suffix
-            paren_end = stripped.rfind(")")
-            action_str = stripped[: paren_end + 1]
-            actions.append(action_str.lower())
-        elif stripped.startswith("(") and stripped.endswith(")"):
-            actions.append(stripped.lower())
-    # Also check for sas_plan files written to CWD
+        if not stripped or stripped.startswith(";"):
+            continue
+        if stripped.startswith("("):
+            if "[" in stripped:
+                stripped = stripped[: stripped.rfind("[")].strip()
+            if stripped.endswith(")"):
+                actions.append(stripped.lower())
     return actions
 
 
-# ---------------------------------------------------------------------------
-# Backend registry — extend here to add PROBE or other planners.
-# ---------------------------------------------------------------------------
 PLANNER_REGISTRY: dict[str, type[PlannerBackend]] = {
     "fd": FastDownwardBackend,
     "fast-downward": FastDownwardBackend,
@@ -144,10 +153,6 @@ def get_backend(name: str) -> PlannerBackend:
     return cls()
 
 
-# ---------------------------------------------------------------------------
-# Public API
-# ---------------------------------------------------------------------------
-
 def solve_instance(
     problem_id: str,
     domain_file: Path,
@@ -156,19 +161,6 @@ def solve_instance(
     backend: str = "fd",
     timeout: int = 120,
 ) -> SolveResult:
-    """Solve one PDDL instance and persist outputs.
-
-    Args:
-        problem_id: Unique identifier for this instance (used in filenames).
-        domain_file: Path to PDDL domain file.
-        problem_file: Path to PDDL problem file.
-        output_dir: Directory to write plan files into.
-        backend: Planner backend key (default "fd").
-        timeout: Timeout in seconds.
-
-    Returns:
-        SolveResult with all fields populated.
-    """
     ensure_dir(output_dir)
     planner = get_backend(backend)
 
