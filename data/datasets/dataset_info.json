@@ -1,0 +1,32 @@
+{
+  "phase1_standard": {
+    "file_name": "alpaca/phase1_standard.jsonl",
+    "file_sha1": null,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system"
+    }
+  },
+  "phase1_anonymized": {
+    "file_name": "alpaca/phase1_anonymized.jsonl",
+    "file_sha1": null,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system"
+    }
+  },
+  "phase1_compact": {
+    "file_name": "alpaca/phase1_compact.jsonl",
+    "file_sha1": null,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system"
+    }
+  }
+}

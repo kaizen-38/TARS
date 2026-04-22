@@ -1,0 +1,4 @@
+[Tue Apr 21 16:04:34 MST 2026] task=10 domain=transport split=heldout n=5 seed=42
+Generating 5 instances for transport (heldout)
+Generated 5 instances for transport
+[Tue Apr 21 16:04:40 MST 2026] done: transport — 5 instances

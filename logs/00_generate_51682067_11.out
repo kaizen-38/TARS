@@ -1,0 +1,4 @@
+[Tue Apr 21 14:04:57 MST 2026] task=11 domain=satellite split=heldout n=5 seed=42
+Generating 5 instances for satellite (heldout)
+Generated 0 instances for satellite
+[Tue Apr 21 14:04:57 MST 2026] done: satellite — 5 instances

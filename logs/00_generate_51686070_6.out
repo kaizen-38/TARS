@@ -1,0 +1,4 @@
+[Tue Apr 21 16:03:47 MST 2026] task=6 domain=rovers split=train n=5 seed=42
+Generating 5 instances for rovers (train)
+Generated 0 instances for rovers
+[Tue Apr 21 16:03:47 MST 2026] done: rovers — 5 instances

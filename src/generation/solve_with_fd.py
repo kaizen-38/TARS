@@ -87,7 +87,7 @@ class FastDownwardBackend(PlannerBackend):
                 "python", str(binary.resolve()),
                 str(domain_file.resolve()), str(problem_file.resolve()),
                 "--search", search_expr,
-                "--internal-plan-file", str(plan_file),
+                "--plan-file", str(plan_file),
             ]
         elif self.search_config.startswith("--alias "):
             alias = self.search_config[len("--alias "):]
@@ -95,20 +95,20 @@ class FastDownwardBackend(PlannerBackend):
                 "python", str(binary.resolve()),
                 str(domain_file.resolve()), str(problem_file.resolve()),
                 "--alias", alias,
-                "--internal-plan-file", str(plan_file),
+                "--plan-file", str(plan_file),
             ]
         else:
             cmd = (
                 ["python", str(binary.resolve()),
                  str(domain_file.resolve()), str(problem_file.resolve())]
                 + self.search_config.split()
-                + ["--internal-plan-file", str(plan_file)]
+                + ["--plan-file", str(plan_file)]
             )
 
         logger.info("FD solve: %s", " ".join(cmd))
         result = subprocess.run(
             cmd, capture_output=True, text=True, timeout=timeout,
-            cwd=str(fd_dir)
+            cwd=str(Path.cwd())
         )
 
         plan_files = sorted(Path(tempfile.gettempdir()).glob(f"{plan_file.name}*"))

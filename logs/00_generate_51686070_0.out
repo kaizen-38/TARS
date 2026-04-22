@@ -1,0 +1,4 @@
+[Tue Apr 21 16:03:47 MST 2026] task=0 domain=blocksworld split=train n=5 seed=42
+Generating 5 instances for blocksworld (train)
+Generated 5 instances for blocksworld
+[Tue Apr 21 16:03:48 MST 2026] done: blocksworld — 5 instances

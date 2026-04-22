@@ -1,0 +1,51 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-21T14:05:00 | INFO     | generation.generate_instances | Generating sokoban_heldout_0000_670488
+2026-04-21T14:05:00 | WARNING  | generation.generate_instances | FAILED sokoban idx=0: Command failed (rc=1):
+CMD: ./sokoban-generator-typed -n 8 -b 1 -w 4 -s 670488
+STDERR: ./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by ./sokoban-generator-typed)
+./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by ./sokoban-generator-typed)
+./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by ./sokoban-generator-typed)
+
+2026-04-21T14:05:00 | INFO     | generation.generate_instances | Generating sokoban_heldout_0001_116740
+2026-04-21T14:05:00 | WARNING  | generation.generate_instances | FAILED sokoban idx=1: Command failed (rc=1):
+CMD: ./sokoban-generator-typed -n 7 -b 2 -w 4 -s 116740
+STDERR: ./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by ./sokoban-generator-typed)
+./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by ./sokoban-generator-typed)
+./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by ./sokoban-generator-typed)
+
+2026-04-21T14:05:00 | INFO     | generation.generate_instances | Generating sokoban_heldout_0002_26226
+2026-04-21T14:05:00 | WARNING  | generation.generate_instances | FAILED sokoban idx=2: Command failed (rc=1):
+CMD: ./sokoban-generator-typed -n 8 -b 2 -w 6 -s 26226
+STDERR: ./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by ./sokoban-generator-typed)
+./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by ./sokoban-generator-typed)
+./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by ./sokoban-generator-typed)
+
+2026-04-21T14:05:00 | INFO     | generation.generate_instances | Generating sokoban_heldout_0003_777573
+2026-04-21T14:05:00 | WARNING  | generation.generate_instances | FAILED sokoban idx=3: Command failed (rc=1):
+CMD: ./sokoban-generator-typed -n 8 -b 1 -w 6 -s 777573
+STDERR: ./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by ./sokoban-generator-typed)
+./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by ./sokoban-generator-typed)
+./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by ./sokoban-generator-typed)
+
+2026-04-21T14:05:00 | INFO     | generation.generate_instances | Generating sokoban_heldout_0004_288390
+2026-04-21T14:05:00 | WARNING  | generation.generate_instances | FAILED sokoban idx=4: Command failed (rc=1):
+CMD: ./sokoban-generator-typed -n 8 -b 1 -w 6 -s 288390
+STDERR: ./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by ./sokoban-generator-typed)
+./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by ./sokoban-generator-typed)
+./sokoban-generator-typed: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by ./sokoban-generator-typed)
+

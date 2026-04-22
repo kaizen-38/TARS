@@ -1,0 +1,19 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-21T14:10:49 | INFO     | generation.solve_with_fd | FD solve: python /home/mrathod4/TARS/third_party/downward/fast-downward.py /home/mrathod4/TARS/data/generated/instances/sokoban/heldout/sokoban_heldout_0000_670488_domain.pddl /home/mrathod4/TARS/data/generated/instances/sokoban/heldout/sokoban_heldout_0000_670488_problem.pddl --alias lama-first
+2026-04-21T14:10:49 | WARNING  | generation.solve_with_fd | Solve sokoban_heldout_0000_670488: success=False backend=fd time=0.07s
+error=None

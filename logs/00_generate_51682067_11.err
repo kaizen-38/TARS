@@ -1,0 +1,56 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-21T14:04:57 | INFO     | generation.generate_instances | Generating satellite_heldout_0000_670488
+2026-04-21T14:04:57 | WARNING  | generation.generate_instances | FAILED satellite idx=0: Command failed (rc=1):
+CMD: ./satgen 670488 2 3 3 5 3
+STDERR: ./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.26' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by ./satgen)
+
+2026-04-21T14:04:57 | INFO     | generation.generate_instances | Generating satellite_heldout_0001_116740
+2026-04-21T14:04:57 | WARNING  | generation.generate_instances | FAILED satellite idx=1: Command failed (rc=1):
+CMD: ./satgen 116740 2 3 3 8 6
+STDERR: ./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.26' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by ./satgen)
+
+2026-04-21T14:04:57 | INFO     | generation.generate_instances | Generating satellite_heldout_0002_26226
+2026-04-21T14:04:57 | WARNING  | generation.generate_instances | FAILED satellite idx=2: Command failed (rc=1):
+CMD: ./satgen 26226 2 3 3 8 6
+STDERR: ./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.26' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by ./satgen)
+
+2026-04-21T14:04:57 | INFO     | generation.generate_instances | Generating satellite_heldout_0003_777573
+2026-04-21T14:04:57 | WARNING  | generation.generate_instances | FAILED satellite idx=3: Command failed (rc=1):
+CMD: ./satgen 777573 2 3 3 5 4
+STDERR: ./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.26' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by ./satgen)
+
+2026-04-21T14:04:57 | INFO     | generation.generate_instances | Generating satellite_heldout_0004_288390
+2026-04-21T14:04:57 | WARNING  | generation.generate_instances | FAILED satellite idx=4: Command failed (rc=1):
+CMD: ./satgen 288390 2 3 3 6 6
+STDERR: ./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.26' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by ./satgen)
+./satgen: /lib64/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by ./satgen)
+
