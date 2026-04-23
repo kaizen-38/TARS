@@ -1,0 +1,189 @@
+Git revision: "e0cc05b13"
+In file included from /home/mrathod4/TARS/third_party/downward/src/search/per_task_information.h:4,
+                 from /home/mrathod4/TARS/third_party/downward/src/search/abstract_task.cc:3:
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:94:1: error: ‘concept’ does not name a type
+ concept has_item_type = requires { typename T::ItemType; };
+ ^~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:94:1: note: ‘concept’ only available with -fconcepts
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:94:59: warning: extra ‘;’ [-Wpedantic]
+ concept has_item_type = requires { typename T::ItemType; };
+                                                           ^
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:99:10: error: ‘has_item_type’ has not been declared
+ template<has_item_type ProxyCollection>
+          ^~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:103:11: error: ‘ProxyCollection’ does not name a type
+     const ProxyCollection *collection;
+           ^~~~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:107:33: error: ‘ProxyCollection’ has not been declared
+     using value_type = typename ProxyCollection::ItemType;
+                                 ^~~~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:109:27: error: ISO C++ forbids declaration of ‘type name’ with no type [-fpermissive]
+     using pointer = const value_type *;
+                           ^~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:109:26: error: expected ‘;’ before ‘value_type’
+     using pointer = const value_type *;
+                          ^~~~~~~~~~~
+                          ;
+In file included from /home/mrathod4/TARS/third_party/downward/src/search/per_task_information.h:4,
+                 from /home/mrathod4/TARS/third_party/downward/src/search/axioms.h:4,
+                 from /home/mrathod4/TARS/third_party/downward/src/search/axioms.cc:1:
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:94:1: error: ‘concept’ does not name a type
+ concept has_item_type = requires { typename T::ItemType; };
+ ^~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:94:1: note: ‘concept’ only available with -fconcepts
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:94:59: warning: extra ‘;’ [-Wpedantic]
+ concept has_item_type = requires { typename T::ItemType; };
+                                                           ^
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:99:10: error: ‘has_item_type’ has not been declared
+ template<has_item_type ProxyCollection>
+          ^~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:110:23: error: ‘value_type’ does not name a type
+     using reference = value_type;
+                       ^~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:103:11: error: ‘ProxyCollection’ does not name a type
+     const ProxyCollection *collection;
+           ^~~~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:107:33: error: ‘ProxyCollection’ has not been declared
+     using value_type = typename ProxyCollection::ItemType;
+                                 ^~~~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:109:27: error: ISO C++ forbids declaration of ‘type name’ with no type [-fpermissive]
+     using pointer = const value_type *;
+                           ^~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:109:26: error: expected ‘;’ before ‘value_type’
+     using pointer = const value_type *;
+                          ^~~~~~~~~~~
+                          ;
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:112:25: error: ‘ProxyCollection’ does not name a type
+     ProxyIterator(const ProxyCollection &collection, std::size_t pos)
+                         ^~~~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:116:5: error: ‘reference’ does not name a type
+     reference operator*() const {
+     ^~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:110:23: error: ‘value_type’ does not name a type
+     using reference = value_type;
+                       ^~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:120:5: error: ‘value_type’ does not name a type
+     value_type operator++(int) {
+     ^~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:112:25: error: ‘ProxyCollection’ does not name a type
+     ProxyIterator(const ProxyCollection &collection, std::size_t pos)
+                         ^~~~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:116:5: error: ‘reference’ does not name a type
+     reference operator*() const {
+     ^~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:120:5: error: ‘value_type’ does not name a type
+     value_type operator++(int) {
+     ^~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h: In function ‘bool does_fire(const EffectProxy&, const State&)’:
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:748:54: error: invalid type argument of unary ‘*’ (have ‘int’)
+     for (FactProxy condition : effect.get_conditions()) {
+                                                      ^
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h: In function ‘bool does_fire(const EffectProxy&, const State&)’:
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:748:54: error: invalid type argument of unary ‘*’ (have ‘int’)
+     for (FactProxy condition : effect.get_conditions()) {
+                                                      ^
+In file included from /home/mrathod4/TARS/third_party/downward/src/search/per_task_information.h:4,
+                 from /home/mrathod4/TARS/third_party/downward/src/search/axioms.h:4,
+                 from /home/mrathod4/TARS/third_party/downward/src/search/state_registry.h:5,
+                 from /home/mrathod4/TARS/third_party/downward/src/search/per_state_information.h:4,
+                 from /home/mrathod4/TARS/third_party/downward/src/search/search_space.h:5,
+                 from /home/mrathod4/TARS/third_party/downward/src/search/search_algorithm.h:8,
+                 from /home/mrathod4/TARS/third_party/downward/src/search/planner.cc:3:
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:94:1: error: ‘concept’ does not name a type
+ concept has_item_type = requires { typename T::ItemType; };
+ ^~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:94:1: note: ‘concept’ only available with -fconcepts
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:94:59: warning: extra ‘;’ [-Wpedantic]
+ concept has_item_type = requires { typename T::ItemType; };
+                                                           ^
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:99:10: error: ‘has_item_type’ has not been declared
+ template<has_item_type ProxyCollection>
+          ^~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:103:11: error: ‘ProxyCollection’ does not name a type
+     const ProxyCollection *collection;
+           ^~~~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:107:33: error: ‘ProxyCollection’ has not been declared
+     using value_type = typename ProxyCollection::ItemType;
+                                 ^~~~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:109:27: error: ISO C++ forbids declaration of ‘type name’ with no type [-fpermissive]
+     using pointer = const value_type *;
+                           ^~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:109:26: error: expected ‘;’ before ‘value_type’
+     using pointer = const value_type *;
+                          ^~~~~~~~~~~
+                          ;
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:110:23: error: ‘value_type’ does not name a type
+     using reference = value_type;
+                       ^~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:112:25: error: ‘ProxyCollection’ does not name a type
+     ProxyIterator(const ProxyCollection &collection, std::size_t pos)
+                         ^~~~~~~~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:116:5: error: ‘reference’ does not name a type
+     reference operator*() const {
+     ^~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:120:5: error: ‘value_type’ does not name a type
+     value_type operator++(int) {
+     ^~~~~~~~~~
+In file included from /home/mrathod4/TARS/third_party/downward/src/search/axioms.cc:3:
+/home/mrathod4/TARS/third_party/downward/src/search/task_utils/task_properties.h: In function ‘bool task_properties::is_applicable(OperatorProxy, const State&)’:
+/home/mrathod4/TARS/third_party/downward/src/search/task_utils/task_properties.h:11:56: error: invalid type argument of unary ‘*’ (have ‘int’)
+     for (FactProxy precondition : op.get_preconditions()) {
+                                                        ^
+/home/mrathod4/TARS/third_party/downward/src/search/task_utils/task_properties.h: In function ‘bool task_properties::is_goal_state(TaskProxy, const State&)’:
+/home/mrathod4/TARS/third_party/downward/src/search/task_utils/task_properties.h:19:42: error: invalid type argument of unary ‘*’ (have ‘int’)
+     for (FactProxy goal : task.get_goals()) {
+                                          ^
+/home/mrathod4/TARS/third_party/downward/src/search/axioms.cc: In constructor ‘AxiomEvaluator::AxiomEvaluator(const TaskProxy&)’:
+/home/mrathod4/TARS/third_party/downward/src/search/axioms.cc:20:34: error: invalid type argument of unary ‘*’ (have ‘int’)
+         for (VariableProxy var : variables)
+                                  ^~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h: In function ‘bool does_fire(const EffectProxy&, const State&)’:
+/home/mrathod4/TARS/third_party/downward/src/search/task_proxy.h:748:54: error: invalid type argument of unary ‘*’ (have ‘int’)
+     for (FactProxy condition : effect.get_conditions()) {
+                                                      ^
+/home/mrathod4/TARS/third_party/downward/src/search/axioms.cc:24:36: error: invalid type argument of unary ‘*’ (have ‘int’)
+         for (OperatorProxy axiom : axioms) {
+                                    ^~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/axioms.cc:41:36: error: invalid type argument of unary ‘*’ (have ‘int’)
+         for (OperatorProxy axiom : axioms) {
+                                    ^~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/axioms.cc:44:62: error: invalid type argument of unary ‘*’ (have ‘int’)
+             for (FactProxy condition : effect.get_conditions()) {
+                                                              ^
+/home/mrathod4/TARS/third_party/downward/src/search/axioms.cc:54:34: error: invalid type argument of unary ‘*’ (have ‘int’)
+         for (VariableProxy var : variables) {
+                                  ^~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/axioms.cc:61:34: error: invalid type argument of unary ‘*’ (have ‘int’)
+         for (VariableProxy var : variables) {
+                                  ^~~~~~~~~
+/home/mrathod4/TARS/third_party/downward/src/search/axioms.cc:75:34: error: invalid type argument of unary ‘*’ (have ‘int’)
+         for (VariableProxy var : variables) {
+                                  ^~~~~~~~~
+In file included from /home/mrathod4/TARS/third_party/downward/src/search/planner.cc:5:
+/home/mrathod4/TARS/third_party/downward/src/search/task_utils/task_properties.h: In function ‘bool task_properties::is_applicable(OperatorProxy, const State&)’:
+/home/mrathod4/TARS/third_party/downward/src/search/task_utils/task_properties.h:11:56: error: invalid type argument of unary ‘*’ (have ‘int’)
+     for (FactProxy precondition : op.get_preconditions()) {
+                                                        ^
+/home/mrathod4/TARS/third_party/downward/src/search/task_utils/task_properties.h: In function ‘bool task_properties::is_goal_state(TaskProxy, const State&)’:
+/home/mrathod4/TARS/third_party/downward/src/search/task_utils/task_properties.h:19:42: error: invalid type argument of unary ‘*’ (have ‘int’)
+     for (FactProxy goal : task.get_goals()) {
+                                          ^
+gmake[2]: *** [search/CMakeFiles/downward.dir/build.make:90: search/CMakeFiles/downward.dir/abstract_task.cc.o] Error 1
+gmake[2]: *** Waiting for unfinished jobs....
+gmake[2]: *** [search/CMakeFiles/downward.dir/build.make:76: search/CMakeFiles/downward.dir/planner.cc.o] Error 1
+gmake[2]: *** [search/CMakeFiles/downward.dir/build.make:104: search/CMakeFiles/downward.dir/axioms.cc.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:126: search/CMakeFiles/downward.dir/all] Error 2
+gmake[1]: *** Waiting for unfinished jobs....
+gmake: *** [Makefile:91: all] Error 2
+Traceback (most recent call last):
+  File "/home/mrathod4/TARS/third_party/downward/build.py", line 139, in <module>
+    main()
+  File "/home/mrathod4/TARS/third_party/downward/build.py", line 135, in main
+    build(config_name, CONFIGS[config_name], build_parameters)
+  File "/home/mrathod4/TARS/third_party/downward/build.py", line 112, in build
+    try_run(build_cmd)
+  File "/home/mrathod4/TARS/third_party/downward/build.py", line 88, in try_run
+    subprocess.check_call(cmd)
+  File "/home/mrathod4/.conda/envs/thicket311/lib/python3.11/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+subprocess.CalledProcessError: Command '['cmake', '--build', '/home/mrathod4/TARS/third_party/downward/builds/release', '-j', '4']' returned non-zero exit status 2.

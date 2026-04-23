@@ -30,7 +30,7 @@ def _find_llamafactory_cli() -> list[str]:
     # Prefer installed CLI
     try:
         result = subprocess.run(
-            ["llamafactory-cli", "--help"], capture_output=True, timeout=5
+            ["llamafactory-cli", "--help"], capture_output=True, timeout=30
         )
         if result.returncode == 0:
             return ["llamafactory-cli"]

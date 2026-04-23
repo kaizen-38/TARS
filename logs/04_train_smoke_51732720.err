@@ -1,0 +1,84 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-22T12:38:59 | INFO     | training.write_llamafactory_yaml | Wrote LoRA debug SFT config -> /home/mrathod4/TARS/runs/sft_qwen3_phase1_lora_debug/train_config.yaml
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /home/mrathod4/TARS/src/training/launch_sft.py:71 in main                    │
+│                                                                              │
+│   68 │   │   typer.echo(f"Unknown mode '{mode}'. Choose 'full' or 'lora_debu │
+│   69 │   │   raise typer.Exit(1)                                             │
+│   70 │                                                                       │
+│ ❱ 71 │   lf_cmd = _find_llamafactory_cli()                                   │
+│   72 │   cmd = lf_cmd + ["train", str(config_path)]                          │
+│   73 │                                                                       │
+│   74 │   logger.info("Launch SFT: %s", " ".join(cmd))                        │
+│                                                                              │
+│ /home/mrathod4/TARS/src/training/launch_sft.py:32 in _find_llamafactory_cli  │
+│                                                                              │
+│   29 │   """Locate the LLaMA-Factory CLI entry point."""                     │
+│   30 │   # Prefer installed CLI                                              │
+│   31 │   try:                                                                │
+│ ❱ 32 │   │   result = subprocess.run(                                        │
+│   33 │   │   │   ["llamafactory-cli", "--help"], capture_output=True, timeou │
+│   34 │   │   )                                                               │
+│   35 │   │   if result.returncode == 0:                                      │
+│                                                                              │
+│ /home/mrathod4/.conda/envs/thicket311/lib/python3.11/subprocess.py:550 in    │
+│ run                                                                          │
+│                                                                              │
+│    547 │                                                                     │
+│    548 │   with Popen(*popenargs, **kwargs) as process:                      │
+│    549 │   │   try:                                                          │
+│ ❱  550 │   │   │   stdout, stderr = process.communicate(input, timeout=timeo │
+│    551 │   │   except TimeoutExpired as exc:                                 │
+│    552 │   │   │   process.kill()                                            │
+│    553 │   │   │   if _mswindows:                                            │
+│                                                                              │
+│ /home/mrathod4/.conda/envs/thicket311/lib/python3.11/subprocess.py:1209 in   │
+│ communicate                                                                  │
+│                                                                              │
+│   1206 │   │   │   │   endtime = None                                        │
+│   1207 │   │   │                                                             │
+│   1208 │   │   │   try:                                                      │
+│ ❱ 1209 │   │   │   │   stdout, stderr = self._communicate(input, endtime, ti │
+│   1210 │   │   │   except KeyboardInterrupt:                                 │
+│   1211 │   │   │   │   # https://bugs.python.org/issue25942                  │
+│   1212 │   │   │   │   # See the detailed comment in .wait().                │
+│                                                                              │
+│ /home/mrathod4/.conda/envs/thicket311/lib/python3.11/subprocess.py:2116 in   │
+│ _communicate                                                                 │
+│                                                                              │
+│   2113 │   │   │   │   │   │   │   'failed to raise TimeoutExpired.')        │
+│   2114 │   │   │   │   │                                                     │
+│   2115 │   │   │   │   │   ready = selector.select(timeout)                  │
+│ ❱ 2116 │   │   │   │   │   self._check_timeout(endtime, orig_timeout, stdout │
+│   2117 │   │   │   │   │                                                     │
+│   2118 │   │   │   │   │   # XXX Rewrite these to use non-blocking I/O on th │
+│   2119 │   │   │   │   │   # objects; they are no longer using C stdio!      │
+│                                                                              │
+│ /home/mrathod4/.conda/envs/thicket311/lib/python3.11/subprocess.py:1253 in   │
+│ _check_timeout                                                               │
+│                                                                              │
+│   1250 │   │   if endtime is None:                                           │
+│   1251 │   │   │   return                                                    │
+│   1252 │   │   if skip_check_and_raise or _time() > endtime:                 │
+│ ❱ 1253 │   │   │   raise TimeoutExpired(                                     │
+│   1254 │   │   │   │   │   self.args, orig_timeout,                          │
+│   1255 │   │   │   │   │   output=b''.join(stdout_seq) if stdout_seq else No │
+│   1256 │   │   │   │   │   stderr=b''.join(stderr_seq) if stderr_seq else No │
+╰──────────────────────────────────────────────────────────────────────────────╯
+TimeoutExpired: Command '['llamafactory-cli', '--help']' timed out after 5 
+seconds

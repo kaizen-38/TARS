@@ -194,5 +194,43 @@ def eval(
     subprocess.run(cmd, cwd=str(_REPO_ROOT), check=True)
 
 
+
+@app.command()
+def generate_one(
+    domain: str = typer.Argument(...),
+    split: str = typer.Option(...),
+    n_instances: int = typer.Option(..., "--n-instances"),
+    seed: int = typer.Option(42),
+    output_dir: Path = typer.Option(...),
+) -> None:
+    """Generate instances for a single domain (used by Slurm array jobs)."""
+    from utils.seeds import set_global_seed
+    from generation.generate_instances import generate_domain_split
+
+    set_global_seed(seed)
+    generate_domain_split(
+        domain=domain,
+        split=split,
+        n_instances=n_instances,
+        seed=seed,
+        output_dir=output_dir,
+    )
+
+
+@app.command()
+def build_tuples(
+    plans_dir: Path = typer.Option(_REPO_ROOT / "data" / "generated" / "plans"),
+    instances_dir: Path = typer.Option(_REPO_ROOT / "data" / "generated" / "instances"),
+    tuples_dir: Path = typer.Option(_REPO_ROOT / "data" / "generated" / "tuples_standard"),
+) -> None:
+    """Build tuple JSONs from solved plans for dataset construction."""
+    import json
+    from generation.solve_with_fd import SolveResult
+    from pddl_ops.anonymize import anonymize_triple
+    from pddl_ops.compact_serialize import actions_to_compact
+    from dataset.build_sft_dataset import build_tuple_json
+    from utils.logging import get_logger
+
+
 if __name__ == "__main__":
     app()

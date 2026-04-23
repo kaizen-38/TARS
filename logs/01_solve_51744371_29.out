@@ -1,0 +1,3 @@
+[Wed Apr 22 17:53:38 MST 2026] task=29 instance=gripper_train_0004_288390
+success=False actions=0 time=0.3s
+[Wed Apr 22 17:53:38 MST 2026] done: gripper_train_0004_288390

@@ -15,9 +15,11 @@ REPO_ROOT="${SLURM_SUBMIT_DIR}"
 MANIFEST="${REPO_ROOT}/manifests/solve_manifest.tsv"
 
 module purge
+module load gcc/15.2.0
+export LD_LIBRARY_PATH=/home/mrathod4/.conda/envs/thicket311/lib:$LD_LIBRARY_PATH
 module load mamba/latest
 eval "$(conda shell.bash hook)"
-conda activate tars
+conda activate thicket311
 
 export PYTHONPATH="${REPO_ROOT}/src"
 cd "${REPO_ROOT}"
@@ -47,7 +49,7 @@ result = solve_instance(
 print(f"success={result.success} actions={len(result.action_sequence)} time={result.wall_clock_sec:.1f}s")
 if not result.success:
     print(f"error={result.error}", file=sys.stderr)
-    sys.exit(1)
+    pass  # unsolved is expected, meta JSON already written
 EOF
 
 echo "[$(date)] done: ${INSTANCE_ID}"

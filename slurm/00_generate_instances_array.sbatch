@@ -21,7 +21,7 @@ MANIFEST="${REPO_ROOT}/manifests/generate_${MODE:-smoke}.tsv"
 module purge
 module load mamba/latest
 eval "$(conda shell.bash hook)"
-conda activate tars
+conda activate thicket311
 
 export PYTHONPATH="${REPO_ROOT}/src"
 cd "${REPO_ROOT}"

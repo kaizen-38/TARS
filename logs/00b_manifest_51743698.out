@@ -1,0 +1,19 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+/var/spool/slurmd/job51743698/slurm_script: line 40: __conda_exe: command not found
+/var/spool/slurmd/job51743698/slurm_script: eval: line 83: syntax error near unexpected token `activate'
+/var/spool/slurmd/job51743698/slurm_script: eval: line 83: `        activate|deactivate)'

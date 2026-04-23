@@ -1,0 +1,19 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-22T12:01:42 | INFO     | generation.solve_with_fd | FD solve: python /home/mrathod4/TARS/third_party/downward/fast-downward.py /home/mrathod4/TARS/data/generated/instances/floortile/train/floortile_train_0002_26226_domain.pddl /home/mrathod4/TARS/data/generated/instances/floortile/train/floortile_train_0002_26226_problem.pddl --search lazy_greedy([ff()], preferred=[ff()]) --plan-file /tmp/tars_fd_1g_h7fd_/sas_plan
+2026-04-22T12:01:42 | WARNING  | generation.solve_with_fd | Solve floortile_train_0002_26226: success=False backend=fd time=0.32s
+error=None

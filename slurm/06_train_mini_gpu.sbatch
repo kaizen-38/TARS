@@ -19,7 +19,7 @@ REPO_ROOT="${SLURM_SUBMIT_DIR}"
 module purge
 module load mamba/latest
 eval "$(conda shell.bash hook)"
-conda activate tars
+conda activate thicket311
 
 export HF_HOME="${SCRATCH}/hf_cache"
 export TRANSFORMERS_CACHE="${SCRATCH}/hf_cache"

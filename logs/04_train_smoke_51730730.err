@@ -1,0 +1,40 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-22T12:07:21 | INFO     | training.write_llamafactory_yaml | Wrote LoRA debug SFT config -> /home/mrathod4/TARS/runs/sft_qwen3_phase1_lora_debug/train_config.yaml
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /home/mrathod4/TARS/src/training/launch_sft.py:71 in main                    │
+│                                                                              │
+│   68 │   │   typer.echo(f"Unknown mode '{mode}'. Choose 'full' or 'lora_debu │
+│   69 │   │   raise typer.Exit(1)                                             │
+│   70 │                                                                       │
+│ ❱ 71 │   lf_cmd = _find_llamafactory_cli()                                   │
+│   72 │   cmd = lf_cmd + ["train", str(config_path)]                          │
+│   73 │                                                                       │
+│   74 │   logger.info("Launch SFT: %s", " ".join(cmd))                        │
+│                                                                              │
+│ /home/mrathod4/TARS/src/training/launch_sft.py:49 in _find_llamafactory_cli  │
+│                                                                              │
+│   46 │   if main_script.exists():                                            │
+│   47 │   │   return [sys.executable, str(main_script)]                       │
+│   48 │                                                                       │
+│ ❱ 49 │   raise RuntimeError(                                                 │
+│   50 │   │   "LLaMA-Factory CLI not found. Run `pip install -e third_party/L │
+│   51 │   │   "or `make setup`."                                              │
+│   52 │   )                                                                   │
+╰──────────────────────────────────────────────────────────────────────────────╯
+RuntimeError: LLaMA-Factory CLI not found. Run `pip install -e 
+third_party/LLaMAFactory` or `make setup`.

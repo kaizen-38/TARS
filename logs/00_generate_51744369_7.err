@@ -1,0 +1,26 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-22T17:53:16 | INFO     | generation.generate_instances | Generating spanner_train_0000_670488
+2026-04-22T17:53:17 | WARNING  | generation.generate_instances | FAILED spanner idx=0: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/spanner/4ops/domain.pddl'
+2026-04-22T17:53:17 | INFO     | generation.generate_instances | Generating spanner_train_0001_116740
+2026-04-22T17:53:17 | WARNING  | generation.generate_instances | FAILED spanner idx=1: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/spanner/4ops/domain.pddl'
+2026-04-22T17:53:17 | INFO     | generation.generate_instances | Generating spanner_train_0002_26226
+2026-04-22T17:53:18 | WARNING  | generation.generate_instances | FAILED spanner idx=2: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/spanner/4ops/domain.pddl'
+2026-04-22T17:53:18 | INFO     | generation.generate_instances | Generating spanner_train_0003_777573
+2026-04-22T17:53:18 | WARNING  | generation.generate_instances | FAILED spanner idx=3: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/spanner/4ops/domain.pddl'
+2026-04-22T17:53:18 | INFO     | generation.generate_instances | Generating spanner_train_0004_288390
+2026-04-22T17:53:18 | WARNING  | generation.generate_instances | FAILED spanner idx=4: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/spanner/4ops/domain.pddl'

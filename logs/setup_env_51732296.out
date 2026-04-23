@@ -1,0 +1,69 @@
+Transaction
+
+  Prefix: /home/mrathod4/.conda/envs/thicket311
+
+  Updating specs:
+
+   - python=3.11
+
+
+  Package               Version  Build                 Channel           Size
+───────────────────────────────────────────────────────────────────────────────
+  Install:
+───────────────────────────────────────────────────────────────────────────────
+
+  + libzlib               1.3.2  h25fd6f3_2            conda-forge     Cached
+  + libgomp              15.2.0  he0feb66_18           conda-forge     Cached
+  + zstd                  1.5.7  hb78ec9c_6            conda-forge     Cached
+  + _openmp_mutex           4.5  20_gnu                conda-forge     Cached
+  + ld_impl_linux-64     2.45.1  default_hbd61a6d_102  conda-forge     Cached
+  + libgcc               15.2.0  he0feb66_18           conda-forge     Cached
+  + tk                   8.6.13  noxft_h366c992_103    conda-forge     Cached
+  + libstdcxx            15.2.0  h934c35e_18           conda-forge     Cached
+  + libffi                3.5.2  h3435931_0            conda-forge     Cached
+  + libgcc-ng            15.2.0  h69a702a_18           conda-forge     Cached
+  + libuuid                2.42  h5347b49_0            conda-forge     Cached
+  + libnsl                2.0.1  hb9d3cd8_1            conda-forge     Cached
+  + liblzma               5.8.3  hb03c661_0            conda-forge     Cached
+  + libexpat              2.7.5  hecca717_0            conda-forge     Cached
+  + bzip2                 1.0.8  hda65f42_9            conda-forge     Cached
+  + ncurses                 6.5  h2d0b736_3            conda-forge     Cached
+  + icu                    78.3  h33c6efd_0            conda-forge     Cached
+  + libxcrypt            4.4.36  hd590300_1            conda-forge     Cached
+  + readline                8.3  h853b02a_0            conda-forge     Cached
+  + libsqlite            3.53.0  hf4e2dac_0            conda-forge     Cached
+  + tzdata                2025c  hc9c84f9_1            conda-forge     Cached
+  + ca-certificates   2026.4.22  hbd8a1cb_0            conda-forge      131kB
+  + openssl               3.6.2  h35e630c_0            conda-forge     Cached
+  + python              3.11.15  hd63d673_0_cpython    conda-forge       31MB
+  + packaging              26.1  pyhc364b38_0          conda-forge     Cached
+  + setuptools           82.0.1  pyh332efcf_0          conda-forge     Cached
+  + wheel                0.47.0  pyhd8ed1ab_0          conda-forge       33kB
+  + pip                  26.0.1  pyh8b19718_0          conda-forge     Cached
+
+  Summary:
+
+  Install: 28 packages
+
+  Total download: 31MB
+
+───────────────────────────────────────────────────────────────────────────────
+
+
+
+Looking for: ['python=3.11']
+
+
+Downloading and Extracting Packages: ...working... done
+Preparing transaction: - \ | / - done
+Verifying transaction: | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | done
+Executing transaction: - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | done
+
+To activate this environment, use
+
+     $ source activate thicket311
+
+To deactivate an active environment, use
+
+     $ source deactivate
+

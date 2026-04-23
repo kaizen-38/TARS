@@ -1,0 +1,7 @@
+Requirement already satisfied: setuptools in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (82.0.1)
+Requirement already satisfied: pip in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (26.0.1)
+Obtaining file:///home/mrathod4/TARS
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'

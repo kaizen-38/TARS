@@ -1,0 +1,264 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-22T18:41:59 | INFO     | training.write_llamafactory_yaml | Wrote LoRA debug SFT config -> /home/mrathod4/TARS/runs/sft_qwen3_phase1_lora_debug/train_config.yaml
+2026-04-22T18:42:18 | INFO     | __main__ | Launch SFT: llamafactory-cli train /home/mrathod4/TARS/runs/sft_qwen3_phase1_lora_debug/train_config.yaml
+warmup_ratio is deprecated and will be removed in v5.2. Use `warmup_steps` instead.
+`logging_dir` is deprecated and will be removed in v5.2. Please set `TENSORBOARD_LOGGING_DIR` instead.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[INFO|configuration_utils.py:670] 2026-04-22 18:42:29,614 >> loading configuration file config.json from cache at /scratch/mrathod4/hf_cache/hub/models--Qwen--Qwen3-1.7B/snapshots/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/config.json
+[INFO|configuration_utils.py:742] 2026-04-22 18:42:29,620 >> Model config Qwen3Config {
+  "architectures": [
+    "Qwen3ForCausalLM"
+  ],
+  "attention_bias": false,
+  "attention_dropout": 0.0,
+  "bos_token_id": 151643,
+  "dtype": "bfloat16",
+  "eos_token_id": 151645,
+  "head_dim": 128,
+  "hidden_act": "silu",
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": 6144,
+  "layer_types": [
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention"
+  ],
+  "max_position_embeddings": 40960,
+  "max_window_layers": 28,
+  "model_type": "qwen3",
+  "num_attention_heads": 16,
+  "num_hidden_layers": 28,
+  "num_key_value_heads": 8,
+  "pad_token_id": null,
+  "rms_norm_eps": 1e-06,
+  "rope_parameters": {
+    "rope_theta": 1000000,
+    "rope_type": "default"
+  },
+  "sliding_window": null,
+  "tie_word_embeddings": true,
+  "transformers_version": "5.2.0",
+  "use_cache": true,
+  "use_sliding_window": false,
+  "vocab_size": 151936
+}
+
+[INFO|configuration_utils.py:670] 2026-04-22 18:42:33,673 >> loading configuration file config.json from cache at /scratch/mrathod4/hf_cache/hub/models--Qwen--Qwen3-1.7B/snapshots/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/config.json
+[INFO|configuration_utils.py:742] 2026-04-22 18:42:33,674 >> Model config Qwen3Config {
+  "architectures": [
+    "Qwen3ForCausalLM"
+  ],
+  "attention_bias": false,
+  "attention_dropout": 0.0,
+  "bos_token_id": 151643,
+  "dtype": "bfloat16",
+  "eos_token_id": 151645,
+  "head_dim": 128,
+  "hidden_act": "silu",
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": 6144,
+  "layer_types": [
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention"
+  ],
+  "max_position_embeddings": 40960,
+  "max_window_layers": 28,
+  "model_type": "qwen3",
+  "num_attention_heads": 16,
+  "num_hidden_layers": 28,
+  "num_key_value_heads": 8,
+  "pad_token_id": null,
+  "rms_norm_eps": 1e-06,
+  "rope_parameters": {
+    "rope_theta": 1000000,
+    "rope_type": "default"
+  },
+  "sliding_window": null,
+  "tie_word_embeddings": true,
+  "transformers_version": "5.2.0",
+  "use_cache": true,
+  "use_sliding_window": false,
+  "vocab_size": 151936
+}
+
+[INFO|configuration_utils.py:670] 2026-04-22 18:42:34,082 >> loading configuration file config.json from cache at /scratch/mrathod4/hf_cache/hub/models--Qwen--Qwen3-1.7B/snapshots/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/config.json
+[INFO|configuration_utils.py:742] 2026-04-22 18:42:34,082 >> Model config Qwen3Config {
+  "architectures": [
+    "Qwen3ForCausalLM"
+  ],
+  "attention_bias": false,
+  "attention_dropout": 0.0,
+  "bos_token_id": 151643,
+  "dtype": "bfloat16",
+  "eos_token_id": 151645,
+  "head_dim": 128,
+  "hidden_act": "silu",
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": 6144,
+  "layer_types": [
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention"
+  ],
+  "max_position_embeddings": 40960,
+  "max_window_layers": 28,
+  "model_type": "qwen3",
+  "num_attention_heads": 16,
+  "num_hidden_layers": 28,
+  "num_key_value_heads": 8,
+  "pad_token_id": null,
+  "rms_norm_eps": 1e-06,
+  "rope_parameters": {
+    "rope_theta": 1000000,
+    "rope_type": "default"
+  },
+  "sliding_window": null,
+  "tie_word_embeddings": true,
+  "transformers_version": "5.2.0",
+  "use_cache": true,
+  "use_sliding_window": false,
+  "vocab_size": 151936
+}
+
+Setting num_proc from 4 back to 1 for the train split to disable multiprocessing as it only contains one shard.
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 0 examples [00:00, ? examples/s]
+Traceback (most recent call last):
+  File "/home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages/datasets/builder.py", line 1847, in _prepare_split_single
+    num_examples, num_bytes = writer.finalize()
+                              ^^^^^^^^^^^^^^^^^
+  File "/home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages/datasets/arrow_writer.py", line 670, in finalize
+    raise SchemaInferenceError("Please pass `features` or at least one example when writing data")
+datasets.arrow_writer.SchemaInferenceError: Please pass `features` or at least one example when writing data
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/mrathod4/.conda/envs/thicket311/bin/llamafactory-cli", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/mrathod4/TARS/third_party/LLaMAFactory/src/llamafactory/cli.py", line 24, in main
+    launcher.launch()
+  File "/home/mrathod4/TARS/third_party/LLaMAFactory/src/llamafactory/launcher.py", line 157, in launch
+    run_exp()
+  File "/home/mrathod4/TARS/third_party/LLaMAFactory/src/llamafactory/train/tuner.py", line 139, in run_exp
+    _training_function(config={"args": args, "callbacks": callbacks})
+  File "/home/mrathod4/TARS/third_party/LLaMAFactory/src/llamafactory/train/tuner.py", line 107, in _training_function
+    run_sft(model_args, data_args, training_args, finetuning_args, generating_args, callbacks)
+  File "/home/mrathod4/TARS/third_party/LLaMAFactory/src/llamafactory/train/sft/workflow.py", line 52, in run_sft
+    dataset_module = get_dataset(template, model_args, data_args, training_args, stage="sft", **tokenizer_module)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mrathod4/TARS/third_party/LLaMAFactory/src/llamafactory/data/loader.py", line 303, in get_dataset
+    dataset = _get_merged_dataset(data_args.dataset, model_args, data_args, training_args, stage)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mrathod4/TARS/third_party/LLaMAFactory/src/llamafactory/data/loader.py", line 181, in _get_merged_dataset
+    datasets[dataset_name] = _load_single_dataset(dataset_attr, model_args, data_args, training_args)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mrathod4/TARS/third_party/LLaMAFactory/src/llamafactory/data/loader.py", line 131, in _load_single_dataset
+    dataset = load_dataset(
+              ^^^^^^^^^^^^^
+  File "/home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages/datasets/load.py", line 1412, in load_dataset
+    builder_instance.download_and_prepare(
+  File "/home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages/datasets/builder.py", line 894, in download_and_prepare
+    self._download_and_prepare(
+  File "/home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages/datasets/builder.py", line 970, in _download_and_prepare
+    self._prepare_split(split_generator, **prepare_split_kwargs)
+  File "/home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages/datasets/builder.py", line 1702, in _prepare_split
+    for job_id, done, content in self._prepare_split_single(
+  File "/home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages/datasets/builder.py", line 1858, in _prepare_split_single
+    raise DatasetGenerationError("An error occurred while generating the dataset") from e
+datasets.exceptions.DatasetGenerationError: An error occurred while generating the dataset
+2026-04-22T18:42:37 | ERROR    | __main__ | Training failed with exit code 1

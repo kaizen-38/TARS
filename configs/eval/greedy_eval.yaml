@@ -5,7 +5,7 @@ decoding:
   do_sample: false
   temperature: 0.01
   top_p: 1.0
-  max_new_tokens: 2048
+  max_new_tokens: 512
   enable_thinking: false      # MUST be false for Phase 1
 
 # Batch size for inference (reduce if OOM)

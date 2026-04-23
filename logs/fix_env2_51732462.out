@@ -1,0 +1,328 @@
+Obtaining file:///home/mrathod4/TARS/third_party/LLaMAFactory
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Collecting accelerate<=1.11.0,>=1.3.0 (from llamafactory==0.9.5.dev0)
+  Downloading accelerate-1.11.0-py3-none-any.whl.metadata (19 kB)
+Collecting av<=16.0.0,>=10.0.0 (from llamafactory==0.9.5.dev0)
+  Downloading av-16.0.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (4.6 kB)
+Collecting datasets<=4.0.0,>=2.16.0 (from llamafactory==0.9.5.dev0)
+  Downloading datasets-4.0.0-py3-none-any.whl.metadata (19 kB)
+Collecting einops (from llamafactory==0.9.5.dev0)
+  Using cached einops-0.8.2-py3-none-any.whl.metadata (13 kB)
+Collecting fastapi (from llamafactory==0.9.5.dev0)
+  Using cached fastapi-0.136.0-py3-none-any.whl.metadata (28 kB)
+Collecting fire (from llamafactory==0.9.5.dev0)
+  Using cached fire-0.7.1-py3-none-any.whl.metadata (5.8 kB)
+Collecting gradio<=5.50.0,>=4.38.0 (from llamafactory==0.9.5.dev0)
+  Downloading gradio-5.50.0-py3-none-any.whl.metadata (16 kB)
+Collecting hf-transfer (from llamafactory==0.9.5.dev0)
+  Downloading hf_transfer-0.1.9-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.7 kB)
+Collecting matplotlib>=3.7.0 (from llamafactory==0.9.5.dev0)
+  Downloading matplotlib-3.10.8-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (52 kB)
+Collecting modelscope (from llamafactory==0.9.5.dev0)
+  Downloading modelscope-1.36.1-py3-none-any.whl.metadata (43 kB)
+Requirement already satisfied: numpy in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from llamafactory==0.9.5.dev0) (2.4.4)
+Collecting omegaconf (from llamafactory==0.9.5.dev0)
+  Downloading omegaconf-2.3.0-py3-none-any.whl.metadata (3.9 kB)
+Requirement already satisfied: packaging in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from llamafactory==0.9.5.dev0) (26.1)
+Requirement already satisfied: pandas in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from llamafactory==0.9.5.dev0) (3.0.2)
+Collecting peft<=0.18.1,>=0.18.0 (from llamafactory==0.9.5.dev0)
+  Downloading peft-0.18.1-py3-none-any.whl.metadata (14 kB)
+Collecting protobuf (from llamafactory==0.9.5.dev0)
+  Using cached protobuf-7.34.1-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)
+Collecting pydantic (from llamafactory==0.9.5.dev0)
+  Using cached pydantic-2.13.3-py3-none-any.whl.metadata (108 kB)
+Requirement already satisfied: pyyaml in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from llamafactory==0.9.5.dev0) (6.0.3)
+Requirement already satisfied: safetensors in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from llamafactory==0.9.5.dev0) (0.7.0)
+Collecting scipy (from llamafactory==0.9.5.dev0)
+  Downloading scipy-1.17.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+Collecting sentencepiece (from llamafactory==0.9.5.dev0)
+  Downloading sentencepiece-0.2.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (10 kB)
+Collecting sse-starlette (from llamafactory==0.9.5.dev0)
+  Using cached sse_starlette-3.3.4-py3-none-any.whl.metadata (14 kB)
+Collecting tiktoken (from llamafactory==0.9.5.dev0)
+  Downloading tiktoken-0.12.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (6.7 kB)
+Requirement already satisfied: torch>=2.4.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from llamafactory==0.9.5.dev0) (2.11.0)
+Collecting torchaudio>=2.4.0 (from llamafactory==0.9.5.dev0)
+  Downloading torchaudio-2.11.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (6.9 kB)
+Collecting torchdata<=0.11.0,>=0.10.0 (from llamafactory==0.9.5.dev0)
+  Downloading torchdata-0.11.0-py3-none-any.whl.metadata (6.3 kB)
+Collecting torchvision>=0.19.0 (from llamafactory==0.9.5.dev0)
+  Downloading torchvision-0.26.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (5.5 kB)
+Collecting transformers!=4.52.0,!=4.57.0,<=5.2.0,>=4.55.0 (from llamafactory==0.9.5.dev0)
+  Downloading transformers-5.2.0-py3-none-any.whl.metadata (32 kB)
+Collecting trl<=0.24.0,>=0.18.0 (from llamafactory==0.9.5.dev0)
+  Downloading trl-0.24.0-py3-none-any.whl.metadata (11 kB)
+Collecting tyro<0.9.0 (from llamafactory==0.9.5.dev0)
+  Downloading tyro-0.8.14-py3-none-any.whl.metadata (8.4 kB)
+Collecting uvicorn (from llamafactory==0.9.5.dev0)
+  Using cached uvicorn-0.45.0-py3-none-any.whl.metadata (6.7 kB)
+Requirement already satisfied: psutil in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from accelerate<=1.11.0,>=1.3.0->llamafactory==0.9.5.dev0) (7.2.2)
+Requirement already satisfied: huggingface_hub>=0.21.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from accelerate<=1.11.0,>=1.3.0->llamafactory==0.9.5.dev0) (1.11.0)
+Requirement already satisfied: filelock in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (3.29.0)
+Requirement already satisfied: pyarrow>=15.0.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (24.0.0)
+Collecting dill<0.3.9,>=0.3.0 (from datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0)
+  Downloading dill-0.3.8-py3-none-any.whl.metadata (10 kB)
+Requirement already satisfied: requests>=2.32.2 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (2.33.1)
+Requirement already satisfied: tqdm>=4.66.3 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (4.67.3)
+Requirement already satisfied: xxhash in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (3.6.0)
+Collecting multiprocess<0.70.17 (from datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0)
+  Downloading multiprocess-0.70.16-py311-none-any.whl.metadata (7.2 kB)
+Collecting fsspec<=2025.3.0,>=2023.1.0 (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0)
+  Downloading fsspec-2025.3.0-py3-none-any.whl.metadata (11 kB)
+Requirement already satisfied: aiohttp!=4.0.0a0,!=4.0.0a1 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from fsspec[http]<=2025.3.0,>=2023.1.0->datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (3.13.5)
+Collecting aiofiles<25.0,>=22.0 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Downloading aiofiles-24.1.0-py3-none-any.whl.metadata (10 kB)
+Requirement already satisfied: anyio<5.0,>=3.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (4.13.0)
+Collecting brotli>=1.1.0 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Downloading brotli-1.2.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.1 kB)
+Collecting ffmpy (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Downloading ffmpy-1.0.0-py3-none-any.whl.metadata (3.0 kB)
+Collecting gradio-client==1.14.0 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Downloading gradio_client-1.14.0-py3-none-any.whl.metadata (7.1 kB)
+Collecting groovy~=0.1 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Using cached groovy-0.1.2-py3-none-any.whl.metadata (6.1 kB)
+Requirement already satisfied: httpx<1.0,>=0.24.1 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (0.28.1)
+Requirement already satisfied: jinja2<4.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (3.1.6)
+Requirement already satisfied: markupsafe<4.0,>=2.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (3.0.3)
+Collecting orjson~=3.0 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Downloading orjson-3.11.8-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (41 kB)
+Collecting pandas (from llamafactory==0.9.5.dev0)
+  Downloading pandas-2.3.3-cp311-cp311-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (91 kB)
+Collecting pillow<12.0,>=8.0 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Downloading pillow-11.3.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.0 kB)
+Collecting pydantic (from llamafactory==0.9.5.dev0)
+  Downloading pydantic-2.12.3-py3-none-any.whl.metadata (87 kB)
+Collecting pydub (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Using cached pydub-0.25.1-py2.py3-none-any.whl.metadata (1.4 kB)
+Collecting python-multipart>=0.0.18 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Using cached python_multipart-0.0.26-py3-none-any.whl.metadata (2.1 kB)
+Collecting ruff>=0.9.3 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Using cached ruff-0.15.11-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (26 kB)
+Collecting safehttpx<0.2.0,>=0.1.6 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Using cached safehttpx-0.1.7-py3-none-any.whl.metadata (4.2 kB)
+Collecting semantic-version~=2.0 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Using cached semantic_version-2.10.0-py2.py3-none-any.whl.metadata (9.7 kB)
+Collecting starlette<1.0,>=0.40.0 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Downloading starlette-0.52.1-py3-none-any.whl.metadata (6.3 kB)
+Collecting tomlkit<0.14.0,>=0.12.0 (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Downloading tomlkit-0.13.3-py3-none-any.whl.metadata (2.8 kB)
+Requirement already satisfied: typer<1.0,>=0.12 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (0.24.2)
+Requirement already satisfied: typing-extensions~=4.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (4.15.0)
+Collecting websockets<16.0,>=13.0 (from gradio-client==1.14.0->gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0)
+  Downloading websockets-15.0.1-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
+Requirement already satisfied: idna>=2.8 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from anyio<5.0,>=3.0->gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (3.13)
+Collecting typing-inspection>=0.4.2 (from fastapi->llamafactory==0.9.5.dev0)
+  Using cached typing_inspection-0.4.2-py3-none-any.whl.metadata (2.6 kB)
+Requirement already satisfied: annotated-doc>=0.0.2 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from fastapi->llamafactory==0.9.5.dev0) (0.0.4)
+Requirement already satisfied: certifi in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from httpx<1.0,>=0.24.1->gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (2026.4.22)
+Requirement already satisfied: httpcore==1.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from httpx<1.0,>=0.24.1->gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (1.0.9)
+Requirement already satisfied: h11>=0.16 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from httpcore==1.*->httpx<1.0,>=0.24.1->gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (0.16.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.4.3 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from huggingface_hub>=0.21.0->accelerate<=1.11.0,>=1.3.0->llamafactory==0.9.5.dev0) (1.4.3)
+Requirement already satisfied: python-dateutil>=2.8.2 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from pandas->llamafactory==0.9.5.dev0) (2.9.0.post0)
+Collecting pytz>=2020.1 (from pandas->llamafactory==0.9.5.dev0)
+  Using cached pytz-2026.1.post1-py2.py3-none-any.whl.metadata (22 kB)
+Collecting tzdata>=2022.7 (from pandas->llamafactory==0.9.5.dev0)
+  Using cached tzdata-2026.1-py2.py3-none-any.whl.metadata (1.4 kB)
+Collecting annotated-types>=0.6.0 (from pydantic->llamafactory==0.9.5.dev0)
+  Using cached annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.41.4 (from pydantic->llamafactory==0.9.5.dev0)
+  Downloading pydantic_core-2.41.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (7.3 kB)
+Requirement already satisfied: urllib3>=1.25 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from torchdata<=0.11.0,>=0.10.0->llamafactory==0.9.5.dev0) (2.6.3)
+Requirement already satisfied: regex!=2019.12.17 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from transformers!=4.52.0,!=4.57.0,<=5.2.0,>=4.55.0->llamafactory==0.9.5.dev0) (2026.4.4)
+Requirement already satisfied: tokenizers<=0.23.0,>=0.22.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from transformers!=4.52.0,!=4.57.0,<=5.2.0,>=4.55.0->llamafactory==0.9.5.dev0) (0.22.2)
+Collecting typer-slim (from transformers!=4.52.0,!=4.57.0,<=5.2.0,>=4.55.0->llamafactory==0.9.5.dev0)
+  Downloading typer_slim-0.24.0-py3-none-any.whl.metadata (4.2 kB)
+Requirement already satisfied: click>=8.2.1 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from typer<1.0,>=0.12->gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (8.3.3)
+Requirement already satisfied: shellingham>=1.3.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from typer<1.0,>=0.12->gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (1.5.4)
+Requirement already satisfied: rich>=12.3.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from typer<1.0,>=0.12->gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (15.0.0)
+Collecting docstring-parser>=0.16 (from tyro<0.9.0->llamafactory==0.9.5.dev0)
+  Downloading docstring_parser-0.18.0-py3-none-any.whl.metadata (3.5 kB)
+Collecting shtab>=1.5.6 (from tyro<0.9.0->llamafactory==0.9.5.dev0)
+  Downloading shtab-1.8.0-py3-none-any.whl.metadata (7.3 kB)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (2.6.1)
+Requirement already satisfied: aiosignal>=1.4.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (1.4.0)
+Requirement already satisfied: attrs>=17.3.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (26.1.0)
+Requirement already satisfied: frozenlist>=1.1.1 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (1.8.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (6.7.1)
+Requirement already satisfied: propcache>=0.2.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (0.4.1)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.3.0,>=2023.1.0->datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (1.23.0)
+Collecting contourpy>=1.0.1 (from matplotlib>=3.7.0->llamafactory==0.9.5.dev0)
+  Downloading contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (5.5 kB)
+Collecting cycler>=0.10 (from matplotlib>=3.7.0->llamafactory==0.9.5.dev0)
+  Using cached cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
+Collecting fonttools>=4.22.0 (from matplotlib>=3.7.0->llamafactory==0.9.5.dev0)
+  Downloading fonttools-4.62.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (117 kB)
+Collecting kiwisolver>=1.3.1 (from matplotlib>=3.7.0->llamafactory==0.9.5.dev0)
+  Downloading kiwisolver-1.5.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.1 kB)
+Collecting pyparsing>=3 (from matplotlib>=3.7.0->llamafactory==0.9.5.dev0)
+  Using cached pyparsing-3.3.2-py3-none-any.whl.metadata (5.8 kB)
+Requirement already satisfied: six>=1.5 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from python-dateutil>=2.8.2->pandas->llamafactory==0.9.5.dev0) (1.17.0)
+Requirement already satisfied: charset_normalizer<4,>=2 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from requests>=2.32.2->datasets<=4.0.0,>=2.16.0->llamafactory==0.9.5.dev0) (3.4.7)
+Requirement already satisfied: markdown-it-py>=2.2.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from rich>=12.3.0->typer<1.0,>=0.12->gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (4.0.0)
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from rich>=12.3.0->typer<1.0,>=0.12->gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (2.20.0)
+Requirement already satisfied: mdurl~=0.1 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from markdown-it-py>=2.2.0->rich>=12.3.0->typer<1.0,>=0.12->gradio<=5.50.0,>=4.38.0->llamafactory==0.9.5.dev0) (0.1.2)
+Requirement already satisfied: setuptools<82 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from torch>=2.4.0->llamafactory==0.9.5.dev0) (81.0.0)
+Requirement already satisfied: sympy>=1.13.3 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from torch>=2.4.0->llamafactory==0.9.5.dev0) (1.14.0)
+Requirement already satisfied: networkx>=2.5.1 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from torch>=2.4.0->llamafactory==0.9.5.dev0) (3.6.1)
+Requirement already satisfied: cuda-toolkit==13.0.2 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (13.0.2)
+Requirement already satisfied: cuda-bindings<14,>=13.0.3 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from torch>=2.4.0->llamafactory==0.9.5.dev0) (13.2.0)
+Requirement already satisfied: nvidia-cudnn-cu13==9.19.0.56 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from torch>=2.4.0->llamafactory==0.9.5.dev0) (9.19.0.56)
+Requirement already satisfied: nvidia-cusparselt-cu13==0.8.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from torch>=2.4.0->llamafactory==0.9.5.dev0) (0.8.0)
+Requirement already satisfied: nvidia-nccl-cu13==2.28.9 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from torch>=2.4.0->llamafactory==0.9.5.dev0) (2.28.9)
+Requirement already satisfied: nvidia-nvshmem-cu13==3.4.5 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from torch>=2.4.0->llamafactory==0.9.5.dev0) (3.4.5)
+Requirement already satisfied: triton==3.6.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from torch>=2.4.0->llamafactory==0.9.5.dev0) (3.6.0)
+Requirement already satisfied: nvidia-cublas==13.1.0.3.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (13.1.0.3)
+Requirement already satisfied: nvidia-cuda-runtime==13.0.96.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (13.0.96)
+Requirement already satisfied: nvidia-cufft==12.0.0.61.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (12.0.0.61)
+Requirement already satisfied: nvidia-cufile==1.15.1.6.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (1.15.1.6)
+Requirement already satisfied: nvidia-cuda-cupti==13.0.85.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (13.0.85)
+Requirement already satisfied: nvidia-curand==10.4.0.35.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (10.4.0.35)
+Requirement already satisfied: nvidia-cusolver==12.0.4.66.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (12.0.4.66)
+Requirement already satisfied: nvidia-cusparse==12.6.3.3.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (12.6.3.3)
+Requirement already satisfied: nvidia-nvjitlink==13.0.88.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (13.0.88)
+Requirement already satisfied: nvidia-cuda-nvrtc==13.0.88.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (13.0.88)
+Requirement already satisfied: nvidia-nvtx==13.0.85.* in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.4.0->llamafactory==0.9.5.dev0) (13.0.85)
+Requirement already satisfied: cuda-pathfinder~=1.1 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from cuda-bindings<14,>=13.0.3->torch>=2.4.0->llamafactory==0.9.5.dev0) (1.5.3)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in /home/mrathod4/.conda/envs/thicket311/lib/python3.11/site-packages (from sympy>=1.13.3->torch>=2.4.0->llamafactory==0.9.5.dev0) (1.3.0)
+Collecting termcolor (from fire->llamafactory==0.9.5.dev0)
+  Using cached termcolor-3.3.0-py3-none-any.whl.metadata (6.5 kB)
+Collecting antlr4-python3-runtime==4.9.* (from omegaconf->llamafactory==0.9.5.dev0)
+  Downloading antlr4-python3-runtime-4.9.3.tar.gz (117 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Downloading accelerate-1.11.0-py3-none-any.whl (375 kB)
+Downloading av-16.0.0-cp311-cp311-manylinux_2_28_x86_64.whl (40.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40.2/40.2 MB 72.1 MB/s  0:00:00
+Downloading datasets-4.0.0-py3-none-any.whl (494 kB)
+Downloading dill-0.3.8-py3-none-any.whl (116 kB)
+Downloading fsspec-2025.3.0-py3-none-any.whl (193 kB)
+Downloading gradio-5.50.0-py3-none-any.whl (63.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 63.5/63.5 MB 91.2 MB/s  0:00:00
+Downloading gradio_client-1.14.0-py3-none-any.whl (325 kB)
+Downloading aiofiles-24.1.0-py3-none-any.whl (15 kB)
+Using cached fastapi-0.136.0-py3-none-any.whl (117 kB)
+Using cached groovy-0.1.2-py3-none-any.whl (14 kB)
+Downloading multiprocess-0.70.16-py311-none-any.whl (143 kB)
+Downloading orjson-3.11.8-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (133 kB)
+Downloading pandas-2.3.3-cp311-cp311-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (12.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 120.4 MB/s  0:00:00
+Downloading peft-0.18.1-py3-none-any.whl (556 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 557.0/557.0 kB 16.6 MB/s  0:00:00
+Downloading pillow-11.3.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.6/6.6 MB 98.0 MB/s  0:00:00
+Downloading pydantic-2.12.3-py3-none-any.whl (462 kB)
+Downloading pydantic_core-2.41.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 68.6 MB/s  0:00:00
+Using cached safehttpx-0.1.7-py3-none-any.whl (9.0 kB)
+Using cached semantic_version-2.10.0-py2.py3-none-any.whl (15 kB)
+Downloading starlette-0.52.1-py3-none-any.whl (74 kB)
+Downloading tomlkit-0.13.3-py3-none-any.whl (38 kB)
+Downloading torchdata-0.11.0-py3-none-any.whl (61 kB)
+Downloading transformers-5.2.0-py3-none-any.whl (10.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.4/10.4 MB 106.1 MB/s  0:00:00
+Downloading trl-0.24.0-py3-none-any.whl (423 kB)
+Downloading tyro-0.8.14-py3-none-any.whl (109 kB)
+Downloading websockets-15.0.1-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (182 kB)
+Using cached annotated_types-0.7.0-py3-none-any.whl (13 kB)
+Downloading brotli-1.2.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 55.2 MB/s  0:00:00
+Downloading docstring_parser-0.18.0-py3-none-any.whl (22 kB)
+Downloading matplotlib-3.10.8-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (8.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.7/8.7 MB 97.5 MB/s  0:00:00
+Downloading contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (355 kB)
+Using cached cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Downloading fonttools-4.62.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.1/5.1 MB 77.7 MB/s  0:00:00
+Downloading kiwisolver-1.5.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 54.5 MB/s  0:00:00
+Using cached pyparsing-3.3.2-py3-none-any.whl (122 kB)
+Using cached python_multipart-0.0.26-py3-none-any.whl (28 kB)
+Using cached pytz-2026.1.post1-py2.py3-none-any.whl (510 kB)
+Using cached ruff-0.15.11-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.3 MB)
+Downloading shtab-1.8.0-py3-none-any.whl (14 kB)
+Downloading torchaudio-2.11.0-cp311-cp311-manylinux_2_28_x86_64.whl (1.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 69.0 MB/s  0:00:00
+Downloading torchvision-0.26.0-cp311-cp311-manylinux_2_28_x86_64.whl (7.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.5/7.5 MB 97.6 MB/s  0:00:00
+Using cached typing_inspection-0.4.2-py3-none-any.whl (14 kB)
+Using cached tzdata-2026.1-py2.py3-none-any.whl (348 kB)
+Using cached uvicorn-0.45.0-py3-none-any.whl (69 kB)
+Using cached einops-0.8.2-py3-none-any.whl (65 kB)
+Downloading ffmpy-1.0.0-py3-none-any.whl (5.6 kB)
+Using cached fire-0.7.1-py3-none-any.whl (115 kB)
+Downloading hf_transfer-0.1.9-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.6/3.6 MB 90.4 MB/s  0:00:00
+Downloading modelscope-1.36.1-py3-none-any.whl (6.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.1/6.1 MB 106.7 MB/s  0:00:00
+Downloading omegaconf-2.3.0-py3-none-any.whl (79 kB)
+Using cached protobuf-7.34.1-cp310-abi3-manylinux2014_x86_64.whl (324 kB)
+Using cached pydub-0.25.1-py2.py3-none-any.whl (32 kB)
+Downloading scipy-1.17.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.3/35.3 MB 112.5 MB/s  0:00:00
+Downloading sentencepiece-0.2.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (1.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 51.4 MB/s  0:00:00
+Using cached sse_starlette-3.3.4-py3-none-any.whl (14 kB)
+Using cached termcolor-3.3.0-py3-none-any.whl (7.7 kB)
+Downloading tiktoken-0.12.0-cp311-cp311-manylinux_2_28_x86_64.whl (1.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 35.5 MB/s  0:00:00
+Downloading typer_slim-0.24.0-py3-none-any.whl (3.4 kB)
+Building wheels for collected packages: llamafactory, antlr4-python3-runtime
+  Building editable for llamafactory (pyproject.toml): started
+  Building editable for llamafactory (pyproject.toml): finished with status 'done'
+  Created wheel for llamafactory: filename=llamafactory-0.9.5.dev0-py3-none-any.whl size=27108 sha256=b4005780bcd8500e75326e7c178c9c51cea2270c2431ce218d35bf0843af9bc7
+  Stored in directory: /tmp/pip-ephem-wheel-cache-c09pup0d/wheels/b0/64/d4/349e795689382f5ab17909f032bc2ac4b48f78ee4c4c0fcd15
+  Building wheel for antlr4-python3-runtime (pyproject.toml): started
+  Building wheel for antlr4-python3-runtime (pyproject.toml): finished with status 'done'
+  Created wheel for antlr4-python3-runtime: filename=antlr4_python3_runtime-4.9.3-py3-none-any.whl size=144590 sha256=98a7614bdf607542094d2a6a5808250a68d135fdc67b194829a007024df7f9ab
+  Stored in directory: /home/mrathod4/.cache/pip/wheels/1a/97/32/461f837398029ad76911109f07047fde1d7b661a147c7c56d1
+Successfully built llamafactory antlr4-python3-runtime
+Installing collected packages: torchaudio, pytz, pydub, brotli, antlr4-python3-runtime, websockets, uvicorn, tzdata, typing-inspection, tomlkit, termcolor, shtab, sentencepiece, semantic-version, scipy, ruff, python-multipart, pyparsing, pydantic-core, protobuf, pillow, orjson, omegaconf, kiwisolver, hf-transfer, groovy, fsspec, fonttools, ffmpy, einops, docstring-parser, dill, cycler, contourpy, av, annotated-types, aiofiles, tiktoken, starlette, pydantic, pandas, multiprocess, modelscope, matplotlib, fire, tyro, sse-starlette, safehttpx, fastapi, typer-slim, torchvision, torchdata, gradio-client, datasets, accelerate, transformers, gradio, trl, peft, llamafactory
+  Attempting uninstall: fsspec
+    Found existing installation: fsspec 2026.2.0
+    Uninstalling fsspec-2026.2.0:
+      Successfully uninstalled fsspec-2026.2.0
+  Attempting uninstall: dill
+    Found existing installation: dill 0.4.1
+    Uninstalling dill-0.4.1:
+      Successfully uninstalled dill-0.4.1
+  Attempting uninstall: pandas
+    Found existing installation: pandas 3.0.2
+    Uninstalling pandas-3.0.2:
+      Successfully uninstalled pandas-3.0.2
+  Attempting uninstall: multiprocess
+    Found existing installation: multiprocess 0.70.19
+    Uninstalling multiprocess-0.70.19:
+      Successfully uninstalled multiprocess-0.70.19
+  Attempting uninstall: datasets
+    Found existing installation: datasets 4.8.4
+    Uninstalling datasets-4.8.4:
+      Successfully uninstalled datasets-4.8.4
+  Attempting uninstall: accelerate
+    Found existing installation: accelerate 1.13.0
+    Uninstalling accelerate-1.13.0:
+      Successfully uninstalled accelerate-1.13.0
+  Attempting uninstall: transformers
+    Found existing installation: transformers 5.6.0
+    Uninstalling transformers-5.6.0:
+      Successfully uninstalled transformers-5.6.0
+  Attempting uninstall: peft
+    Found existing installation: peft 0.19.1
+    Uninstalling peft-0.19.1:
+      Successfully uninstalled peft-0.19.1
+
+Successfully installed accelerate-1.11.0 aiofiles-24.1.0 annotated-types-0.7.0 antlr4-python3-runtime-4.9.3 av-16.0.0 brotli-1.2.0 contourpy-1.3.3 cycler-0.12.1 datasets-4.0.0 dill-0.3.8 docstring-parser-0.18.0 einops-0.8.2 fastapi-0.136.0 ffmpy-1.0.0 fire-0.7.1 fonttools-4.62.1 fsspec-2025.3.0 gradio-5.50.0 gradio-client-1.14.0 groovy-0.1.2 hf-transfer-0.1.9 kiwisolver-1.5.0 llamafactory-0.9.5.dev0 matplotlib-3.10.8 modelscope-1.36.1 multiprocess-0.70.16 omegaconf-2.3.0 orjson-3.11.8 pandas-2.3.3 peft-0.18.1 pillow-11.3.0 protobuf-7.34.1 pydantic-2.12.3 pydantic-core-2.41.4 pydub-0.25.1 pyparsing-3.3.2 python-multipart-0.0.26 pytz-2026.1.post1 ruff-0.15.11 safehttpx-0.1.7 scipy-1.17.1 semantic-version-2.10.0 sentencepiece-0.2.1 shtab-1.8.0 sse-starlette-3.3.4 starlette-0.52.1 termcolor-3.3.0 tiktoken-0.12.0 tomlkit-0.13.3 torchaudio-2.11.0 torchdata-0.11.0 torchvision-0.26.0 transformers-5.2.0 trl-0.24.0 typer-slim-0.24.0 typing-inspection-0.4.2 tyro-0.8.14 tzdata-2026.1 uvicorn-0.45.0 websockets-15.0.1
+DONE
+0.9.5.dev0

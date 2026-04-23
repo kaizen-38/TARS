@@ -28,13 +28,13 @@ mkdir -p logs
 if ! python3 -c "import typer" &>/dev/null; then
     module load mamba/latest
     eval "$(conda shell.bash hook)"
-    conda activate tars
+    conda activate thicket311
 fi
 export PYTHONPATH="${REPO_ROOT}/src"
 
 # Pre-flight: verify submodules and built tools exist
 PREFLIGHT_OK=true
-if [ ! -f "${REPO_ROOT}/third_party/pddl-generators/blocksworld/blocksworld" ]; then
+if [ ! -f "${REPO_ROOT}/third_party/pddl-generators/blocksworld/4ops/2pddl/2pddl" ]; then
     echo "ERROR: pddl-generators not built. Run: bash scripts/setup_third_party.sh && make build-tools" >&2
     PREFLIGHT_OK=false
 fi
@@ -102,10 +102,7 @@ JID_SOLVE_MANIFEST=$(submit "00b_solve_manifest" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/00b_manifest_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && eval \"\$(conda shell.bash hook)\" && conda activate tars && \
-            export PYTHONPATH=${REPO_ROOT}/src && \
-            python3 scripts/gen_manifests.py solve && \
-            python3 scripts/gen_manifests.py validate")
+    --wrap="cd ${REPO_ROOT} && export PYTHONPATH=${REPO_ROOT}/src && /home/mrathod4/.conda/envs/thicket311/bin/python3 scripts/gen_manifests.py solve")
 
 # Job 01: solve instances (FD), smoke array 0-59
 JID_SOLVE=$(submit "01_teacher_plans_smoke" \
@@ -119,9 +116,9 @@ JID_VAL_MANIFEST=$(submit "01b_val_manifest" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/01b_manifest_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && eval \"\$(conda shell.bash hook)\" && conda activate tars && \
-            export PYTHONPATH=${REPO_ROOT}/src && \
-            python3 scripts/gen_manifests.py validate")
+    --wrap="cd ${REPO_ROOT} && export PYTHONPATH=${REPO_ROOT}/src && /home/mrathod4/.conda/envs/thicket311/bin/python3 scripts/gen_manifests.py validate")
+
+            
 
 # Job 02: validate plans (VAL), smoke array 0-59
 JID_VAL=$(submit "02_validate_smoke" \
@@ -176,9 +173,9 @@ JID_SOLVE_MANIFEST_P=$(submit "00b_solve_manifest_pilot" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/00b_manifest_pilot_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && eval \"\$(conda shell.bash hook)\" && conda activate tars && \
-            export PYTHONPATH=${REPO_ROOT}/src && \
-            python3 scripts/gen_manifests.py solve")
+    --wrap="cd ${REPO_ROOT} && export PYTHONPATH=${REPO_ROOT}/src && /home/mrathod4/.conda/envs/thicket311/bin/python3 scripts/gen_manifests.py solve")
+
+
 
 JID_SOLVE_PILOT=$(submit "01_teacher_plans_pilot" \
     --dependency=afterok:${JID_SOLVE_MANIFEST_P} \
@@ -190,9 +187,9 @@ JID_VAL_MANIFEST_P=$(submit "01b_val_manifest_pilot" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/01b_manifest_pilot_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && eval \"\$(conda shell.bash hook)\" && conda activate tars && \
+    --wrap="cd ${REPO_ROOT} && module load mamba/latest && eval \"\$(conda shell.bash hook)\" && conda activate thicket311 && \
             export PYTHONPATH=${REPO_ROOT}/src && \
-            python3 scripts/gen_manifests.py validate")
+            
 
 JID_VAL_PILOT=$(submit "02_validate_pilot" \
     --dependency=afterok:${JID_VAL_MANIFEST_P} \

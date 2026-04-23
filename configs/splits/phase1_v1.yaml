@@ -20,7 +20,7 @@ representations:
   - compact
 
 budgets:
-  max_new_tokens: 2048
+  max_new_tokens: 512
   max_val_calls_per_candidate: 1
   per_instance_timeout_sec: 120
 

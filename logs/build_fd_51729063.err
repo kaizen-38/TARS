@@ -1,0 +1,15 @@
+Loading gcc/15.2.0 
+Git revision: "e0cc05b13"
+gmake: *** No rule to make target '-j4'.  Stop.
+Traceback (most recent call last):
+  File "/home/mrathod4/TARS/third_party/downward/build.py", line 139, in <module>
+    main()
+  File "/home/mrathod4/TARS/third_party/downward/build.py", line 135, in main
+    build(config_name, CONFIGS[config_name], build_parameters)
+  File "/home/mrathod4/TARS/third_party/downward/build.py", line 112, in build
+    try_run(build_cmd)
+  File "/home/mrathod4/TARS/third_party/downward/build.py", line 88, in try_run
+    subprocess.check_call(cmd)
+  File "/home/mrathod4/.conda/envs/thicket/lib/python3.10/subprocess.py", line 369, in check_call
+    raise CalledProcessError(retcode, cmd)
+subprocess.CalledProcessError: Command '['cmake', '--build', '/home/mrathod4/TARS/third_party/downward/builds/release', '-j', '4', '--', '--', '-j4']' returned non-zero exit status 2.

@@ -79,7 +79,8 @@ class FastDownwardBackend(PlannerBackend):
     ) -> tuple[int, str, str, list[str]]:
         binary = self._get_binary()
         fd_dir = binary.resolve().parent
-        plan_file = Path(tempfile.gettempdir()) / f"sas_plan_{uuid.uuid4().hex}"
+        _tmp_dir = Path(tempfile.mkdtemp(prefix="tars_fd_"))
+        plan_file = _tmp_dir / "sas_plan"
 
         if self.search_config.startswith("--search "):
             search_expr = self.search_config[len("--search "):]
@@ -87,7 +88,6 @@ class FastDownwardBackend(PlannerBackend):
                 "python", str(binary.resolve()),
                 str(domain_file.resolve()), str(problem_file.resolve()),
                 "--search", search_expr,
-                "--plan-file", str(plan_file),
             ]
         elif self.search_config.startswith("--alias "):
             alias = self.search_config[len("--alias "):]
@@ -95,14 +95,12 @@ class FastDownwardBackend(PlannerBackend):
                 "python", str(binary.resolve()),
                 str(domain_file.resolve()), str(problem_file.resolve()),
                 "--alias", alias,
-                "--plan-file", str(plan_file),
             ]
         else:
             cmd = (
                 ["python", str(binary.resolve()),
                  str(domain_file.resolve()), str(problem_file.resolve())]
                 + self.search_config.split()
-                + ["--plan-file", str(plan_file)]
             )
 
         logger.info("FD solve: %s", " ".join(cmd))
@@ -111,7 +109,7 @@ class FastDownwardBackend(PlannerBackend):
             cwd=str(Path.cwd())
         )
 
-        plan_files = sorted(Path(tempfile.gettempdir()).glob(f"{plan_file.name}*"))
+        plan_files = sorted(Path(fd_dir).glob("sas_plan*")) or sorted(Path(".").glob("sas_plan*"))
         actions = _parse_fd_plan(plan_files[-1].read_text()) if plan_files else []
 
         for f in plan_files:
@@ -119,6 +117,10 @@ class FastDownwardBackend(PlannerBackend):
                 f.unlink()
             except Exception:
                 pass
+        try:
+            _tmp_dir.rmdir()
+        except Exception:
+            pass
 
         return result.returncode, result.stdout, result.stderr, actions
 

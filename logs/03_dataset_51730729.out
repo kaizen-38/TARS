@@ -1,0 +1,8 @@
+[Wed Apr 22 12:07:05 MST 2026] Building SFT datasets...
+Dataset counts: {'phase1_standard': 0, 'phase1_anonymized': 0, 'phase1_compact': 0}
+Dataset counts: {'phase1_standard': 0, 'phase1_anonymized': 0, 'phase1_compact': 0}
+[Wed Apr 22 12:07:11 MST 2026] Dataset build complete.
+Row counts:
+  0 rows in data/datasets/alpaca/phase1_anonymized.jsonl
+  0 rows in data/datasets/alpaca/phase1_compact.jsonl
+  0 rows in data/datasets/alpaca/phase1_standard.jsonl
