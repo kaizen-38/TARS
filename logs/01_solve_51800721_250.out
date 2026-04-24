@@ -1,0 +1,3 @@
+[Thu Apr 23 18:18:42 MST 2026] task=250 instance=spanner_train_0001_116740
+success=True actions=11 time=0.2s
+[Thu Apr 23 18:18:42 MST 2026] done: spanner_train_0001_116740

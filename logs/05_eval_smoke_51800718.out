@@ -1,0 +1,26 @@
+[Thu Apr 23 17:59:19 MST 2026] Smoke eval: checkpoint=Qwen/Qwen3-1.7B
+[Thu Apr 23 18:09:42 MST 2026] Smoke eval complete.
+
+=== Phase 1 Evaluation Summary ===
+Total instances: 587
+Validity rate:   0.009
+Goal rate:       0.083
+
+-- By Representation --
+  anonymized  : validity=0.010 goal=0.122 n=196
+  compact     : validity=0.005 goal=0.005 n=195
+  standard    : validity=0.010 goal=0.122 n=196
+
+-- By Domain --
+  blocksworld    : validity=0.033 goal=0.083 n=120
+  childsnack     : validity=0.000 goal=0.167 n=60
+  delivery       : validity=0.008 goal=0.092 n=120
+  ferry          : validity=0.000 goal=0.167 n=60
+  floortile      : validity=0.000 goal=0.143 n=56
+  gripper        : validity=0.000 goal=0.000 n=45
+  miconic        : validity=0.000 goal=0.000 n=9
+  rovers         : validity=0.000 goal=0.000 n=45
+  satellite      : validity=0.000 goal=0.000 n=9
+  sokoban        : validity=0.000 goal=0.000 n=9
+  spanner        : validity=0.000 goal=0.000 n=45
+  transport      : validity=0.000 goal=0.000 n=9

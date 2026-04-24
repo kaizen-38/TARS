@@ -17,7 +17,7 @@ lora_dropout: 0.05
 lora_target: all
 
 ### Dataset
-dataset: phase1_standard
+dataset: phase1_standard_train
 dataset_dir: data/datasets
 template: qwen
 cutoff_len: 1024

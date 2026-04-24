@@ -58,6 +58,7 @@ def main(
     seed: int = typer.Option(42, help="Global random seed"),
     model_name: str = typer.Option("Qwen/Qwen3-1.7B", help="Model name for logging"),
     run_id: Optional[str] = typer.Option(None, help="Run ID (auto-generated if not set)"),
+    domain: Optional[str] = typer.Option(None, help="Filter to a single domain (optional)"),
 ) -> None:
     """Run greedy evaluation on PDDL instances."""
     set_global_seed(seed)
@@ -87,6 +88,9 @@ def main(
         if f"_{split}_" in f.name
     ]
 
+    if domain:
+        instance_files = [f for f in instance_files if f"_{domain}_" in f.name or f.name.startswith(domain + "_")]
+        logger.info("Filtered to domain '%s': %d files", domain, len(instance_files))
     logger.info("Found %d instance meta files for split '%s'", len(instance_files), split)
 
     for meta_path in sorted(instance_files):

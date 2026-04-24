@@ -1,0 +1,74 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0000_670488
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0000_670488 in 0.01s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0001_116740
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0001_116740 in 0.01s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0002_26226
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0002_26226 in 0.01s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0003_777573
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0003_777573 in 0.00s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0004_288390
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0004_288390 in 0.01s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0005_256788
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0005_256788 in 0.00s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0006_234054
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0006_234054 in 0.05s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0007_146317
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0007_146317 in 0.01s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0008_772247
+2026-04-23T18:12:14 | WARNING  | generation.generate_instances | FAILED sokoban idx=8: Command failed (rc=1):
+CMD: ./sokoban-generator-typed -n 6 -b 2 -w 6 -s 772247
+STDERR: 
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0009_107474
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0009_107474 in 0.00s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0010_709571
+2026-04-23T18:12:14 | WARNING  | generation.generate_instances | FAILED sokoban idx=10: Command failed (rc=1):
+CMD: ./sokoban-generator-typed -n 6 -b 2 -w 5 -s 709571
+STDERR: 
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0011_776647
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0011_776647 in 0.01s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0012_935519
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0012_935519 in 0.00s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0013_571859
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0013_571859 in 0.00s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0014_91162
+2026-04-23T18:12:14 | WARNING  | generation.generate_instances | FAILED sokoban idx=14: Command failed (rc=1):
+CMD: ./sokoban-generator-typed -n 6 -b 2 -w 5 -s 91162
+STDERR: 
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0015_619177
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0015_619177 in 0.00s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0016_442418
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0016_442418 in 0.01s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0017_33327
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0017_33327 in 0.00s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0018_31245
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0018_31245 in 0.01s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0019_98247
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0019_98247 in 0.00s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0020_229259
+2026-04-23T18:12:14 | WARNING  | generation.generate_instances | FAILED sokoban idx=20: Command failed (rc=1):
+CMD: ./sokoban-generator-typed -n 6 -b 2 -w 6 -s 229259
+STDERR: 
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0021_243963
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0021_243963 in 0.01s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0022_529904
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0022_529904 in 0.00s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0023_631263
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0023_631263 in 0.01s
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generating sokoban_heldout_0024_27825
+2026-04-23T18:12:14 | INFO     | generation.generate_instances | Generated sokoban_heldout_0024_27825 in 0.01s

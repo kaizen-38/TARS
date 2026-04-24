@@ -1,0 +1,66 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0000_670488
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=0: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0001_116740
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=1: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0002_26226
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=2: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0003_777573
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=3: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0004_288390
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=4: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0005_256788
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=5: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0006_234054
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=6: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0007_146317
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=7: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0008_772247
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=8: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0009_107474
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=9: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0010_709571
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=10: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0011_776647
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=11: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0012_935519
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=12: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0013_571859
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=13: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0014_91162
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=14: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0015_619177
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=15: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0016_442418
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=16: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0017_33327
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=17: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0018_31245
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=18: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0019_98247
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=19: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0020_229259
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=20: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0021_243963
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=21: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0022_529904
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=22: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0023_631263
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=23: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'
+2026-04-23T17:03:36 | INFO     | generation.generate_instances | Generating miconic_heldout_0024_27825
+2026-04-23T17:03:36 | WARNING  | generation.generate_instances | FAILED miconic idx=24: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/miconic/4ops/domain.pddl'

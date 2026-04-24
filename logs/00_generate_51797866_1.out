@@ -1,0 +1,2 @@
+[Thu Apr 23 17:00:01 MST 2026] task=1 domain=gripper split=train n=25 seed=42
+[Thu Apr 23 17:03:12 MST 2026] done: gripper — 5 instances

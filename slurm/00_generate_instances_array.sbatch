@@ -36,7 +36,7 @@ SEED=$(echo   "$LINE" | cut -f4)
 
 echo "[$(date)] task=${SLURM_ARRAY_TASK_ID} domain=${DOMAIN} split=${SPLIT} n=${N} seed=${SEED}"
 
-python -m cli generate-one \
+python -m src.cli generate-one \
     "${DOMAIN}" \
     --split "${SPLIT}" \
     --n-instances "${N}" \

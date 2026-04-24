@@ -1,0 +1,3 @@
+[Thu Apr 23 18:27:19 MST 2026] task=0 domain=miconic split=heldout checkpoint=runs/sft_qwen3_phase1_full/
+GPU: NVIDIA A100-SXM4-80GB, 81920 MiB
+[Thu Apr 23 18:29:21 MST 2026] done: miconic

@@ -126,9 +126,14 @@ JID_VAL=$(submit "02_validate_smoke" \
     --array=0-${SMOKE_N} \
     slurm/02_validate_teacher_array.sbatch)
 
+# Job 02b: build tuples
+JID_TUPLES=$(submit "02b_build_tuples" \
+    --dependency=afterok:${JID_VAL} \
+    slurm/02b_build_tuples_cpu.sbatch)
+
 # Job 03: build dataset
 JID_DATASET=$(submit "03_build_dataset" \
-    --dependency=afterok:${JID_VAL} \
+    --dependency=afterok:${JID_TUPLES} \
     slurm/03_build_dataset.sbatch)
 
 # Job 04: smoke LoRA train
@@ -187,10 +192,7 @@ JID_VAL_MANIFEST_P=$(submit "01b_val_manifest_pilot" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/01b_manifest_pilot_%j.out \
-    --wrap="cd ${REPO_ROOT} && module load mamba/latest && eval \"\$(conda shell.bash hook)\" && conda activate thicket311 && \
-            export PYTHONPATH=${REPO_ROOT}/src && \
-            
-
+    --wrap="cd ${REPO_ROOT} && export PYTHONPATH=${REPO_ROOT}/src && /home/mrathod4/.conda/envs/thicket311/bin/python3 scripts/gen_manifests.py validate")
 JID_VAL_PILOT=$(submit "02_validate_pilot" \
     --dependency=afterok:${JID_VAL_MANIFEST_P} \
     --array=0-${PILOT_N} \

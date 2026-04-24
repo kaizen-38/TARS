@@ -11,7 +11,7 @@ do_train: true
 finetuning_type: full
 
 ### Dataset (populated by write_llamafactory_yaml.py at launch time)
-dataset: phase1_standard,phase1_anonymized,phase1_compact
+dataset: phase1_standard_train,phase1_anonymized_train,phase1_compact_train
 dataset_dir: data/datasets
 template: qwen
 cutoff_len: 4096

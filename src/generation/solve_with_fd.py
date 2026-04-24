@@ -104,12 +104,15 @@ class FastDownwardBackend(PlannerBackend):
             )
 
         logger.info("FD solve: %s", " ".join(cmd))
+        import os
+        fd_env = os.environ.copy()
+        fd_env["LD_LIBRARY_PATH"] = "/home/mrathod4/.conda/envs/thicket311/lib:" + fd_env.get("LD_LIBRARY_PATH", "")
         result = subprocess.run(
             cmd, capture_output=True, text=True, timeout=timeout,
-            cwd=str(Path.cwd())
+            cwd=str(_tmp_dir), env=fd_env
         )
 
-        plan_files = sorted(Path(fd_dir).glob("sas_plan*")) or sorted(Path(".").glob("sas_plan*"))
+        plan_files = sorted(_tmp_dir.glob("sas_plan*"))
         actions = _parse_fd_plan(plan_files[-1].read_text()) if plan_files else []
 
         for f in plan_files:

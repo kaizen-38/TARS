@@ -28,5 +28,65 @@
       "response": "output",
       "system": "system"
     }
+  },
+  "phase1_standard_train": {
+    "file_name": "alpaca/phase1_standard_train.jsonl",
+    "file_sha1": null,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system"
+    }
+  },
+  "phase1_anonymized_train": {
+    "file_name": "alpaca/phase1_anonymized_train.jsonl",
+    "file_sha1": null,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system"
+    }
+  },
+  "phase1_compact_train": {
+    "file_name": "alpaca/phase1_compact_train.jsonl",
+    "file_sha1": null,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system"
+    }
+  },
+  "phase1_standard_heldout": {
+    "file_name": "alpaca/phase1_standard_heldout.jsonl",
+    "file_sha1": null,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system"
+    }
+  },
+  "phase1_anonymized_heldout": {
+    "file_name": "alpaca/phase1_anonymized_heldout.jsonl",
+    "file_sha1": null,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system"
+    }
+  },
+  "phase1_compact_heldout": {
+    "file_name": "alpaca/phase1_compact_heldout.jsonl",
+    "file_sha1": null,
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system"
+    }
   }
 }

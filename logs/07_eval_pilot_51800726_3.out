@@ -1,0 +1,3 @@
+[Thu Apr 23 18:36:50 MST 2026] task=3 domain=satellite split=heldout checkpoint=runs/sft_qwen3_phase1_full/
+GPU: NVIDIA A100-SXM4-80GB, 81920 MiB
+[Thu Apr 23 18:50:43 MST 2026] done: satellite

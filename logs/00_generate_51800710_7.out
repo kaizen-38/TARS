@@ -1,0 +1,2 @@
+[Thu Apr 23 17:36:30 MST 2026] task=7 domain=spanner split=train n=5 seed=42
+[Thu Apr 23 17:36:44 MST 2026] done: spanner — 5 instances

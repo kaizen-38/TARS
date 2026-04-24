@@ -224,12 +224,60 @@ def build_tuples(
     tuples_dir: Path = typer.Option(_REPO_ROOT / "data" / "generated" / "tuples_standard"),
 ) -> None:
     """Build tuple JSONs from solved plans for dataset construction."""
-    import json
-    from generation.solve_with_fd import SolveResult
     from pddl_ops.anonymize import anonymize_triple
     from pddl_ops.compact_serialize import actions_to_compact
     from dataset.build_sft_dataset import build_tuple_json
     from utils.logging import get_logger
+    import json
+
+    log = get_logger("build_tuples")
+
+    meta_files = sorted(plans_dir.glob("*.solve_meta.json"))
+    log.info("Found %d solve meta files", len(meta_files))
+
+    built = 0
+    for meta_path in meta_files:
+        meta = json.loads(meta_path.read_text())
+        if not meta.get("success"):
+            continue
+
+        instance_id = meta["problem_id"]
+        domain_file = Path(meta["domain_file"])
+        problem_file = Path(meta["problem_file"])
+        plan_actions = meta["action_sequence"]
+
+        if not domain_file.exists() or not problem_file.exists():
+            log.warning("Missing PDDL files for %s", instance_id)
+            continue
+
+        if not plan_actions:
+            log.warning("Empty action sequence for %s", instance_id)
+            continue
+
+        domain_text = domain_file.read_text()
+        problem_text = problem_file.read_text()
+
+        anon_d, anon_p, anon_plan, _ = anonymize_triple(
+            domain_text, problem_text, plan_actions, instance_id
+        )
+        compact_text = actions_to_compact(plan_actions)
+
+        build_tuple_json(
+            instance_id=instance_id,
+            domain_text=domain_text,
+            problem_text=problem_text,
+            plan_actions=plan_actions,
+            anon_domain_text=anon_d,
+            anon_problem_text=anon_p,
+            anon_plan_actions=anon_plan,
+            compact_plan=compact_text,
+            output_dir=tuples_dir,
+        )
+        built += 1
+        log.info("Built tuple: %s", instance_id)
+
+    log.info("Total tuples built: %d", built)
+    typer.echo(f"Built {built} tuples from {len(meta_files)} meta files")
 
 
 if __name__ == "__main__":

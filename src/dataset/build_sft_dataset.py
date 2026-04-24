@@ -145,9 +145,9 @@ class SFTDatasetBuilder:
 
         counts: dict[str, int] = {}
         for name, rows in [
-            (f"phase1_standard", standard_rows),
-            (f"phase1_anonymized", anon_rows),
-            (f"phase1_compact", compact_rows),
+            (f"phase1_standard_{split}", standard_rows),
+            (f"phase1_anonymized_{split}", anon_rows),
+            (f"phase1_compact_{split}", compact_rows),
         ]:
             out_path = self.output_dir / f"{name}.jsonl"
             write_jsonl(rows, out_path)
@@ -179,10 +179,12 @@ class SFTDatasetBuilder:
         }
 
     def _write_dataset_info(self, counts: dict[str, int]) -> None:
-        """Write dataset_info.json for LLaMA-Factory."""
-        info: dict[str, Any] = {}
+        """Write dataset_info.json for LLaMA-Factory, merging with existing entries."""
+        existing: dict[str, Any] = {}
+        if _DATASET_INFO_PATH.exists():
+            existing = json.loads(_DATASET_INFO_PATH.read_text())
         for name in counts:
-            info[name] = {
+            existing[name] = {
                 "file_name": f"alpaca/{name}.jsonl",
                 "file_sha1": None,
                 "columns": {
@@ -192,8 +194,8 @@ class SFTDatasetBuilder:
                     "system": "system",
                 },
             }
-        dump_json(info, _DATASET_INFO_PATH)
-        logger.info("Wrote dataset_info.json with %d datasets", len(info))
+        dump_json(existing, _DATASET_INFO_PATH)
+        logger.info("Wrote dataset_info.json with %d datasets", len(existing))
 
 
 def build_tuple_json(

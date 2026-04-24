@@ -1,0 +1,66 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0000_670488
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=0: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0001_116740
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=1: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0002_26226
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=2: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0003_777573
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=3: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0004_288390
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=4: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0005_256788
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=5: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0006_234054
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=6: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0007_146317
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=7: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0008_772247
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=8: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0009_107474
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=9: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0010_709571
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=10: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0011_776647
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=11: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0012_935519
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=12: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0013_571859
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=13: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0014_91162
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=14: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0015_619177
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=15: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0016_442418
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=16: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0017_33327
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=17: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0018_31245
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=18: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0019_98247
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=19: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0020_229259
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=20: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0021_243963
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=21: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0022_529904
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=22: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0023_631263
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=23: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'
+2026-04-23T17:01:42 | INFO     | generation.generate_instances | Generating childsnack_train_0024_27825
+2026-04-23T17:01:42 | WARNING  | generation.generate_instances | FAILED childsnack idx=24: [Errno 2] No such file or directory: '/home/mrathod4/TARS/third_party/pddl-generators/childsnack/4ops/domain.pddl'

@@ -1,0 +1,25 @@
+Loading gcc/15.2.0 
+  This version of GCC is stricter than old ones, so you may need to use the
+following flags: 
+    -fpermissive
+    -Wno-incompatible-pointer-types
+    -Wno-implicit-function-declaration
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-23T17:13:04 | INFO     | generation.solve_with_fd | FD solve: python /home/mrathod4/TARS/third_party/downward/fast-downward.py /home/mrathod4/TARS /home/mrathod4/TARS --search lazy_greedy([ff()], preferred=[ff()])
+2026-04-23T17:13:04 | WARNING  | generation.solve_with_fd | Solve : success=False backend=fd time=0.14s
+error=None

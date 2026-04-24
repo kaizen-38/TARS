@@ -1,0 +1,180 @@
+[Thu Apr 23 18:52:02 MST 2026] Aggregating Phase 1 results...
+==> runs/eval_pilot/run_log.jsonl
+
+=== Phase 1 Evaluation Summary ===
+Total instances: 350
+Validity rate:   0.014
+Goal rate:       0.000
+
+-- By Representation --
+  anonymized  : validity=0.000 goal=0.000 n=117
+  compact     : validity=0.043 goal=0.000 n=116
+  standard    : validity=0.000 goal=0.000 n=117
+
+-- By Domain --
+  miconic        : validity=0.056 goal=0.000 n=90
+  satellite      : validity=0.000 goal=0.000 n=75
+  sokoban        : validity=0.000 goal=0.000 n=95
+  transport      : validity=0.000 goal=0.000 n=90
+==> runs/eval_single_smoke/run_log.jsonl
+
+=== Phase 1 Evaluation Summary ===
+Total instances: 44
+Validity rate:   0.000
+Goal rate:       0.000
+
+-- By Representation --
+  standard    : validity=0.000 goal=0.000 n=44
+
+-- By Domain --
+  blocksworld    : validity=0.000 goal=0.000 n=5
+  childsnack     : validity=0.000 goal=0.000 n=5
+  delivery       : validity=0.000 goal=0.000 n=5
+  ferry          : validity=0.000 goal=0.000 n=5
+  floortile      : validity=0.000 goal=0.000 n=5
+  gripper        : validity=0.000 goal=0.000 n=5
+  miconic        : validity=0.000 goal=0.000 n=1
+  rovers         : validity=0.000 goal=0.000 n=5
+  satellite      : validity=0.000 goal=0.000 n=1
+  sokoban        : validity=0.000 goal=0.000 n=1
+  spanner        : validity=0.000 goal=0.000 n=5
+  transport      : validity=0.000 goal=0.000 n=1
+==> runs/eval_single_smoke2/run_log.jsonl
+
+=== Phase 1 Evaluation Summary ===
+Total instances: 44
+Validity rate:   0.000
+Goal rate:       1.000
+
+-- By Representation --
+  standard    : validity=0.000 goal=1.000 n=44
+
+-- By Domain --
+  blocksworld    : validity=0.000 goal=1.000 n=5
+  childsnack     : validity=0.000 goal=1.000 n=5
+  delivery       : validity=0.000 goal=1.000 n=5
+  ferry          : validity=0.000 goal=1.000 n=5
+  floortile      : validity=0.000 goal=1.000 n=5
+  gripper        : validity=0.000 goal=1.000 n=5
+  miconic        : validity=0.000 goal=1.000 n=1
+  rovers         : validity=0.000 goal=1.000 n=5
+  satellite      : validity=0.000 goal=1.000 n=1
+  sokoban        : validity=0.000 goal=1.000 n=1
+  spanner        : validity=0.000 goal=1.000 n=5
+  transport      : validity=0.000 goal=1.000 n=1
+==> runs/eval_single_smoke3/run_log.jsonl
+
+=== Phase 1 Evaluation Summary ===
+Total instances: 44
+Validity rate:   0.000
+Goal rate:       1.000
+
+-- By Representation --
+  standard    : validity=0.000 goal=1.000 n=44
+
+-- By Domain --
+  blocksworld    : validity=0.000 goal=1.000 n=5
+  childsnack     : validity=0.000 goal=1.000 n=5
+  delivery       : validity=0.000 goal=1.000 n=5
+  ferry          : validity=0.000 goal=1.000 n=5
+  floortile      : validity=0.000 goal=1.000 n=5
+  gripper        : validity=0.000 goal=1.000 n=5
+  miconic        : validity=0.000 goal=1.000 n=1
+  rovers         : validity=0.000 goal=1.000 n=5
+  satellite      : validity=0.000 goal=1.000 n=1
+  sokoban        : validity=0.000 goal=1.000 n=1
+  spanner        : validity=0.000 goal=1.000 n=5
+  transport      : validity=0.000 goal=1.000 n=1
+==> runs/eval_single_smoke4/run_log.jsonl
+
+=== Phase 1 Evaluation Summary ===
+Total instances: 44
+Validity rate:   0.000
+Goal rate:       0.000
+
+-- By Representation --
+  standard    : validity=0.000 goal=0.000 n=44
+
+-- By Domain --
+  blocksworld    : validity=0.000 goal=0.000 n=5
+  childsnack     : validity=0.000 goal=0.000 n=5
+  delivery       : validity=0.000 goal=0.000 n=5
+  ferry          : validity=0.000 goal=0.000 n=5
+  floortile      : validity=0.000 goal=0.000 n=5
+  gripper        : validity=0.000 goal=0.000 n=5
+  miconic        : validity=0.000 goal=0.000 n=1
+  rovers         : validity=0.000 goal=0.000 n=5
+  satellite      : validity=0.000 goal=0.000 n=1
+  sokoban        : validity=0.000 goal=0.000 n=1
+  spanner        : validity=0.000 goal=0.000 n=5
+  transport      : validity=0.000 goal=0.000 n=1
+==> runs/eval_smoke/run_log.jsonl
+
+=== Phase 1 Evaluation Summary ===
+Total instances: 587
+Validity rate:   0.009
+Goal rate:       0.083
+
+-- By Representation --
+  anonymized  : validity=0.010 goal=0.122 n=196
+  compact     : validity=0.005 goal=0.005 n=195
+  standard    : validity=0.010 goal=0.122 n=196
+
+-- By Domain --
+  blocksworld    : validity=0.033 goal=0.083 n=120
+  childsnack     : validity=0.000 goal=0.167 n=60
+  delivery       : validity=0.008 goal=0.092 n=120
+  ferry          : validity=0.000 goal=0.167 n=60
+  floortile      : validity=0.000 goal=0.143 n=56
+  gripper        : validity=0.000 goal=0.000 n=45
+  miconic        : validity=0.000 goal=0.000 n=9
+  rovers         : validity=0.000 goal=0.000 n=45
+  satellite      : validity=0.000 goal=0.000 n=9
+  sokoban        : validity=0.000 goal=0.000 n=9
+  spanner        : validity=0.000 goal=0.000 n=45
+  transport      : validity=0.000 goal=0.000 n=9
+
+=== Phase 1 summary ===
+--- runs/eval_pilot ---
+  total: 350
+  overall: {'validity_rate': 0.014285714285714285, 'goal_rate': 0.0}
+  by_domain: {'miconic': {'count': 90, 'validity_rate': 0.05555555555555555, 'goal_rate': 0.0}, 'satellite': {'count': 75, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'sokoban': {'count': 95, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'transport': {'count': 90, 'validity_rate': 0.0, 'goal_rate': 0.0}}
+  by_representation: {'anonymized': {'count': 117, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'compact': {'count': 116, 'validity_rate': 0.04310344827586207, 'goal_rate': 0.0}, 'standard': {'count': 117, 'validity_rate': 0.0, 'goal_rate': 0.0}}
+  by_split: {'heldout': {'count': 350, 'validity_rate': 0.014285714285714285, 'goal_rate': 0.0}}
+  error_breakdown: {}
+--- runs/eval_single_smoke ---
+  total: 44
+  overall: {'validity_rate': 0.0, 'goal_rate': 0.0}
+  by_domain: {'blocksworld': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'childsnack': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'delivery': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'ferry': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'floortile': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'gripper': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'miconic': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'rovers': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'satellite': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'sokoban': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'spanner': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'transport': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 0.0}}
+  by_representation: {'standard': {'count': 44, 'validity_rate': 0.0, 'goal_rate': 0.0}}
+  by_split: {'train': {'count': 44, 'validity_rate': 0.0, 'goal_rate': 0.0}}
+  error_breakdown: {}
+--- runs/eval_single_smoke2 ---
+  total: 44
+  overall: {'validity_rate': 0.0, 'goal_rate': 1.0}
+  by_domain: {'blocksworld': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'childsnack': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'delivery': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'ferry': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'floortile': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'gripper': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'miconic': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'rovers': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'satellite': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'sokoban': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'spanner': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'transport': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 1.0}}
+  by_representation: {'standard': {'count': 44, 'validity_rate': 0.0, 'goal_rate': 1.0}}
+  by_split: {'train': {'count': 44, 'validity_rate': 0.0, 'goal_rate': 1.0}}
+  error_breakdown: {}
+--- runs/eval_single_smoke3 ---
+  total: 44
+  overall: {'validity_rate': 0.0, 'goal_rate': 1.0}
+  by_domain: {'blocksworld': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'childsnack': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'delivery': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'ferry': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'floortile': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'gripper': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'miconic': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'rovers': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'satellite': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'sokoban': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'spanner': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 1.0}, 'transport': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 1.0}}
+  by_representation: {'standard': {'count': 44, 'validity_rate': 0.0, 'goal_rate': 1.0}}
+  by_split: {'train': {'count': 44, 'validity_rate': 0.0, 'goal_rate': 1.0}}
+  error_breakdown: {}
+--- runs/eval_single_smoke4 ---
+  total: 44
+  overall: {'validity_rate': 0.0, 'goal_rate': 0.0}
+  by_domain: {'blocksworld': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'childsnack': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'delivery': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'ferry': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'floortile': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'gripper': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'miconic': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'rovers': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'satellite': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'sokoban': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'spanner': {'count': 5, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'transport': {'count': 1, 'validity_rate': 0.0, 'goal_rate': 0.0}}
+  by_representation: {'standard': {'count': 44, 'validity_rate': 0.0, 'goal_rate': 0.0}}
+  by_split: {'train': {'count': 44, 'validity_rate': 0.0, 'goal_rate': 0.0}}
+  error_breakdown: {}
+--- runs/eval_smoke ---
+  total: 587
+  overall: {'validity_rate': 0.008517887563884156, 'goal_rate': 0.08347529812606473}
+  by_domain: {'blocksworld': {'count': 120, 'validity_rate': 0.03333333333333333, 'goal_rate': 0.08333333333333333}, 'childsnack': {'count': 60, 'validity_rate': 0.0, 'goal_rate': 0.16666666666666666}, 'delivery': {'count': 120, 'validity_rate': 0.008333333333333333, 'goal_rate': 0.09166666666666666}, 'ferry': {'count': 60, 'validity_rate': 0.0, 'goal_rate': 0.16666666666666666}, 'floortile': {'count': 56, 'validity_rate': 0.0, 'goal_rate': 0.14285714285714285}, 'gripper': {'count': 45, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'miconic': {'count': 9, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'rovers': {'count': 45, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'satellite': {'count': 9, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'sokoban': {'count': 9, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'spanner': {'count': 45, 'validity_rate': 0.0, 'goal_rate': 0.0}, 'transport': {'count': 9, 'validity_rate': 0.0, 'goal_rate': 0.0}}
+  by_representation: {'anonymized': {'count': 196, 'validity_rate': 0.01020408163265306, 'goal_rate': 0.12244897959183673}, 'compact': {'count': 195, 'validity_rate': 0.005128205128205128, 'goal_rate': 0.005128205128205128}, 'standard': {'count': 196, 'validity_rate': 0.01020408163265306, 'goal_rate': 0.12244897959183673}}
+  by_split: {'train': {'count': 587, 'validity_rate': 0.008517887563884156, 'goal_rate': 0.08347529812606473}}
+  error_breakdown: {}
+[Thu Apr 23 18:52:03 MST 2026] Aggregation complete.

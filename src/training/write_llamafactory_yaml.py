@@ -88,7 +88,7 @@ def write_full_config(
     Returns:
         Path to the written YAML file.
     """
-    dataset_names = dataset_names or ["phase1_standard", "phase1_anonymized", "phase1_compact"]
+    dataset_names = dataset_names or ["phase1_standard_train", "phase1_anonymized_train", "phase1_compact_train"]
     output_dir = _RUNS_DIR / run_name
 
     cfg = _base_config(
@@ -123,7 +123,7 @@ def write_lora_debug_config(
     - gradient_checkpointing: false
     - overwrite_output_dir: true
     """
-    dataset_names = dataset_names or ["phase1_standard"]
+    dataset_names = dataset_names or ["phase1_standard_train"]
     output_dir = _RUNS_DIR / run_name
 
     lora_extras: dict[str, Any] = {

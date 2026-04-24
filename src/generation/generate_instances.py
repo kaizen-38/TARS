@@ -73,7 +73,7 @@ def _gen_gripper(seed: int, idx: int) -> tuple[str, str]:
     balls = rng.randint(2, 6)
     cwd = _GENERATORS_ROOT / "gripper"
     problem = _run(f"./gripper -n {balls}", cwd)
-    domain = (cwd / "4ops" / "domain.pddl").read_text()
+    domain = (cwd / "domain.pddl").read_text()
     return domain, problem
 
 
@@ -83,7 +83,7 @@ def _gen_ferry(seed: int, idx: int) -> tuple[str, str]:
     cars = rng.randint(2, 5)
     cwd = _GENERATORS_ROOT / "ferry"
     problem = _run(f"./ferry -l {locs} -c {cars} -s {seed}", cwd)
-    domain = (cwd / "4ops" / "domain.pddl").read_text()
+    domain = (cwd / "domain.pddl").read_text()
     return domain, problem
 
 
@@ -96,7 +96,7 @@ def _gen_childsnack(seed: int, idx: int) -> tuple[str, str]:
         f"python child-snack-generator.py pool {seed} {children} {trays} 0.4 1.3",
         cwd
     )
-    domain = (cwd / "4ops" / "domain.pddl").read_text()
+    domain = (cwd / "domain.pddl").read_text()
     return domain, problem
 
 
@@ -109,7 +109,7 @@ def _gen_floortile(seed: int, idx: int) -> tuple[str, str]:
         f"python floortile-generator.py p{idx:04d} {rows} {cols} 2 seq {seed}",
         cwd
     )
-    domain = (cwd / "4ops" / "domain.pddl").read_text()
+    domain = (cwd / "domain.pddl").read_text()
     return domain, problem
 
 
@@ -119,7 +119,7 @@ def _gen_rovers(seed: int, idx: int) -> tuple[str, str]:
     goals = rng.randint(1, 2)
     cwd = _GENERATORS_ROOT / "rovers"
     problem = _run(f"./rovgen {seed} 1 {waypoints} 1 1 {goals}", cwd)
-    domain = (cwd / "4ops" / "domain.pddl").read_text()
+    domain = (cwd / "domain.pddl").read_text()
     return domain, problem
 
 
@@ -133,7 +133,7 @@ def _gen_spanner(seed: int, idx: int) -> tuple[str, str]:
         f"python spanner-generator.py {spanners} {nuts} {locations} --seed {seed}",
         cwd
     )
-    domain = (cwd / "4ops" / "domain.pddl").read_text()
+    domain = (cwd / "domain.pddl").read_text()
     return domain, problem
 def _gen_delivery(seed: int, idx: int) -> tuple[str, str]:
     static_dir = _REPO_ROOT / "data" / "static" / "delivery" / "train"
@@ -154,7 +154,7 @@ def _gen_miconic(seed: int, idx: int) -> tuple[str, str]:
     passengers = rng.randint(1, floors)
     cwd = _GENERATORS_ROOT / "miconic"
     problem = _run(f"./miconic -f {floors} -p {passengers} -r {seed}", cwd)
-    domain = (cwd / "4ops" / "domain.pddl").read_text()
+    domain = (cwd / "domain.pddl").read_text()
     return domain, problem
 
 
@@ -184,7 +184,7 @@ def _gen_transport(seed: int, idx: int) -> tuple[str, str]:
         f"python city-generator.py {nodes} 1000 3 100 {trucks} {packages} {seed}",
         cwd
     )
-    domain = (cwd / "4ops" / "domain.pddl").read_text()
+    domain = (cwd / "domain.pddl").read_text()
     return domain, problem
 
 
@@ -194,7 +194,7 @@ def _gen_satellite(seed: int, idx: int) -> tuple[str, str]:
     obs = rng.randint(3, targets)
     cwd = _GENERATORS_ROOT / "satellite"
     problem = _run(f"./satgen {seed} 2 3 3 {targets} {obs}", cwd)
-    domain = (cwd / "4ops" / "domain.pddl").read_text()
+    domain = (cwd / "domain.pddl").read_text()
     return domain, problem
 
 

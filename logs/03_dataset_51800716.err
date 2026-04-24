@@ -1,0 +1,48 @@
+
+=====================================================================
+This module is only for creating or activating Python environments:
+$ mamba create -n myenv -c conda-forge python=3 <package_name>
+$ source activate myenv
+
+Only run "pip install" after activating an environment.
+Running pip without activating an environment is known to cause issues.
+
+To list available environments:
+$ mamba info --envs
+
+Other uses are not tested. More info: https://links.asu.edu/solpy
+=====================================================================
+
+  
+2026-04-23T17:49:33 | INFO     | dataset.build_sft_dataset | Wrote 82 rows to /home/mrathod4/TARS/data/datasets/alpaca/phase1_standard_train.jsonl
+2026-04-23T17:49:33 | INFO     | dataset.build_sft_dataset | Wrote 82 rows to /home/mrathod4/TARS/data/datasets/alpaca/phase1_anonymized_train.jsonl
+2026-04-23T17:49:33 | INFO     | dataset.build_sft_dataset | Wrote 82 rows to /home/mrathod4/TARS/data/datasets/alpaca/phase1_compact_train.jsonl
+2026-04-23T17:49:33 | INFO     | dataset.build_sft_dataset | Wrote dataset_info.json with 9 datasets
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_anonymized_heldout.jsonl: 20 total -> 20 kept (0 removed)
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_anonymized_train.jsonl: 82 total -> 78 kept (4 removed)
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_compact_heldout.jsonl: 20 total -> 20 kept (0 removed)
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_compact_train.jsonl: 82 total -> 79 kept (3 removed)
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_standard_heldout.jsonl: 20 total -> 20 kept (0 removed)
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_standard_train.jsonl: 82 total -> 79 kept (3 removed)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_anonymized_heldout.jsonl: count=20 out_words=96.3±(9–552)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_anonymized_train.jsonl: count=78 out_words=40.1±(9–97)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_compact_heldout.jsonl: count=20 out_words=96.3±(9–552)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_compact_train.jsonl: count=79 out_words=40.2±(9–97)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_standard_heldout.jsonl: count=20 out_words=96.3±(9–552)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_standard_train.jsonl: count=79 out_words=40.2±(9–97)
+2026-04-23T17:49:33 | INFO     | dataset.build_sft_dataset | Wrote 36 rows to /home/mrathod4/TARS/data/datasets/alpaca/phase1_standard_heldout.jsonl
+2026-04-23T17:49:33 | INFO     | dataset.build_sft_dataset | Wrote 36 rows to /home/mrathod4/TARS/data/datasets/alpaca/phase1_anonymized_heldout.jsonl
+2026-04-23T17:49:33 | INFO     | dataset.build_sft_dataset | Wrote 36 rows to /home/mrathod4/TARS/data/datasets/alpaca/phase1_compact_heldout.jsonl
+2026-04-23T17:49:33 | INFO     | dataset.build_sft_dataset | Wrote dataset_info.json with 9 datasets
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_anonymized_heldout.jsonl: 36 total -> 36 kept (0 removed)
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_anonymized_train.jsonl: 78 total -> 78 kept (0 removed)
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_compact_heldout.jsonl: 36 total -> 36 kept (0 removed)
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_compact_train.jsonl: 79 total -> 79 kept (0 removed)
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_standard_heldout.jsonl: 36 total -> 36 kept (0 removed)
+2026-04-23T17:49:33 | INFO     | dataset.dedupe | Dedupe phase1_standard_train.jsonl: 79 total -> 79 kept (0 removed)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_anonymized_heldout.jsonl: count=36 out_words=138.8±(9–552)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_anonymized_train.jsonl: count=78 out_words=40.1±(9–97)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_compact_heldout.jsonl: count=36 out_words=138.8±(9–552)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_compact_train.jsonl: count=79 out_words=40.2±(9–97)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_standard_heldout.jsonl: count=36 out_words=138.8±(9–552)
+2026-04-23T17:49:33 | INFO     | dataset.stats | phase1_standard_train.jsonl: count=79 out_words=40.2±(9–97)

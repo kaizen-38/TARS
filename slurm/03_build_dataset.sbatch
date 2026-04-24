@@ -23,8 +23,8 @@ mkdir -p logs
 
 echo "[$(date)] Building SFT datasets..."
 
-python -m cli build-dataset --split train
-python -m cli build-dataset --split heldout
+python -m src.cli build-dataset --split train
+python -m src.cli build-dataset --split heldout
 
 echo "[$(date)] Dataset build complete."
 echo "Row counts:"
