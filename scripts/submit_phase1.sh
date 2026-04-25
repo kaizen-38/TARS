@@ -64,6 +64,9 @@ done
 LOG="${REPO_ROOT}/logs/submitted_jobs.txt"
 echo "=== Phase 1 submission $(date) ===" | tee -a "$LOG"
 
+# Preamble for --wrap jobs that need conda
+WRAP_INIT="module load mamba/latest && eval \"\\\$(conda shell.bash hook)\" && conda activate thicket311 && cd ${REPO_ROOT} && export PYTHONPATH=${REPO_ROOT}/src"
+
 # ---------------------------------------------------------------------------
 # Helper: submit and record job ID
 # ---------------------------------------------------------------------------
@@ -102,7 +105,7 @@ JID_SOLVE_MANIFEST=$(submit "00b_solve_manifest" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/00b_manifest_%j.out \
-    --wrap="cd ${REPO_ROOT} && export PYTHONPATH=${REPO_ROOT}/src && /home/mrathod4/.conda/envs/thicket311/bin/python3 scripts/gen_manifests.py solve")
+    --wrap="${WRAP_INIT} && python3 scripts/gen_manifests.py solve")
 
 # Job 01: solve instances (FD), smoke array 0-59
 JID_SOLVE=$(submit "01_teacher_plans_smoke" \
@@ -116,7 +119,7 @@ JID_VAL_MANIFEST=$(submit "01b_val_manifest" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/01b_manifest_%j.out \
-    --wrap="cd ${REPO_ROOT} && export PYTHONPATH=${REPO_ROOT}/src && /home/mrathod4/.conda/envs/thicket311/bin/python3 scripts/gen_manifests.py validate")
+    --wrap="${WRAP_INIT} && python3 scripts/gen_manifests.py validate")
 
             
 
@@ -178,7 +181,7 @@ JID_SOLVE_MANIFEST_P=$(submit "00b_solve_manifest_pilot" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/00b_manifest_pilot_%j.out \
-    --wrap="cd ${REPO_ROOT} && export PYTHONPATH=${REPO_ROOT}/src && /home/mrathod4/.conda/envs/thicket311/bin/python3 scripts/gen_manifests.py solve")
+    --wrap="${WRAP_INIT} && python3 scripts/gen_manifests.py solve")
 
 
 
@@ -192,7 +195,7 @@ JID_VAL_MANIFEST_P=$(submit "01b_val_manifest_pilot" \
     --partition=public --qos=class --account=class_cse574spring2026 \
     --cpus-per-task=1 --mem=2G --time=00:05:00 \
     --output=logs/01b_manifest_pilot_%j.out \
-    --wrap="cd ${REPO_ROOT} && export PYTHONPATH=${REPO_ROOT}/src && /home/mrathod4/.conda/envs/thicket311/bin/python3 scripts/gen_manifests.py validate")
+    --wrap="${WRAP_INIT} && python3 scripts/gen_manifests.py validate")
 JID_VAL_PILOT=$(submit "02_validate_pilot" \
     --dependency=afterok:${JID_VAL_MANIFEST_P} \
     --array=0-${PILOT_N} \

@@ -16,10 +16,10 @@ MANIFEST="${REPO_ROOT}/manifests/solve_manifest.tsv"
 
 module purge
 module load gcc/15.2.0
-export LD_LIBRARY_PATH=/home/mrathod4/.conda/envs/thicket311/lib:${LD_LIBRARY_PATH:-}
 module load mamba/latest
 eval "$(conda shell.bash hook)"
 conda activate thicket311
+export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH:-}"
 
 export PYTHONPATH="${REPO_ROOT}/src"
 cd "${REPO_ROOT}"

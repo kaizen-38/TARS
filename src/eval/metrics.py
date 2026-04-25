@@ -26,6 +26,22 @@ def compute_goal_rate(rows: list[dict[str, Any]]) -> float:
     return reached / len(rows)
 
 
+def compute_empty_plan_rate(rows: list[dict[str, Any]]) -> float:
+    """Fraction of rows where num_actions is 0."""
+    if not rows:
+        return 0.0
+    empty = sum(1 for r in rows if r.get("num_actions", 0) == 0)
+    return empty / len(rows)
+
+
+def compute_avg_actions(rows: list[dict[str, Any]]) -> float:
+    """Average number of actions across non-empty plans."""
+    non_empty = [r.get("num_actions", 0) for r in rows if r.get("num_actions", 0) > 0]
+    if not non_empty:
+        return 0.0
+    return sum(non_empty) / len(non_empty)
+
+
 def breakdown_by_field(
     rows: list[dict[str, Any]],
     field: str,
@@ -42,6 +58,8 @@ def breakdown_by_field(
             "count": len(group_rows),
             "validity_rate": compute_validity_rate(group_rows),
             "goal_rate": compute_goal_rate(group_rows),
+            "empty_plan_rate": compute_empty_plan_rate(group_rows),
+            "avg_actions": compute_avg_actions(group_rows),
         }
     return result
 
@@ -57,6 +75,8 @@ def compute_all_metrics(log_path: Path) -> dict[str, Any]:
         "overall": {
             "validity_rate": compute_validity_rate(rows),
             "goal_rate": compute_goal_rate(rows),
+            "empty_plan_rate": compute_empty_plan_rate(rows),
+            "avg_actions": compute_avg_actions(rows),
         },
         "by_domain": breakdown_by_field(rows, "domain"),
         "by_representation": breakdown_by_field(rows, "representation"),

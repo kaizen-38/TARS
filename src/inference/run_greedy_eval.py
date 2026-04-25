@@ -96,7 +96,7 @@ def main(
     for meta_path in sorted(instance_files):
         meta = load_json(meta_path)
         instance_id = meta["instance_id"]
-        domain = meta["domain"]
+        inst_domain = meta["domain"]
 
         domain_file = _REPO_ROOT / meta["domain_file"]
         problem_file = _REPO_ROOT / meta["problem_file"]
@@ -116,6 +116,7 @@ def main(
             generated_tokens: Optional[int] = None
             gen_time: Optional[float] = None
             val_time: Optional[float] = None
+            num_actions: int = 0
 
             try:
                 gen_result = generate_plan(
@@ -143,22 +144,39 @@ def main(
                 else:
                     parsed = parse_plan_from_text(gen_result.raw_output)
 
-                # Write plan for VAL
-                plan_path = tmp_dir / f"{instance_id}_{repr_name}.pddl"
-                plan_to_file(parsed, plan_path, timed=False)
+                num_actions = len(parsed.actions)
 
-                # Validate
-                val_result = validate_plan(
-                    problem_id=f"{instance_id}_{repr_name}",
-                    domain_file=domain_file,
-                    problem_file=problem_file,
-                    plan_file=plan_path,
-                    output_dir=output_dir / "val_results",
-                    timeout=eval_cfg.get("max_val_calls_per_candidate", 30),
-                )
-                valid_plan = val_result.parsed_validity
-                goal_reached = val_result.parsed_goal_reached
-                val_time = val_result.wall_clock_sec
+                if num_actions == 0:
+                    valid_plan = False
+                    goal_reached = False
+                    logger.warning(
+                        "Empty plan for %s/%s (0 actions parsed from %d tokens)",
+                        instance_id, repr_name, generated_tokens,
+                    )
+                else:
+                    # Write plan for VAL
+                    plan_path = tmp_dir / f"{instance_id}_{repr_name}.pddl"
+                    plan_to_file(parsed, plan_path, timed=False)
+
+                    # Validate
+                    val_timeout = eval_cfg.get("val_timeout_sec", 30)
+                    val_result = validate_plan(
+                        problem_id=f"{instance_id}_{repr_name}",
+                        domain_file=domain_file,
+                        problem_file=problem_file,
+                        plan_file=plan_path,
+                        output_dir=output_dir / "val_results",
+                        timeout=val_timeout,
+                    )
+                    valid_plan = val_result.parsed_validity
+                    goal_reached = val_result.parsed_goal_reached
+                    val_time = val_result.wall_clock_sec
+
+                    # Treat unparseable VAL output as invalid
+                    if valid_plan is None:
+                        valid_plan = False
+                    if goal_reached is None and valid_plan is False:
+                        goal_reached = False
 
             except Exception as exc:
                 error_type = type(exc).__name__
@@ -169,7 +187,7 @@ def main(
             run_logger.log_run_result(
                 run_id=run_id,
                 seed=seed,
-                domain=domain,
+                domain=inst_domain,
                 problem_id=instance_id,
                 representation=repr_name,
                 split=split,
@@ -184,6 +202,7 @@ def main(
                 val_time_sec=val_time,
                 total_time_sec=total_time,
                 error_type=error_type,
+                num_actions=num_actions,
             )
 
     logger.info("Eval complete. Results in %s", output_dir)

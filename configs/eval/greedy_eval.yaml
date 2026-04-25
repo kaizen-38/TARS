@@ -3,16 +3,14 @@
 
 decoding:
   do_sample: false
-  temperature: 0.01
-  top_p: 1.0
-  max_new_tokens: 512
+  max_new_tokens: 2048
   enable_thinking: false      # MUST be false for Phase 1
 
 # Batch size for inference (reduce if OOM)
 per_device_eval_batch_size: 1
 
-# VAL validation budget per candidate
-max_val_calls_per_candidate: 1
+# VAL timeout in seconds per plan validation
+val_timeout_sec: 30
 
 # Per-instance wall-clock timeout in seconds
 per_instance_timeout_sec: 120

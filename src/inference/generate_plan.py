@@ -177,8 +177,6 @@ def generate_plan(
                 gen_kwargs[key] = config[key]
         if "presence_penalty" in config:
             gen_kwargs["repetition_penalty"] = 1.0 + config["presence_penalty"] * 0.1
-    else:
-        gen_kwargs["temperature"] = config.get("temperature", 0.01)
 
     t0 = time.perf_counter()
     with torch.inference_mode():

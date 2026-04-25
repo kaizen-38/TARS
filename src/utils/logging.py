@@ -5,6 +5,7 @@ reproducible and attributable to exact git commits, seeds, and configs.
 """
 from __future__ import annotations
 
+import fcntl
 import json
 import logging
 import sys
@@ -55,11 +56,17 @@ class RunLogger:
         self._git_commit = _get_git_commit()
 
     def log(self, row: dict[str, Any]) -> None:
-        """Append a single JSONL row to the log file."""
+        """Append a single JSONL row to the log file (atomic with file lock)."""
         row.setdefault("timestamp", datetime.now(timezone.utc).isoformat())
         row.setdefault("git_commit", self._git_commit)
+        line = json.dumps(row, default=str) + "\n"
         with self.log_path.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps(row, default=str) + "\n")
+            fcntl.flock(fh, fcntl.LOCK_EX)
+            try:
+                fh.write(line)
+                fh.flush()
+            finally:
+                fcntl.flock(fh, fcntl.LOCK_UN)
 
     def log_run_result(
         self,
@@ -81,6 +88,7 @@ class RunLogger:
         val_time_sec: float | None,
         total_time_sec: float | None,
         error_type: str | None,
+        num_actions: int = 0,
     ) -> None:
         """Log the canonical Phase 1 result row."""
         self.log(
@@ -96,6 +104,7 @@ class RunLogger:
                 "planner_backend": planner_backend,
                 "valid_plan": valid_plan,
                 "goal_reached": goal_reached,
+                "num_actions": num_actions,
                 "max_new_tokens": max_new_tokens,
                 "generated_tokens": generated_tokens,
                 "generation_time_sec": generation_time_sec,

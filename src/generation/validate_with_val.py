@@ -6,6 +6,7 @@ Returns a structured VALResult with:
 """
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import time
@@ -122,9 +123,9 @@ def validate_plan(
 
     t0 = time.perf_counter()
     try:
-        import os
         val_env = os.environ.copy()
-        val_env["LD_LIBRARY_PATH"] = "/home/mrathod4/.conda/envs/thicket311/lib:" + val_env.get("LD_LIBRARY_PATH", "")
+        conda_lib = os.path.join(os.environ.get("CONDA_PREFIX", ""), "lib")
+        val_env["LD_LIBRARY_PATH"] = conda_lib + ":" + val_env.get("LD_LIBRARY_PATH", "")
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=val_env)
         elapsed = time.perf_counter() - t0
 
@@ -187,4 +188,13 @@ def validate_plan(
         val_result.parsed_goal_reached,
         val_result.wall_clock_sec,
     )
+    if val_result.parsed_validity is None and val_result.success:
+        logger.warning(
+            "VAL %s: could not parse validity from stdout (exit=%d). "
+            "stdout=%r stderr=%r",
+            problem_id,
+            val_result.exit_code,
+            val_result.stdout[:500],
+            val_result.stderr[:500],
+        )
     return val_result

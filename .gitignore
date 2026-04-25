@@ -28,6 +28,7 @@ runs/*/
 *.pth
 
 # Logs
+logs/
 *.log
 *.jsonl
 !configs/**/*.yaml

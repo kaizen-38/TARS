@@ -35,19 +35,27 @@ def main(
     print(f"Total instances: {metrics.get('total', 0)}")
     print(f"Validity rate:   {overall.get('validity_rate', 0):.3f}")
     print(f"Goal rate:       {overall.get('goal_rate', 0):.3f}")
+    print(f"Empty plan rate: {overall.get('empty_plan_rate', 0):.3f}")
+    print(f"Avg actions:     {overall.get('avg_actions', 0):.1f}")
 
     print("\n-- By Representation --")
     for rep, stats in metrics.get("by_representation", {}).items():
         print(
             f"  {rep:12s}: validity={stats['validity_rate']:.3f} "
-            f"goal={stats['goal_rate']:.3f} n={stats['count']}"
+            f"goal={stats['goal_rate']:.3f} "
+            f"empty={stats.get('empty_plan_rate', 0):.3f} "
+            f"avg_act={stats.get('avg_actions', 0):.1f} "
+            f"n={stats['count']}"
         )
 
     print("\n-- By Domain --")
     for domain, stats in metrics.get("by_domain", {}).items():
         print(
             f"  {domain:15s}: validity={stats['validity_rate']:.3f} "
-            f"goal={stats['goal_rate']:.3f} n={stats['count']}"
+            f"goal={stats['goal_rate']:.3f} "
+            f"empty={stats.get('empty_plan_rate', 0):.3f} "
+            f"avg_act={stats.get('avg_actions', 0):.1f} "
+            f"n={stats['count']}"
         )
 
 

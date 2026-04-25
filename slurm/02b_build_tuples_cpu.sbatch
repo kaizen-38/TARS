@@ -15,7 +15,7 @@ module load mamba/latest
 eval "$(conda shell.bash hook)"
 conda activate thicket311
 export PYTHONPATH="${REPO_ROOT}/src"
-export LD_LIBRARY_PATH=/home/mrathod4/.conda/envs/thicket311/lib:${LD_LIBRARY_PATH:-}
+export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH:-}"
 cd "${REPO_ROOT}"
 mkdir -p logs
 echo "[$(date)] Building tuples..."

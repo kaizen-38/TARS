@@ -102,20 +102,41 @@ def extract_compact_plan_from_text(model_output: str) -> str:
     return "\n".join(action_lines)
 
 
+_PROSE_WORDS = frozenset({
+    "the", "a", "an", "this", "that", "these", "those", "is", "are", "was",
+    "were", "be", "been", "being", "have", "has", "had", "do", "does", "did",
+    "will", "would", "could", "should", "may", "might", "shall", "can",
+    "for", "and", "but", "or", "nor", "not", "so", "yet", "both", "either",
+    "neither", "each", "every", "all", "any", "few", "more", "most", "other",
+    "some", "such", "no", "only", "own", "same", "than", "too", "very",
+    "just", "because", "as", "until", "while", "of", "at", "by", "about",
+    "between", "into", "through", "during", "before", "after", "above",
+    "below", "to", "from", "up", "down", "in", "out", "on", "off", "over",
+    "under", "again", "further", "then", "once", "here", "there", "when",
+    "where", "why", "how", "what", "which", "who", "whom", "if", "it", "i",
+    "you", "he", "she", "we", "they", "me", "him", "her", "us", "them",
+    "my", "your", "his", "its", "our", "their", "step", "plan", "solution",
+    "first", "second", "third", "next", "finally", "note", "output",
+})
+
+
 def _looks_like_action(line: str) -> bool:
-    """Heuristic: does this line look like a compact action?"""
+    """Heuristic: does this line look like a compact PDDL action?"""
     if not line:
         return False
-    # Standard PDDL: starts with (
     if line.startswith("("):
         return True
-    # Compact: starts with a lowercase identifier (no special chars)
     tokens = line.split()
     if not tokens:
         return False
-    first = tokens[0]
-    return (
-        first[0].isalpha()
-        and all(c.isalnum() or c in "-_" for c in first)
-        and not first.startswith(":")
-    )
+    first = tokens[0].lower().rstrip(":.,;")
+    if not first:
+        return False
+    if first in _PROSE_WORDS:
+        return False
+    if not all(c.isalnum() or c in "-_" for c in first):
+        return False
+    # Actions must contain a hyphen or have at least one argument
+    if "-" in first or len(tokens) >= 2:
+        return True
+    return False

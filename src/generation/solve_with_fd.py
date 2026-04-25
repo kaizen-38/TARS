@@ -1,10 +1,11 @@
 """Solve PDDL problems using Fast Downward (default) or a pluggable backend."""
 from __future__ import annotations
 
+import os
+import shutil
 import subprocess
 import tempfile
 import time
-import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
@@ -78,54 +79,45 @@ class FastDownwardBackend(PlannerBackend):
         timeout: int,
     ) -> tuple[int, str, str, list[str]]:
         binary = self._get_binary()
-        fd_dir = binary.resolve().parent
         _tmp_dir = Path(tempfile.mkdtemp(prefix="tars_fd_"))
-        plan_file = _tmp_dir / "sas_plan"
 
-        if self.search_config.startswith("--search "):
-            search_expr = self.search_config[len("--search "):]
-            cmd = [
-                "python", str(binary.resolve()),
-                str(domain_file.resolve()), str(problem_file.resolve()),
-                "--search", search_expr,
-            ]
-        elif self.search_config.startswith("--alias "):
-            alias = self.search_config[len("--alias "):]
-            cmd = [
-                "python", str(binary.resolve()),
-                str(domain_file.resolve()), str(problem_file.resolve()),
-                "--alias", alias,
-            ]
-        else:
-            cmd = (
-                ["python", str(binary.resolve()),
-                 str(domain_file.resolve()), str(problem_file.resolve())]
-                + self.search_config.split()
+        try:
+            if self.search_config.startswith("--search "):
+                search_expr = self.search_config[len("--search "):]
+                cmd = [
+                    "python", str(binary.resolve()),
+                    str(domain_file.resolve()), str(problem_file.resolve()),
+                    "--search", search_expr,
+                ]
+            elif self.search_config.startswith("--alias "):
+                alias = self.search_config[len("--alias "):]
+                cmd = [
+                    "python", str(binary.resolve()),
+                    str(domain_file.resolve()), str(problem_file.resolve()),
+                    "--alias", alias,
+                ]
+            else:
+                cmd = (
+                    ["python", str(binary.resolve()),
+                     str(domain_file.resolve()), str(problem_file.resolve())]
+                    + self.search_config.split()
+                )
+
+            logger.info("FD solve: %s", " ".join(cmd))
+            fd_env = os.environ.copy()
+            conda_lib = os.path.join(os.environ.get("CONDA_PREFIX", ""), "lib")
+            fd_env["LD_LIBRARY_PATH"] = conda_lib + ":" + fd_env.get("LD_LIBRARY_PATH", "")
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=timeout,
+                cwd=str(_tmp_dir), env=fd_env
             )
 
-        logger.info("FD solve: %s", " ".join(cmd))
-        import os
-        fd_env = os.environ.copy()
-        fd_env["LD_LIBRARY_PATH"] = "/home/mrathod4/.conda/envs/thicket311/lib:" + fd_env.get("LD_LIBRARY_PATH", "")
-        result = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=timeout,
-            cwd=str(_tmp_dir), env=fd_env
-        )
+            plan_files = sorted(_tmp_dir.glob("sas_plan*"))
+            actions = _parse_fd_plan(plan_files[-1].read_text()) if plan_files else []
 
-        plan_files = sorted(_tmp_dir.glob("sas_plan*"))
-        actions = _parse_fd_plan(plan_files[-1].read_text()) if plan_files else []
-
-        for f in plan_files:
-            try:
-                f.unlink()
-            except Exception:
-                pass
-        try:
-            _tmp_dir.rmdir()
-        except Exception:
-            pass
-
-        return result.returncode, result.stdout, result.stderr, actions
+            return result.returncode, result.stdout, result.stderr, actions
+        finally:
+            shutil.rmtree(_tmp_dir, ignore_errors=True)
 
 
 def _parse_fd_plan(text: str) -> list[str]:

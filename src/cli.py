@@ -232,7 +232,7 @@ def build_tuples(
 
     log = get_logger("build_tuples")
 
-    meta_files = sorted(plans_dir.glob("*.solve_meta.json"))
+    meta_files = sorted(plans_dir.rglob("*.solve_meta.json"))
     log.info("Found %d solve meta files", len(meta_files))
 
     built = 0
