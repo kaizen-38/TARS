@@ -144,7 +144,7 @@ PYTHONPATH=src python3 src/eval/aggregate_results.py runs/eval_pilot_train/run_l
 ---
 
 ## Dataset Files
-
+```
 After `build-dataset`, files are split-suffixed:
 data/datasets/alpaca/
 phase1_standard_train.jsonl      # ~79 rows (pilot)
@@ -154,6 +154,7 @@ phase1_standard_heldout.jsonl    # ~36 rows (pilot)
 phase1_anonymized_heldout.jsonl
 phase1_compact_heldout.jsonl
 dataset_info.json                # LLaMAFactory registry (merges, no overwrite)
+```
 ---
 
 ## Third-Party Dependencies
