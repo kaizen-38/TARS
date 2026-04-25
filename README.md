@@ -1,220 +1,175 @@
-# thicket_phase1
+# TARS — Thicket-Aware Regime Switching for Verifier-Grounded LLM Planning
 
 **Phase 1: Reproduce the 1.7B LLM Planning Baseline**
 
-Goal: lock splits/budgets/protocol, reproduce Qwen3-1.7B planning results across
-standard, anonymized, and compact PDDL representations, and build a trustworthy
-data + validation pipeline.
+Team: Rhythm Arya (rarya124), Mohak Rathod (mrathod4), Abhiram Menon (amenon28)
+Course: CSE-574, ASU | Branch: `mohak/sol-fd-fix`
 
+> Phase 1 goal: lock splits/budgets/protocol, reproduce Qwen3-1.7B planning results
+> across standard, anonymized, and compact PDDL representations, and build a
+> trustworthy data + validation pipeline on ASU Sol.
 > Regime switching is NOT implemented in Phase 1.
 
 ---
 
+## Phase 1 Baseline Results (Pilot Run)
+
+| Split | Validity | Goal Rate | Instances |
+|-------|----------|-----------|-----------|
+| Train (8 domains) | 4.2% | 0% | 25/domain |
+| Heldout (4 domains) | 1.4% | 0% | 25/domain |
+| Generalization gap | 2.8% | 0% | — |
+
+By representation (train):
+| Representation | Validity |
+|----------------|----------|
+| Standard | 1.0% |
+| Anonymized | 1.0% |
+| Compact | 10.5% |
+
+Model: Qwen3-1.7B + mini LoRA (~79 training tuples)
+
+---
+
+## Frozen Splits
+
+**Train (8):** blocksworld, gripper, ferry, delivery, childsnack, floortile, rovers, spanner
+
+**Held-out (4):** miconic, sokoban, transport, satellite
+
+**Representations:** standard, anonymized, compact
+
+---
+
 ## Repository Layout
-
-```
-thicket_phase1/
-  configs/
-    splits/phase1_v1.yaml          # Locked domain splits, budgets, smoke/pilot counts
-    models/qwen3_1p7b.yaml         # Primary model config
-    models/qwen2p5_1p5b_debug.yaml # Cheap debug model config
-    train/sft_qwen3_phase1_full.yaml    # Locked full fine-tuning config
-    train/sft_qwen3_phase1_lora_debug.yaml  # LoRA smoke-test config
-    eval/greedy_eval.yaml          # Greedy decoding eval (primary Phase 1 metric)
-    eval/verify_sampling.yaml      # Sampling eval (pass@k, secondary)
-  data/
-    generated/instances/           # PDDL domain+problem files (generated)
-    generated/plans/               # Solved plans + VAL results
-    generated/tuples_*/            # (domain, problem, plan) tuples per representation
-    datasets/alpaca/               # Alpaca JSONL datasets for LLaMA-Factory
-    datasets/dataset_info.json     # LLaMA-Factory dataset registry
-  src/
-    cli.py                         # Unified CLI entry point
-    generation/                    # Instance generation, FD solving, VAL validation
-    pddl_ops/                      # PDDL parsing, anonymization, compact serialization
-    dataset/                       # SFT dataset builder, dedup, stats
-    training/                      # LLaMA-Factory config writer + launch wrapper
-    inference/                     # Plan generation + greedy eval runner
-    eval/                          # Metrics, aggregation, manifest
-    utils/                         # IO, logging, seeds
-  scripts/                         # Shell scripts backing Makefile targets
-  tests/                           # Pytest tests
-  third_party/                     # Git submodules
-  runs/                            # Training + eval outputs (gitignored)
-```
-
+TARS/
+configs/
+splits/phase1_v1.yaml               # Locked domain splits and budgets
+train/sft_qwen3_phase1_full.yaml    # Full fine-tuning config
+train/sft_qwen3_phase1_lora_debug.yaml  # LoRA smoke config
+eval/greedy_eval.yaml               # Greedy eval config (max_new_tokens=512)
+data/
+generated/instances/                # PDDL domain+problem files
+generated/plans/                    # Solved plans + VAL results
+generated/tuples_standard/          # (domain, problem, plan) tuples
+datasets/alpaca/                    # Alpaca JSONL datasets (split-suffixed)
+static/delivery/                    # Pre-generated delivery instances
+src/
+cli.py                              # Unified CLI: generate-one, build-tuples, build-dataset, train, eval
+generation/                         # Instance generation, FD solving, VAL validation
+pddl_ops/                           # Anonymization, compact serialization
+dataset/                            # SFT dataset builder
+training/                           # LLaMAFactory config + launch
+inference/                          # Plan generation + greedy eval
+eval/                               # Metrics aggregation
+slurm/                                # Sbatch scripts (00-10)
+scripts/
+submit_phase1.sh                    # Full pipeline submission
+gen_manifests.py                    # TSV manifest generator
+docs/
+domain_generator_notes.md           # Generator commands and known issues
+third_party/                          # Git submodules
+runs/                                 # Training + eval outputs (gitignored)
 ---
 
-## Third-Party Dependencies (Submodules)
-
-| Submodule | Path | Role |
-|---|---|---|
-| [hiyouga/LLaMAFactory](https://github.com/hiyouga/LLaMAFactory) | `third_party/LLaMAFactory` | SFT training framework |
-| [AI-Planning/pddl-generators](https://github.com/AI-Planning/pddl-generators) | `third_party/pddl-generators` | Domain instance generation |
-| [KCL-Planning/VAL](https://github.com/KCL-Planning/VAL) | `third_party/VAL` | PDDL plan validation (`Validate` binary) |
-| [aibasel/downward](https://github.com/aibasel/downward) | `third_party/downward` | Fast Downward teacher planner |
-| [harshakokel/PlanBench](https://github.com/harshakokel/PlanBench) | `third_party/PlanBench` | **Reference only** — do not import into `src/` |
-| [ValerioBelcamino/PDDL_encoder](https://github.com/ValerioBelcamino/PDDL_encoder) | `third_party/PDDL_encoder` | **Reference only** — do not import into `src/` |
-
-> **PlanBench** and **PDDL_encoder** are included as reference material only.
-> No code from these repos is imported or copied into `src/`.
-
----
-
-## Setup
-
-**Requirements:** Python 3.10+, `git`, `cmake`, `make`, C++ compiler.
+## Sol Setup (One-time)
 
 ```bash
-# 1. Clone with submodules
-git clone --recurse-submodules <your-repo-url>
-cd thicket_phase1
-
-# 2. Install Python deps + init submodules
-make setup
-
-# 3. Build Fast Downward and VAL
-make build-tools
+# Load environment
+module load mamba/latest
+eval "$(conda shell.bash hook)"
+conda activate thicket311
+export PYTHONPATH=$HOME/TARS/src
+export LD_LIBRARY_PATH=/home/mrathod4/.conda/envs/thicket311/lib:${LD_LIBRARY_PATH:-}
+export HF_HOME="${SCRATCH}/hf_cache"
 ```
 
-Or step by step:
+**Important:** VAL and Fast Downward require `LD_LIBRARY_PATH` set as above.
+This is injected automatically in all sbatch scripts.
 
+---
+
+## Running the Pipeline on Sol
+
+### Smoke + Pilot (recommended)
 ```bash
-pip install -e ".[dev]"
-git submodule update --init --recursive
-pip install -e third_party/LLaMAFactory
-bash scripts/build_generators.sh    # builds Fast Downward
-bash scripts/build_val.sh           # builds VAL Validate binary
+cd ~/TARS
+bash scripts/submit_phase1.sh --pilot
 ```
 
----
-
-## End-to-End Smoke Test
-
-Run this after `make setup` and `make build-tools`:
-
+After pilot completes, manually submit train eval:
 ```bash
-# Step 1: Generate 5 instances per domain
-make generate-smoke
-# Expected: data/generated/instances/<domain>/train/ and /heldout/ dirs
-# Each with *_domain.pddl, *_problem.pddl, *_meta.json
-
-# Step 2: Solve with Fast Downward + validate with VAL
-make solve-smoke
-# Expected: data/generated/plans/<domain>/*.raw_plan.txt
-#           data/generated/plans/<domain>/*.plan.pddl
-#           data/generated/tuples_standard/*_tuple.json
-
-# Step 3: Build SFT datasets
-make build-dataset
-# Expected: data/datasets/alpaca/phase1_{standard,anonymized,compact}.jsonl
-#           data/datasets/dataset_info.json
-
-# Step 4: Smoke SFT run (LoRA, 20 steps)
-make train-phase1
-# Expected: runs/sft_qwen3_phase1_lora_debug/
-
-# Step 5: Greedy evaluation
-make eval-phase1 CHECKPOINT=runs/sft_qwen3_phase1_lora_debug
-# Expected: runs/eval_results/run_log.jsonl
-#           runs/eval_results/metrics_summary.json
-
-# Step 6: Run tests
-make test
+JID=$(sbatch --array=0-7 slurm/07b_eval_train_gpu_array.sbatch | awk '{print $NF}')
+echo "train eval: $JID"
 ```
+
+Aggregate train results:
+```bash
+PYTHONPATH=src python3 src/eval/aggregate_results.py runs/eval_pilot_train/run_log.jsonl
+```
+
+### Pipeline stages
+| Job | What | Depends on |
+|-----|------|-----------|
+| 00_generate | Generate instances (array 12) | — |
+| 00b | Build solve manifest | 00 |
+| 01_teacher_plans | FD solve (array 60/300) | 00b |
+| 01b | Build validate manifest | 01 |
+| 02_validate | VAL validate (array 60/300) | 01b |
+| 02b_build_tuples | Build tuple JSONs | 02 |
+| 03_build_dataset | Build Alpaca JSONL | 02b |
+| 04/06_train | LoRA/mini train | 03 |
+| 05/07_eval | Greedy eval heldout | 04/06 |
+| 07b_eval_train | Greedy eval train | manual |
+| 10_aggregate | Aggregate results | 07 |
 
 ---
 
-## Expected File Outputs
+## Known Issues and Fixes Applied
 
-After `make generate-smoke`:
-```
-data/generated/instances/
-  blocksworld/train/
-    blocksworld_train_0000_42_domain.pddl
-    blocksworld_train_0000_42_problem.pddl
-    blocksworld_train_0000_42_meta.json
-    ... (5 instances)
-  ferry/heldout/
-    ... (5 instances)
-  miconic/heldout/
-    ... (5 instances)
-```
-
-After `make build-dataset`:
-```
-data/datasets/
-  alpaca/
-    phase1_standard.jsonl
-    phase1_anonymized.jsonl
-    phase1_compact.jsonl
-  dataset_info.json
-```
-
-After `make eval-phase1`:
-```
-runs/eval_results/
-  run_log.jsonl           # One JSONL row per (instance, representation)
-  metrics_summary.json    # Aggregated validity/goal rates by domain + representation
-  raw/                    # Raw model outputs
-  val_results/            # Per-instance VAL result JSONs
-```
+| Issue | Fix |
+|-------|-----|
+| FD writes `output.sas` to cwd causing parallel collisions | `cwd=tmpdir` in `solve_with_fd.py` |
+| VAL/FD `GLIBCXX_3.4.32` not found | `LD_LIBRARY_PATH` injected in all sbatch and subprocess calls |
+| Domain paths wrong for non-blocksworld domains | Fixed in `generate_instances.py` — only blocksworld uses `4ops/domain.pddl` |
+| Dataset builder overwrites train when building heldout | Output files now split-suffixed: `phase1_standard_train.jsonl` |
+| `build-tuples` not in sbatch chain | `02b_build_tuples_cpu.sbatch` added between 02 and 03 |
+| `python -m cli` not found | Fixed to `python -m src.cli` in sbatch scripts |
+| VAL `goal_reached` always True | Fixed regex in `validate_with_val.py` |
+| `--domain` filter missing from eval script | Added to `run_greedy_eval.py` |
+| Train domains never evaluated in pilot | `07b_eval_train_gpu_array.sbatch` added |
 
 ---
 
-## Run Log Schema
+## Dataset Files
 
-Every evaluation appends rows with these fields to `run_log.jsonl`:
+After `build-dataset`, files are split-suffixed:
+data/datasets/alpaca/
+phase1_standard_train.jsonl      # ~79 rows (pilot)
+phase1_anonymized_train.jsonl
+phase1_compact_train.jsonl
+phase1_standard_heldout.jsonl    # ~36 rows (pilot)
+phase1_anonymized_heldout.jsonl
+phase1_compact_heldout.jsonl
+dataset_info.json                # LLaMAFactory registry (merges, no overwrite)
+---
 
-| Field | Description |
-|---|---|
-| `run_id` | Unique run identifier |
-| `timestamp` | ISO 8601 UTC |
-| `git_commit` | Short commit hash |
-| `seed` | Global random seed |
-| `domain` | PDDL domain name |
-| `problem_id` | Instance identifier |
-| `representation` | `standard` / `anonymized` / `compact` |
-| `split` | `train` / `heldout` |
-| `model_name` | HF model identifier |
-| `checkpoint_path` | Fine-tuned checkpoint path |
-| `planner_backend` | Teacher planner used (e.g. `fd`) |
-| `valid_plan` | VAL verdict (bool or null) |
-| `goal_reached` | VAL goal check (bool or null) |
-| `max_new_tokens` | Decoding budget |
-| `generated_tokens` | Actual tokens generated |
-| `generation_time_sec` | Wall-clock generation time |
-| `val_time_sec` | VAL validation time |
-| `total_time_sec` | Total per-instance time |
-| `error_type` | Exception class if error, else null |
+## Third-Party Dependencies
+
+| Submodule | Role |
+|-----------|------|
+| `third_party/LLaMAFactory` | SFT training |
+| `third_party/pddl-generators` | Domain instance generation |
+| `third_party/VAL` | Plan validation |
+| `third_party/downward` | Fast Downward teacher planner |
+| `third_party/PlanBench` | Reference only — no code imported |
 
 ---
 
 ## Key Design Decisions
 
-1. **`enable_thinking=False` always** — set at the `apply_chat_template` call in
-   `src/inference/generate_plan.py`. This is a hard Phase 1 requirement.
-
-2. **Full fine-tuning by default** — `finetuning_type: full` in the locked config.
-   LoRA config exists only for smoke testing.
-
-3. **VAL is the single source of truth** — no heuristic plan checking.
-   All validity claims trace to the `Validate` binary.
-
-4. **No code copied from PlanBench** — PlanBench is a reference submodule.
-   Prompt formats and domain lists were independently specified.
-
-5. **Planner backend is abstracted** — `src/generation/solve_with_fd.py` has a
-   `PlannerBackend` ABC. Fast Downward is the only registered backend in Phase 1.
-
----
-
-## Running Full Fine-Tuning
-
-```bash
-make train-phase1 MODE=full
-```
-
-This writes the config to `runs/sft_qwen3_phase1_full/train_config.yaml` and
-calls `llamafactory-cli train`. Requires a GPU with ~40GB VRAM (or use
-gradient checkpointing + small batch on smaller GPUs).
+1. **`enable_thinking=False` always** — hard Phase 1 requirement
+2. **VAL is single source of truth** — no heuristic plan checking
+3. **LD_LIBRARY_PATH workaround** — VAL and FD built against newer libstdc++ than system provides; conda env lib injected at runtime
+4. **Delivery uses static instances** — `uv` not available on Sol; pre-generated in `data/static/delivery/`
+5. **Split-suffixed datasets** — `phase1_standard_train.jsonl` not `phase1_standard.jsonl` to prevent overwrite on second split build
