@@ -28,23 +28,23 @@ mkdir -p logs
 if ! python3 -c "import typer" &>/dev/null; then
     module load mamba/latest
     eval "$(conda shell.bash hook)"
-    conda activate thicket311
+    conda activate tars
 fi
 export PYTHONPATH="${REPO_ROOT}/src"
 
 # Pre-flight: verify submodules and built tools exist
 PREFLIGHT_OK=true
-if [ ! -f "${REPO_ROOT}/third_party/pddl-generators/blocksworld/4ops/2pddl/2pddl" ]; then
-    echo "ERROR: pddl-generators not built. Run: bash scripts/setup_third_party.sh && make build-tools" >&2
+if [ ! -d "${REPO_ROOT}/third_party/pddl-generators/blocksworld" ]; then
+    echo "ERROR: pddl-generators not found. Run: git submodule update --init --recursive" >&2
     PREFLIGHT_OK=false
 fi
 if [ ! -f "${REPO_ROOT}/third_party/downward/fast-downward.py" ]; then
-    echo "ERROR: Fast Downward not found. Run: bash scripts/setup_third_party.sh && make build-tools" >&2
+    echo "ERROR: Fast Downward not found. Run: git submodule update --init --recursive" >&2
     PREFLIGHT_OK=false
 fi
 if [ ! -f "${REPO_ROOT}/third_party/VAL/build/bin/Validate" ] && \
    [ ! -f "${REPO_ROOT}/third_party/VAL/bin/Validate" ]; then
-    echo "ERROR: VAL not built. Run: bash scripts/setup_third_party.sh && make build-tools" >&2
+    echo "ERROR: VAL not built. Run: cd third_party/VAL && mkdir -p build && cd build && cmake .. && make -j2" >&2
     PREFLIGHT_OK=false
 fi
 if ! $PREFLIGHT_OK; then
@@ -65,7 +65,7 @@ LOG="${REPO_ROOT}/logs/submitted_jobs.txt"
 echo "=== Phase 1 submission $(date) ===" | tee -a "$LOG"
 
 # Preamble for --wrap jobs that need conda
-WRAP_INIT="module load mamba/latest && eval \"\\\$(conda shell.bash hook)\" && conda activate thicket311 && cd ${REPO_ROOT} && export PYTHONPATH=${REPO_ROOT}/src"
+WRAP_INIT="source ${REPO_ROOT}/scripts/sol_init.sh && cd ${REPO_ROOT} && export PYTHONPATH=${REPO_ROOT}/src"
 
 # ---------------------------------------------------------------------------
 # Helper: submit and record job ID
