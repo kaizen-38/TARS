@@ -42,6 +42,7 @@ Model: Qwen3-1.7B + mini LoRA (~79 training tuples)
 ---
 
 ## Repository Layout
+```
 TARS/
 configs/
 splits/phase1_v1.yaml               # Locked domain splits and budgets
@@ -70,6 +71,7 @@ docs/
 domain_generator_notes.md           # Generator commands and known issues
 third_party/                          # Git submodules
 runs/                                 # Training + eval outputs (gitignored)
+```
 ---
 
 ## Sol Setup (One-time)
