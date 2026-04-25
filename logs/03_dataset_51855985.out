@@ -1,0 +1,11 @@
+[Sat Apr 25 12:02:58 MST 2026] Building SFT datasets...
+Dataset counts: {'phase1_standard_train': 202, 'phase1_anonymized_train': 202, 'phase1_compact_train': 202}
+Dataset counts: {'phase1_standard_heldout': 96, 'phase1_anonymized_heldout': 96, 'phase1_compact_heldout': 96}
+[Sat Apr 25 12:02:59 MST 2026] Dataset build complete.
+Row counts:
+  94 rows in data/datasets/alpaca/phase1_anonymized_heldout.jsonl
+  170 rows in data/datasets/alpaca/phase1_anonymized_train.jsonl
+  94 rows in data/datasets/alpaca/phase1_compact_heldout.jsonl
+  178 rows in data/datasets/alpaca/phase1_compact_train.jsonl
+  94 rows in data/datasets/alpaca/phase1_standard_heldout.jsonl
+  178 rows in data/datasets/alpaca/phase1_standard_train.jsonl

@@ -1,0 +1,3 @@
+[Thu Apr 23 21:20:25 MST 2026] task=2 domain=ferry split=train checkpoint=runs/sft_qwen3_phase1_full/
+GPU: NVIDIA A100-SXM4-80GB, 81920 MiB
+[Thu Apr 23 21:23:35 MST 2026] done: ferry

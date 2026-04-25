@@ -168,3 +168,22 @@
 06_train_mini: 51800725
 07_eval_pilot: 51800726
 10_aggregate_pilot: 51800727
+=== Phase 1 submission Sat Apr 25 11:57:51 MST 2026 ===
+00_generate_smoke: 51855968
+00b_solve_manifest: 51855980
+01_teacher_plans_smoke: 51855981
+01b_val_manifest: 51855982
+02_validate_smoke: 51855983
+02b_build_tuples: 51855984
+03_build_dataset: 51855985
+04_train_smoke: 51855986
+05_eval_smoke: 51855987
+00_generate_pilot: 51855988
+00b_solve_manifest_pilot: 51855989
+01_teacher_plans_pilot: 51855990
+01b_val_manifest_pilot: 51855991
+02_validate_pilot: 51855992
+03_build_dataset_pilot: 51855993
+06_train_mini: 51855994
+07_eval_pilot: 51855995
+10_aggregate_pilot: 51855996
