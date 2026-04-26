@@ -56,40 +56,121 @@ runs/                                 # Training + eval outputs (gitignored)
 
 ## Sol Setup (One-time)
 
+**IMPORTANT:** Clone to `/scratch/<username>/TARS` not `~/TARS` — home directories are quota-limited and will fill up with generated data.
+
+### 1. Clone and setup environment
 ```bash
+cd /scratch/$USER
+git clone https://github.com/kaizen-38/TARS.git
+cd TARS
+git checkout mohak/sol-fd-fix
+
+# Create conda environment
 module load mamba/latest
 eval "$(conda shell.bash hook)"
-conda activate thicket311
-export PYTHONPATH=$HOME/TARS/src
-export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH:-}"
+conda create -n tars python=3.11 -y
+conda activate tars
+
+# Install Python dependencies
+pip install --upgrade pip setuptools wheel
+pip install -e ".[dev]"
+```
+
+### 2. Initialize submodules
+```bash
+# Clone all third-party dependencies
+git submodule update --init --recursive
+
+# Install LLaMAFactory
+pip install -e third_party/LLaMAFactory
+```
+
+### 3. Build Fast Downward
+```bash
+module load gcc/15.2.0
+cd third_party/downward
+python build.py -j2
+cd ../..
+```
+
+### 4. Build VAL
+```bash
+module load gcc/15.2.0
+cd third_party/VAL
+mkdir -p build && cd build
+cmake .. -DCMAKE_CXX_COMPILER=$(which g++) -DCMAKE_C_COMPILER=$(which gcc)
+make -j2
+cd ../../..
+```
+
+### 5. Build pddl-generators
+```bash
+cd third_party/pddl-generators
+
+# Compile C/C++ generators
+for d in blocksworld gripper ferry miconic rovers satellite; do
+  echo "Building $d..."
+  cd $d && make -j2 && cd ..
+done
+
+# Sokoban is in a subdirectory
+cd sokoban/random
+make -j2
+cd ../../..
+```
+
+### 6. Verify everything works
+```bash
+python -c "import torch; print('CUDA:', torch.cuda.is_available())"
+third_party/downward/fast-downward.py --help | head -3
+third_party/VAL/build/bin/Validate 2>&1 | head -3
+third_party/pddl-generators/blocksworld/blocksworld 4 3 42 | head -3
+```
+
+### 7. Set environment variables
+Add to `~/.bashrc`:
+```bash
+export PYTHONPATH=/scratch/$USER/TARS/src
 export HF_HOME="${SCRATCH}/hf_cache"
 ```
 
-`LD_LIBRARY_PATH` is required for VAL and Fast Downward (GLIBCXX). All sbatch scripts set this automatically via `$CONDA_PREFIX`.
+Then reload: `source ~/.bashrc`
 
 ---
 
 ## Running the Pipeline on Sol
 
-### Quick start: smoke + pilot
+### Smoke (fast sanity check, ~2 GPU-hours)
 ```bash
-cd ~/TARS
-git checkout mohak/sol-fd-fix
-git pull origin mohak/sol-fd-fix
+cd /scratch/$USER/TARS
+conda activate tars
+bash scripts/submit_phase1.sh
+```
 
+### Pilot (25 inst/domain, ~16 GPU-hours)
+```bash
+cd /scratch/$USER/TARS
+conda activate tars
+
+# If smoke already completed, run pilot-only
+bash scripts/submit_pilot_only.sh
+
+# Or re-run full chain (smoke + pilot)
 bash scripts/submit_phase1.sh --pilot
 ```
 
-### After pilot completes: evaluate train domains
+### Monitor jobs
 ```bash
-JID=$(sbatch --array=0-7 slurm/07b_eval_train_gpu_array.sbatch | awk '{print $NF}')
-echo "train eval: $JID"
+squeue -u $USER | grep tars
 ```
 
-### Aggregate results
+### Check results after completion
 ```bash
-PYTHONPATH=src python3 src/eval/aggregate_results.py runs/eval_pilot_train/run_log.jsonl
-PYTHONPATH=src python3 src/eval/aggregate_results.py runs/eval_pilot/run_log.jsonl
+# Pilot results (heldout domains)
+cat logs/10_aggregate_pilot_*.out
+
+# If you ran train eval separately
+cat logs/10_aggregate_*.out | grep -A20 "Domain breakdown"
 ```
 
 ### Pipeline stages
@@ -136,13 +217,47 @@ data/datasets/alpaca/
 
 ---
 
+## Troubleshooting
+
+### Home directory full
+If you get "No space left on device" errors:
+```bash
+# Clean up history spam
+rm -rf ~/.hpc_history
+unset HISTFILE
+
+# Check space
+du -sh ~/TARS
+df -h ~
+
+# Move to scratch if needed
+mv ~/TARS /scratch/$USER/TARS
+ln -s /scratch/$USER/TARS ~/TARS
+```
+
+### Jobs stuck in `Priority`
+This is normal — cluster is busy. Jobs will start when capacity frees up.
+
+### Jobs failed with `DependencyNeverSatisfied`
+An upstream job failed. Check logs:
+```bash
+ls -lt logs/ | head -20
+cat logs/<failed_job>_*.err
+```
+
+### VAL not found
+Binary is at `third_party/VAL/build/bin/Validate` (not `third_party/VAL/build/Validate`). The code checks both locations.
+
+---
+
 ## Key Design Decisions
 
-1. **`enable_thinking=False` always** -- hard Phase 1 requirement
-2. **VAL is single source of truth** -- no heuristic plan checking
-3. **LD_LIBRARY_PATH via $CONDA_PREFIX** -- portable across all team members
-4. **Delivery uses static instances** -- `uv` not available on Sol
-5. **Split-suffixed datasets** -- prevents overwrite on second split build
-6. **Empty plans rejected before VAL** -- plans with 0 parsed actions are `valid=False`
-7. **File-locked JSONL writes** -- safe for concurrent Slurm array tasks
-8. **Compact action parser rejects prose** -- prevents English text inflating compact validity
+1. **`enable_thinking=False` always** — hard Phase 1 requirement
+2. **VAL is single source of truth** — no heuristic plan checking
+3. **LD_LIBRARY_PATH via $CONDA_PREFIX** — portable across all team members
+4. **Delivery uses static instances** — `uv` not available on Sol
+5. **Split-suffixed datasets** — prevents overwrite on second split build
+6. **Empty plans rejected before VAL** — plans with 0 parsed actions are `valid=False`
+7. **File-locked JSONL writes** — safe for concurrent Slurm array tasks
+8. **Compact action parser rejects prose** — prevents English text inflating compact validity
+9. **Clone to `/scratch/` not `~/`** — home directories quota out with generated data
