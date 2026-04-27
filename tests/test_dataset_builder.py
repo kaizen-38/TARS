@@ -120,10 +120,10 @@ class TestSFTDatasetBuilderSmoke:
         )
         counts = builder.build_all(split="train")
 
-        assert counts["phase1_standard"] == 1
-        assert (output_dir / "phase1_standard.jsonl").exists()
-        assert (output_dir / "phase1_anonymized.jsonl").exists()
-        assert (output_dir / "phase1_compact.jsonl").exists()
+        assert counts["phase1_standard_train"] == 1
+        assert (output_dir / "phase1_standard_train.jsonl").exists()
+        assert (output_dir / "phase1_anonymized_train.jsonl").exists()
+        assert (output_dir / "phase1_compact_train.jsonl").exists()
 
 
 class TestDedupe:
