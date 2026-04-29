@@ -29,3 +29,6 @@ smoke_test:
 
 pilot:
   instances_per_domain: 25
+
+full:
+  instances_per_domain: 100

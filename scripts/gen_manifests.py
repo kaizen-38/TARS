@@ -36,10 +36,17 @@ def _load_config() -> dict:
 
 
 @app.command()
-def generate(mode: str = typer.Option("smoke", help="'smoke' or 'pilot'")) -> None:
+def generate(mode: str = typer.Option("smoke", help="'smoke', 'pilot', or 'full'")) -> None:
     """Write manifests/generate_manifest.tsv (one row per domain)."""
     cfg = _load_config()
-    n = cfg[mode + "_test"]["instances_per_domain"] if mode == "smoke" else cfg["pilot"]["instances_per_domain"]
+    if mode == "smoke":
+        n = cfg["smoke_test"]["instances_per_domain"]
+    elif mode == "pilot":
+        n = cfg["pilot"]["instances_per_domain"]
+    elif mode == "full":
+        n = cfg["full"]["instances_per_domain"]
+    else:
+        raise ValueError(f"Unknown mode: {mode}. Use 'smoke', 'pilot', or 'full'.")
     all_domains = cfg["train_domains"] + cfg["heldout_domains"]
 
     _MANIFESTS_DIR.mkdir(parents=True, exist_ok=True)
