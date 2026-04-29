@@ -17,7 +17,7 @@ MANIFEST="${REPO_ROOT}/manifests/validate_manifest.tsv"
 module purge
 module load mamba/latest
 eval "$(conda shell.bash hook)"
-conda activate thicket311
+conda activate tars
 export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH:-}"
 
 export PYTHONPATH="${REPO_ROOT}/src"

@@ -18,7 +18,7 @@ module purge
 module load gcc/15.2.0
 module load mamba/latest
 eval "$(conda shell.bash hook)"
-conda activate thicket311
+conda activate tars
 export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH:-}"
 
 export PYTHONPATH="${REPO_ROOT}/src"

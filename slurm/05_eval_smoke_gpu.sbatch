@@ -19,7 +19,7 @@ REPO_ROOT="${SLURM_SUBMIT_DIR}"
 module purge
 module load mamba/latest
 eval "$(conda shell.bash hook)"
-conda activate thicket311
+conda activate tars
 export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH:-}"
 
 SCRATCH="${SCRATCH:-/tmp}"
