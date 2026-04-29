@@ -27,16 +27,7 @@ _LF_ROOT = _REPO_ROOT / "third_party" / "LLaMAFactory"
 
 def _find_llamafactory_cli() -> list[str]:
     """Locate the LLaMA-Factory CLI entry point."""
-    # Prefer installed CLI
-    try:
-        result = subprocess.run(
-            ["llamafactory-cli", "--help"], capture_output=True, timeout=30
-        )
-        if result.returncode == 0:
-            return ["llamafactory-cli"]
-    except FileNotFoundError:
-        pass
-
+    # Skip the CLI check (it hangs for 30s) and go straight to the Python fallback
     # Fall back to running from the submodule
     src_script = _LF_ROOT / "src" / "llamafactory" / "launcher.py"
     if src_script.exists():
