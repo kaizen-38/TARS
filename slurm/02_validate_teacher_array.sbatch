@@ -40,8 +40,8 @@ from generation.validate_with_val import validate_plan
 
 result = validate_plan(
     problem_id="${INSTANCE_ID}",
-    domain_file=Path("${REPO_ROOT}/${DOMAIN_FILE}"),
-    problem_file=Path("${REPO_ROOT}/${PROBLEM_FILE}"),
+    domain_file=Path("${DOMAIN_FILE}"),
+    problem_file=Path("${PROBLEM_FILE}"),
     plan_file=Path("${PLAN_FILE}"),
     output_dir=Path("${REPO_ROOT}/data/generated/plans"),
     timeout=30,
