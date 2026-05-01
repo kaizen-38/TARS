@@ -147,17 +147,11 @@ def main():
         device_map="auto",
     )
 
-    # PPO config
+    # PPO config - use minimal params for compatibility
     ppo_config = PPOConfig(
         learning_rate=1e-6,
         batch_size=4,
         mini_batch_size=1,
-        gradient_accumulation_steps=4,
-        ppo_epochs=4,
-        optimize_cuda_cache=True,
-        early_stopping=False,
-        target_kl=0.1,
-        seed=42,
     )
 
     # Load training data
