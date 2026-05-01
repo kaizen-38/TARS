@@ -147,11 +147,24 @@ def main():
         device_map="auto",
     )
 
-    # PPO config - use minimal params for compatibility
+    # PPO config for TRL 0.24.0
     ppo_config = PPOConfig(
+        output_dir=str(output_dir),
         learning_rate=1e-6,
         batch_size=4,
         mini_batch_size=1,
+        gradient_accumulation_steps=4,
+        num_ppo_epochs=4,
+        response_length=512,  # Max plan length
+        temperature=0.7,
+        kl_coef=0.05,
+        cliprange=0.2,
+        vf_coef=0.1,
+        gamma=1.0,
+        lam=0.95,
+        seed=42,
+        log_with=None,
+        report_to="none",
     )
 
     # Load training data
