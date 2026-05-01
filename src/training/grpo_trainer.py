@@ -141,6 +141,10 @@ def main():
     # Wrap with value head for PPO
     model = AutoModelForCausalLMWithValueHead.from_pretrained(base_model)
 
+    # Copy generation_config from base model (required by PPOTrainer)
+    if hasattr(base_model, 'generation_config'):
+        model.generation_config = base_model.generation_config
+
     # Create reference model (frozen copy for KL divergence)
     ref_model = AutoModelForCausalLMWithValueHead.from_pretrained(
         str(model_path),
