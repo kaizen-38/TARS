@@ -149,7 +149,6 @@ def main():
 
     # PPO config
     ppo_config = PPOConfig(
-        model_name=str(model_path),
         learning_rate=1e-6,
         batch_size=4,
         mini_batch_size=1,
@@ -158,7 +157,6 @@ def main():
         optimize_cuda_cache=True,
         early_stopping=False,
         target_kl=0.1,
-        log_with=None,
         seed=42,
     )
 
