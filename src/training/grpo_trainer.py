@@ -163,7 +163,6 @@ def main():
         gamma=1.0,
         lam=0.95,
         seed=42,
-        log_with=None,
         report_to="none",
     )
 
