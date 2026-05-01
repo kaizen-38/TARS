@@ -24,7 +24,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_REPO_ROOT / "src"))
 
 from generation.validate_with_val import validate_plan
-from pddl_ops.decode_compact_plan import decode_compact_to_actions
+from pddl_ops.decode_compact_plan import decode_compact_plan
 from utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -49,7 +49,8 @@ def compute_plan_reward(
     else:
         # Compact format
         try:
-            actions = decode_compact_to_actions(generated_plan)
+            parsed_plan = decode_compact_plan(generated_plan)
+            actions = parsed_plan.to_pddl_lines()
         except Exception:
             actions = []
 
