@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""GRPO training using VAL validation as reward - TRL 0.24.0 compatible.
+"""GRPO training using VAL validation as reward function.
 
-This uses TRL's PPOTrainer with external reward computation via VAL.
+Uses TRL (Transformer Reinforcement Learning) for policy optimization.
+Reward: VAL validation result (0 for invalid, 1 for valid, 10 for goal-reached).
 """
 from __future__ import annotations
 
@@ -11,8 +12,12 @@ from pathlib import Path
 from typing import Any
 
 import torch
-from datasets import Dataset
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from datasets import Dataset, load_dataset
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    TrainingArguments,
+)
 from trl import AutoModelForCausalLMWithValueHead, PPOConfig, PPOTrainer
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -31,11 +36,18 @@ def compute_plan_reward(
     problem_file: Path,
     generated_plan: str,
 ) -> tuple[float, dict[str, Any]]:
-    """Compute reward by validating generated plan with VAL."""
+    """Compute reward by validating generated plan with VAL.
+
+    Returns:
+        reward: float in [0, 10]
+        info: dict with validation details
+    """
     # Parse actions from generated text
     if generated_plan.strip().startswith("("):
+        # Standard PDDL format
         actions = [line.strip() for line in generated_plan.strip().split("\n") if line.strip()]
     else:
+        # Compact format
         try:
             parsed_plan = decode_compact_plan(generated_plan)
             actions = parsed_plan.to_pddl_lines()
@@ -72,6 +84,7 @@ def compute_plan_reward(
             "valid": result.parsed_validity or False,
             "goal": result.parsed_goal_reached or False,
             "num_actions": len(actions),
+            "exit_code": result.exit_code,
         }
 
         return reward, info
@@ -83,35 +96,34 @@ def compute_plan_reward(
         temp_plan.unlink(missing_ok=True)
 
 
-def load_training_data() -> tuple[Dataset, dict]:
-    """Load PDDL problems and metadata for GRPO training."""
+def load_training_data() -> Dataset:
+    """Load PDDL problems for GRPO training."""
+    # Load tuples (contain domain, problem, reference plan)
     tuples_dir = _REPO_ROOT / "data/generated/tuples_standard"
-    data_list = []
-    metadata = {}
+    tuples = []
 
     for tuple_file in tuples_dir.glob("*_train_*_tuple.json"):
         data = json.loads(tuple_file.read_text())
-        instance_id = data["instance_id"]
 
-        # Create prompt
+        # Create prompt (same format as SFT)
         instruction = "Generate a valid PDDL plan to solve this planning problem."
         problem_text = data["problem_text"]
         prompt = f"{instruction}\n\n{problem_text}\n\nPlan:"
 
-        data_list.append({
-            "query": prompt,  # TRL expects "query" field
-            "instance_id": instance_id,
+        tuples.append({
+            "instance_id": data["instance_id"],
+            "prompt": prompt,
+            "domain_text": data["domain_text"],
+            "problem_text": data["problem_text"],
+            # Store paths for VAL validation
+            "domain_file": str(_REPO_ROOT / "data/generated/instances" /
+                             f"{data['instance_id'].split('_')[0]}/train/{data['instance_id']}_domain.pddl"),
+            "problem_file": str(_REPO_ROOT / "data/generated/instances" /
+                              f"{data['instance_id'].split('_')[0]}/train/{data['instance_id']}_problem.pddl"),
         })
 
-        # Store metadata for reward computation
-        domain_name = instance_id.split("_")[0]
-        metadata[instance_id] = {
-            "domain_file": str(_REPO_ROOT / "data/generated/instances" / domain_name / "train" / f"{instance_id}_domain.pddl"),
-            "problem_file": str(_REPO_ROOT / "data/generated/instances" / domain_name / "train" / f"{instance_id}_problem.pddl"),
-        }
-
-    logger.info(f"Loaded {len(data_list)} training problems")
-    return Dataset.from_list(data_list), metadata
+    logger.info(f"Loaded {len(tuples)} training problems")
+    return Dataset.from_list(tuples)
 
 
 def main():
@@ -119,40 +131,23 @@ def main():
     output_dir = _REPO_ROOT / "runs/qwen3_grpo"
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # Load SFT checkpoint as base policy
     logger.info(f"Loading SFT model from {model_path}")
-
-    # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
         str(model_path),
         trust_remote_code=True,
-        padding_side="left",
+        padding_side="left",  # Important for generation
     )
-    if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token = tokenizer.eos_token
 
-    # Load base model for policy
-    base_model = AutoModelForCausalLM.from_pretrained(
+    model = AutoModelForCausalLMWithValueHead.from_pretrained(
         str(model_path),
         trust_remote_code=True,
         torch_dtype=torch.bfloat16,
         device_map="auto",
     )
 
-    # Wrap with value head for PPO
-    model = AutoModelForCausalLMWithValueHead.from_pretrained(base_model)
-
-    # Create reference model (frozen copy for KL divergence)
-    ref_model = AutoModelForCausalLMWithValueHead.from_pretrained(
-        str(model_path),
-        trust_remote_code=True,
-        torch_dtype=torch.bfloat16,
-        device_map="auto",
-    )
-    ref_model.eval()
-    for param in ref_model.parameters():
-        param.requires_grad = False
-
-    # PPO config
+    # PPO config for TRL 0.24.0
     ppo_config = PPOConfig(
         output_dir=str(output_dir),
         learning_rate=1e-6,
@@ -160,7 +155,7 @@ def main():
         mini_batch_size=1,
         gradient_accumulation_steps=4,
         num_ppo_epochs=4,
-        response_length=512,
+        response_length=512,  # Max plan length
         temperature=0.7,
         kl_coef=0.05,
         cliprange=0.2,
@@ -172,17 +167,26 @@ def main():
     )
 
     # Load training data
-    dataset, metadata = load_training_data()
+    dataset = load_training_data()
 
-    # PPO Trainer - TRL 0.24.0 API
+    # Tokenize prompts
+    def tokenize_fn(examples):
+        return tokenizer(
+            examples["prompt"],
+            truncation=True,
+            max_length=2048,
+            padding=False,
+        )
+
+    dataset = dataset.map(tokenize_fn, batched=True)
+    dataset.set_format(type="torch", columns=["input_ids", "attention_mask"])
+
+    # PPO Trainer
     ppo_trainer = PPOTrainer(
-        args=ppo_config,  # Changed from config to args
-        processing_class=tokenizer,  # Changed from tokenizer
+        config=ppo_config,
         model=model,
-        ref_model=ref_model,
-        reward_model=None,  # We compute rewards externally
-        train_dataset=dataset,
-        value_model=None,  # Value head is in model
+        tokenizer=tokenizer,
+        dataset=dataset,
     )
 
     # Training loop
@@ -201,40 +205,37 @@ def main():
         logger.info(f"Epoch {epoch + 1}/3")
 
         for batch_idx, batch in enumerate(ppo_trainer.dataloader):
-            # Get queries (prompts)
-            query_tensors = [torch.tensor(ex["input_ids"]) for ex in batch]
+            # Get prompts for this batch
+            batch_instances = [dataset[i] for i in range(batch_idx * ppo_config.batch_size,
+                                                         min((batch_idx + 1) * ppo_config.batch_size, len(dataset)))]
 
-            # Generate responses
-            response_tensors = []
-            for query in query_tensors:
-                response = ppo_trainer.generate(
-                    query.unsqueeze(0),
-                    **generation_kwargs,
-                )
-                response_tensors.append(response.squeeze())
+            # Generate plans
+            query_tensors = batch["input_ids"]
+            response_tensors = ppo_trainer.generate(
+                query_tensors,
+                return_prompt=False,
+                **generation_kwargs,
+            )
 
             # Decode generations
-            generated_texts = tokenizer.batch_decode(response_tensors, skip_special_tokens=True)
+            batch_texts = tokenizer.batch_decode(response_tensors, skip_special_tokens=True)
 
             # Compute rewards using VAL
             rewards = []
             stats = []
 
-            for i, (generated_text, batch_item) in enumerate(zip(generated_texts, batch)):
-                instance_id = batch_item["instance_id"]
-                meta = metadata[instance_id]
-
+            for instance, generated_text in zip(batch_instances, batch_texts):
                 reward, info = compute_plan_reward(
-                    problem_id=instance_id,
-                    domain_file=Path(meta["domain_file"]),
-                    problem_file=Path(meta["problem_file"]),
+                    problem_id=instance["instance_id"],
+                    domain_file=Path(instance["domain_file"]),
+                    problem_file=Path(instance["problem_file"]),
                     generated_plan=generated_text,
                 )
                 rewards.append(torch.tensor(reward))
                 stats.append(info)
 
             # PPO update
-            train_stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
+            stats_dict = ppo_trainer.step(query_tensors, response_tensors, rewards)
 
             # Log stats
             if batch_idx % 10 == 0:
@@ -243,7 +244,7 @@ def main():
                 goal_rate = sum(s["goal"] for s in stats) / len(stats)
 
                 logger.info(
-                    f"Batch {batch_idx}: reward={avg_reward:.3f} "
+                    f"Batch {batch_idx}: avg_reward={avg_reward:.3f} "
                     f"valid={valid_rate:.2%} goal={goal_rate:.2%}"
                 )
 
