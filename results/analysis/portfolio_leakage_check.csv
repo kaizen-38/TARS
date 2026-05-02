@@ -1,0 +1,7 @@
+method,mean_accuracy,std_accuracy,n_folds,cv_type
+GroupKFold(domain)_dummy,0.2809655172413793,0.0517647656532812,5,GroupKFold_by_domain
+GroupKFold(domain)_logreg,0.5095057471264368,0.15131169821654677,5,GroupKFold_by_domain
+GroupKFold(domain)_rf,0.5352413793103449,0.10485404611611483,5,GroupKFold_by_domain
+LOGO_dummy,0.21810897435897436,0.15869936863100315,12,LeaveOneDomainOut
+LOGO_logreg,0.5481410256410256,0.22156972231663055,12,LeaveOneDomainOut
+LOGO_rf,0.5398076923076923,0.27445591236184863,12,LeaveOneDomainOut

@@ -1,0 +1,13 @@
+domain,n_instances,split,LLM_valid,random_bw8,goal_count_bw8,teacher_freq_bw8,repair_goal_count,mean_prefix_len,nonzero_prefix_frac,notes
+blocksworld,5,train,0.0,0.31,0.52,0.17,0.0,0.4,0.2,near-zero prefix
+childsnack,5,train,0.0,0.08,0.0,0.0,0.0,0.0,0.0,near-zero prefix
+delivery,5,train,0.0,0.6538461538461539,0.8653846153846154,0.3557692307692308,0.0,0.0,0.0,near-zero prefix
+ferry,5,train,0.0,0.39,1.0,0.18,1.0,0.0,0.0,near-zero prefix
+floortile,5,train,0.0,0.0,0.22,0.0,0.0,0.0,0.0,near-zero prefix
+gripper,5,train,0.0,0.37,0.48,0.0,0.4,0.06666666666666667,0.06666666666666667,near-zero prefix
+miconic,100,heldout,0.13368983957219252,0.71,0.58,0.3,0.35964912280701755,1.0213903743315509,0.34759358288770054,LLM solves trivial instances
+rovers,5,train,0.0,0.8,1.0,0.16,1.0,1.2857142857142858,0.2857142857142857,
+satellite,25,heldout,0.0,0.0,0.0,0.0,0.0,1.36,0.6533333333333333,
+sokoban,20,heldout,0.0,0.0,0.4,0.0,0.25,0.25,0.21666666666666667,near-zero prefix; degenerate looping (mean 157 actions)
+spanner,5,train,0.0,0.87,0.84,0.62,0.4,0.0,0.0,near-zero prefix
+transport,100,heldout,0.0,0.18,0.57,0.02,0.31047619047619046,1.6533333333333333,0.952,95% nonzero prefix

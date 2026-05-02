@@ -1,0 +1,41 @@
+tools:
+  fast_downward: null
+  val: null
+  python: python3
+
+data:
+  repo_root: "."
+  domains_root: null
+  generated_plans_root: null
+  generations_root: null
+  splits_file: "configs/splits/phase1_v1.yaml"
+  output_root: "results"
+
+experiment:
+  train_domains:
+    - blocksworld
+    - gripper
+    - ferry
+    - delivery
+    - childsnack
+    - floortile
+    - rovers
+    - spanner
+  heldout_domains:
+    - miconic
+    - sokoban
+    - transport
+    - satellite
+  representations:
+    - standard
+    - anonymized
+    - compact
+  model_ids:
+    - base
+    - sft514
+    - sft1558
+  random_seed: 574
+  max_seconds_per_instance: 30
+  max_steps_factor: 3.0
+  max_steps_cap: 200
+  val_call_cap: 100

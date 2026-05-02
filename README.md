@@ -1,263 +1,106 @@
-# TARS — Thicket-Aware Regime Switching for Verifier-Grounded LLM Planning
+# TARS — Verifier-Grounded LLM Planning
 
-**Phase 1: Reproduce the 1.7B LLM Planning Baseline**
+**CSE-574, Arizona State University**
+Team: Rhythm Arya, Mohak Rathod, Abhiram Menon
 
-Team: Rhythm Arya (rarya124), Mohak Rathod (mrathod4), Abhiram Menon (amenon28)
-Course: CSE-574, ASU
+> Small-LLM SFT collapses as an autonomous PDDL planner (0% VAL-valid on non-trivial instances), but verifier-grounded structure recovers useful planning behavior through failure diagnostics, legality-constrained search, prefix-salvage repair, and mode selection.
 
-> Phase 1 goal: lock splits/budgets/protocol, reproduce Qwen3-1.7B planning results
-> across standard, anonymized, and compact PDDL representations, and build a
-> trustworthy data + validation pipeline on ASU Sol.
-> Regime switching is NOT implemented in Phase 1.
+![Method Comparison](results/figures/detailed/fig29_money_figure.png)
 
 ---
 
-## Frozen Splits
+## Motivation
+
+We fine-tuned Qwen3-1.7B on teacher-generated PDDL plans across 8 training domains (3 representations: standard, anonymized, compact). Training loss decreased normally, but **VAL-verified plan validity remained at 0%** for all non-trivial instances. Only 3-step miconic elevator problems were solved (13.4% of miconic).
+
+Rather than abandoning the project, we pivoted to ask: *what structure can a verifier extract from these failures?*
+
+## Key Results
+
+| Method | Heldout Solved Rate |
+|---|---|
+| LLM Direct (Qwen3-1.7B SFT) | 4.9% |
+| Random legal actions, beam=8 | 36.3% |
+| **Goal-count ranker, beam=8** | **50.2%** |
+| Prefix repair (goal-count) | 25.4% |
+| LLM prefix + completion | 31.9% |
+
+### Diagnostic Findings
+- **Schema-valid action fraction ~100%**: the model knows the right action names
+- **46% of plans fail at step 0**: first action is inapplicable
+- **Transport**: 95% of plans have a nonzero executable prefix (model gets the opening right)
+- **Sokoban**: degenerate 157-action loops
+- Compact representation produces parseable actions; standard/anonymized also parse but still fail semantically
+
+### Constrained Search
+Beam search over SAS-legal actions with a goal-count heuristic solves **50.2% of heldout instances** — a 10x improvement over the LLM. Even random legal actions solve 36.3%, proving that **legality constraint is the primary driver**, not ranking quality.
+
+### Repair Ablation
+The LLM's executable prefix provides only marginal benefit over starting from scratch (31.9% vs 29.7%). Random legal prefixes perform equivalently (30.8%). The LLM makes legal but strategically arbitrary moves.
+
+### Portfolio Selector
+A random forest selector achieves **54.0% mode-selection accuracy** (leave-one-domain-out CV) vs 21.8% most-frequent baseline, demonstrating that cheap structural features predict which planning mode works per instance.
+
+---
+
+## Repository Structure
+
+```
+src/
+  planning_pivot/           # Verifier-grounded evaluation framework
+    sas.py                  # SAS parser and simulator (core)
+    constrained_search.py   # Beam search over legal actions
+    repair.py               # Prefix-salvage plan repair
+    diagnostics.py          # VAL-grounded failure classification
+    rankers.py              # Action rankers (random, goal_count, teacher_freq, hf_logprob)
+    portfolio.py            # Mode selection classifier
+    val.py                  # VAL validation wrapper
+    fd.py                   # Fast Downward wrapper
+    plan_io.py              # Plan parsing and normalization
+    cli.py                  # Typer CLI
+    config.py               # Pydantic config
+    paths.py                # Tool discovery
+    shell.py                # Subprocess wrapper
+    features.py             # Instance feature extraction
+    reporting.py            # Figures and tables
+  generation/               # Instance generation, FD solving, VAL validation
+  pddl_ops/                 # Anonymization, compact serialization
+  training/                 # SFT training (failed direction, kept for reference)
+  inference/                # LLM plan generation
+configs/
+  pivot_local.yaml          # Local experiment config
+  pivot_sol.yaml            # SOL cluster config
+  splits/phase1_v1.yaml     # Domain splits
+scripts/                    # Pipeline scripts (00-08)
+results/                    # All experiment artifacts
+```
+
+## Running the Pipeline
+
+```bash
+pip install -r requirements-pivot.txt
+
+python -m planning_pivot.cli audit
+python -m planning_pivot.cli build-index
+python -m planning_pivot.cli cache-sas
+python -m planning_pivot.cli diagnose
+python -m planning_pivot.cli constrained-search
+python -m planning_pivot.cli repair
+python -m planning_pivot.cli portfolio
+python -m planning_pivot.cli report
+```
+
+## Domains
 
 **Train (8):** blocksworld, gripper, ferry, delivery, childsnack, floortile, rovers, spanner
 
-**Held-out (4):** miconic, sokoban, transport, satellite
-
-**Representations:** standard, anonymized, compact
-
----
-
-## Repository Layout
-```
-TARS/
-configs/
-  splits/phase1_v1.yaml               # Locked domain splits and budgets
-  train/sft_qwen3_phase1_full.yaml    # Full fine-tuning config
-  train/sft_qwen3_phase1_lora_debug.yaml  # LoRA smoke config
-  eval/greedy_eval.yaml               # Greedy eval config (max_new_tokens=2048)
-data/
-  generated/instances/                # PDDL domain+problem files
-  generated/plans/                    # Solved plans + VAL results
-  generated/tuples_standard/          # (domain, problem, plan) tuples
-  datasets/alpaca/                    # Alpaca JSONL datasets (split-suffixed)
-  static/delivery/                    # Pre-generated delivery instances
-src/
-  cli.py                              # Unified CLI: generate-one, build-tuples, build-dataset, train, eval
-  generation/                         # Instance generation, FD solving, VAL validation
-  pddl_ops/                           # Anonymization, compact serialization, compact decoding
-  dataset/                            # SFT dataset builder
-  training/                           # LLaMAFactory config + launch
-  inference/                          # Plan generation + greedy eval
-  eval/                               # Metrics aggregation
-slurm/                                # Sbatch scripts (00-10)
-scripts/
-  submit_phase1.sh                    # Full pipeline submission
-  gen_manifests.py                    # TSV manifest generator
-third_party/                          # Git submodules (LLaMAFactory, FD, VAL, pddl-generators)
-runs/                                 # Training + eval outputs (gitignored)
-```
-
----
-
-## Sol Setup (One-time)
-
-**IMPORTANT:** Clone to `/scratch/<username>/TARS` not `~/TARS` — home directories are quota-limited and will fill up with generated data.
-
-### 1. Clone and setup environment
-```bash
-cd /scratch/$USER
-git clone https://github.com/kaizen-38/TARS.git
-cd TARS
-git checkout mohak/sol-fd-fix
-
-# Create conda environment
-module load mamba/latest
-eval "$(conda shell.bash hook)"
-conda create -n tars python=3.11 -y
-conda activate tars
-
-# Install Python dependencies
-pip install --upgrade pip setuptools wheel
-pip install -e ".[dev]"
-```
-
-### 2. Initialize submodules
-```bash
-# Clone all third-party dependencies
-git submodule update --init --recursive
-
-# Install LLaMAFactory
-pip install -e third_party/LLaMAFactory
-```
-
-### 3. Build Fast Downward
-```bash
-module load gcc/15.2.0
-cd third_party/downward
-python build.py -j2
-cd ../..
-```
-
-### 4. Build VAL
-```bash
-module load gcc/15.2.0
-cd third_party/VAL
-mkdir -p build && cd build
-cmake .. -DCMAKE_CXX_COMPILER=$(which g++) -DCMAKE_C_COMPILER=$(which gcc)
-make -j2
-cd ../../..
-```
-
-### 5. Build pddl-generators
-```bash
-cd third_party/pddl-generators
-
-# Compile C/C++ generators
-for d in blocksworld gripper ferry miconic rovers satellite; do
-  echo "Building $d..."
-  cd $d && make -j2 && cd ..
-done
-
-# Sokoban is in a subdirectory
-cd sokoban/random
-make -j2
-cd ../../..
-```
-
-### 6. Verify everything works
-```bash
-python -c "import torch; print('CUDA:', torch.cuda.is_available())"
-third_party/downward/fast-downward.py --help | head -3
-third_party/VAL/build/bin/Validate 2>&1 | head -3
-third_party/pddl-generators/blocksworld/blocksworld 4 3 42 | head -3
-```
-
-### 7. Set environment variables
-Add to `~/.bashrc`:
-```bash
-export PYTHONPATH=/scratch/$USER/TARS/src
-export HF_HOME="${SCRATCH}/hf_cache"
-```
-
-Then reload: `source ~/.bashrc`
-
----
-
-## Running the Pipeline on Sol
-
-### Smoke (fast sanity check, ~2 GPU-hours)
-```bash
-cd /scratch/$USER/TARS
-conda activate tars
-bash scripts/submit_phase1.sh
-```
-
-### Pilot (25 inst/domain, ~16 GPU-hours)
-```bash
-cd /scratch/$USER/TARS
-conda activate tars
-
-# If smoke already completed, run pilot-only
-bash scripts/submit_pilot_only.sh
-
-# Or re-run full chain (smoke + pilot)
-bash scripts/submit_phase1.sh --pilot
-```
-
-### Monitor jobs
-```bash
-squeue -u $USER | grep tars
-```
-
-### Check results after completion
-```bash
-# Pilot results (heldout domains)
-cat logs/10_aggregate_pilot_*.out
-
-# If you ran train eval separately
-cat logs/10_aggregate_*.out | grep -A20 "Domain breakdown"
-```
-
-### Pipeline stages
-| Job | What | Depends on |
-|-----|------|-----------|
-| 00_generate | Generate instances (array 12) | -- |
-| 00b | Build solve manifest | 00 |
-| 01_teacher_plans | FD solve (array 60/300) | 00b |
-| 01b | Build validate manifest | 01 |
-| 02_validate | VAL validate (array 60/300) | 01b |
-| 02b_build_tuples | Build tuple JSONs | 02 |
-| 03_build_dataset | Build Alpaca JSONL | 02b |
-| 04/06_train | LoRA/mini train | 03 |
-| 05/07_eval | Greedy eval heldout | 04/06 |
-| 07b_eval_train | Greedy eval train | manual |
-| 10_aggregate | Aggregate results | 07 |
-
----
-
-## Dataset Files
-```
-After build-dataset, files are split-suffixed:
-data/datasets/alpaca/
-  phase1_standard_train.jsonl
-  phase1_anonymized_train.jsonl
-  phase1_compact_train.jsonl
-  phase1_standard_heldout.jsonl
-  phase1_anonymized_heldout.jsonl
-  phase1_compact_heldout.jsonl
-  dataset_info.json                # LLaMAFactory registry (merges, no overwrite)
-```
-
----
+**Heldout (4):** miconic, sokoban, transport, satellite
 
 ## Third-Party Dependencies
 
 | Submodule | Role |
-|-----------|------|
+|---|---|
+| `third_party/downward` | Fast Downward (SAS translation + teacher planning) |
+| `third_party/VAL` | Plan validation (final correctness authority) |
+| `third_party/pddl-generators` | Instance generation |
 | `third_party/LLaMAFactory` | SFT training |
-| `third_party/pddl-generators` | Domain instance generation |
-| `third_party/VAL` | Plan validation |
-| `third_party/downward` | Fast Downward teacher planner |
-| `third_party/PlanBench` | Reference only |
-
----
-
-## Troubleshooting
-
-### Home directory full
-If you get "No space left on device" errors:
-```bash
-# Clean up history spam
-rm -rf ~/.hpc_history
-unset HISTFILE
-
-# Check space
-du -sh ~/TARS
-df -h ~
-
-# Move to scratch if needed
-mv ~/TARS /scratch/$USER/TARS
-ln -s /scratch/$USER/TARS ~/TARS
-```
-
-### Jobs stuck in `Priority`
-This is normal — cluster is busy. Jobs will start when capacity frees up.
-
-### Jobs failed with `DependencyNeverSatisfied`
-An upstream job failed. Check logs:
-```bash
-ls -lt logs/ | head -20
-cat logs/<failed_job>_*.err
-```
-
-### VAL not found
-Binary is at `third_party/VAL/build/bin/Validate` (not `third_party/VAL/build/Validate`). The code checks both locations.
-
----
-
-## Key Design Decisions
-
-1. **`enable_thinking=False` always** — hard Phase 1 requirement
-2. **VAL is single source of truth** — no heuristic plan checking
-3. **LD_LIBRARY_PATH via $CONDA_PREFIX** — portable across all team members
-4. **Delivery uses static instances** — `uv` not available on Sol
-5. **Split-suffixed datasets** — prevents overwrite on second split build
-6. **Empty plans rejected before VAL** — plans with 0 parsed actions are `valid=False`
-7. **File-locked JSONL writes** — safe for concurrent Slurm array tasks
-8. **Compact action parser rejects prose** — prevents English text inflating compact validity
-9. **Clone to `/scratch/` not `~/`** — home directories quota out with generated data
